@@ -9,4 +9,5 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 })
 export class App {
   protected readonly title = signal('MyRestaurant');
+  protected readonly currentYear = new Date().getFullYear();
 }

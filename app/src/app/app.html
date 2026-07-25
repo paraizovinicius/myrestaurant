@@ -44,4 +44,29 @@
   </header>
 
   <router-outlet />
+
+  <footer class="border-t border-white/10 bg-white px-6 py-4 text-[#9e3d00] shadow-[0_-24px_80px_rgba(0,0,0,0.35)] backdrop-blur-lg sm:px-10">
+    <div class="mx-auto flex w-full max-w-7xl flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+      <div class="flex max-w-xl flex-col gap-3">
+        <div class="select-none font-serif text-[32px] font-bold tracking-[-0.02em] text-[#9e3d00]" aria-label="MyRestaurant">
+          {{ title() }}
+        </div>
+        <p class="text-sm text-[#9e3d00]/80 text-black/60">
+          The ultimate destination for discerning diners to find, rate, and review the finest
+          culinary experiences.
+        </p>
+      </div>
+
+      <div class="flex flex-col gap-2 text-left lg:ml-auto lg:items-end lg:text-right">
+        <h3 class="text-[20px] font-semibold text-[#9e3d00]">Company</h3>
+        <a class="transition hover:text-[#7f3100]" href="#">About Us</a>
+        <a class="transition hover:text-[#7f3100]" href="#">Contact</a>
+        <a class="transition hover:text-[#7f3100]" href="#">Terms of Service</a>
+      </div>
+    </div>
+
+    <div class="mx-auto text-center justify-content mt-6 w-full max-w-7xl border-t border-[#9e3d00]/10 pt-4 text-sm text-black/60">
+      {{ currentYear }} &copy; MyRestaurant. All rights reserved.
+    </div>
+  </footer>
 </div>
