@@ -1,11 +1,11 @@
 # MyRestaurant
 
-Simple Angular + NestJS starter.
+Angular SSR + NestJS starter.
 
 ## Structure
 
-- `apps/web`: Angular frontend
-- `apps/api`: NestJS backend
+- `app/src`: Angular frontend
+- `app/api`: NestJS backend
 
 ## Run
 
