@@ -1,0 +1,134 @@
+.hero-card,
+.menu-card {
+  width: min(100%, 980px);
+  margin: 0 auto 24px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(18px);
+}
+
+.hero-card {
+  padding: clamp(28px, 5vw, 56px);
+}
+
+.eyebrow {
+  display: inline-flex;
+  margin: 0;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #f4c98b;
+  font-size: 0.82rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+h2 {
+  margin: 18px 0 14px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(2.4rem, 6vw, 4.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+}
+
+.lead {
+  max-width: 40rem;
+  margin: 0;
+  color: rgba(246, 240, 232, 0.82);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.primary-action,
+.secondary-action {
+  border-radius: 999px;
+  padding: 14px 20px;
+  font-weight: 600;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.primary-action {
+  background: #f4c98b;
+  color: #241915;
+}
+
+.secondary-action {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.primary-action:hover,
+.secondary-action:hover {
+  transform: translateY(-1px);
+}
+
+.info-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 32px;
+}
+
+.info-grid article,
+.menu-list div {
+  padding: 18px;
+  border-radius: 20px;
+  background: rgba(12, 8, 7, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.label {
+  display: block;
+  margin-bottom: 10px;
+  color: #f4c98b;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.info-grid strong,
+.menu-list strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 1rem;
+}
+
+.info-grid p,
+.menu-list span {
+  margin: 0;
+  color: rgba(246, 240, 232, 0.72);
+}
+
+.menu-card {
+  padding: 28px 32px 32px;
+}
+
+.menu-card h2 {
+  margin: 0 0 18px;
+  font-size: 1.35rem;
+}
+
+.menu-list {
+  display: grid;
+  gap: 14px;
+}
+
+.menu-list div {
+  display: grid;
+  gap: 6px;
+}
+
+@media (max-width: 800px) {
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+}

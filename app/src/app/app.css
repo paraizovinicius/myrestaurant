@@ -18,16 +18,16 @@ a {
 	text-decoration: none;
 }
 
-.page-shell {
+.app-shell {
 	min-height: 100dvh;
 	padding: 32px;
 	display: grid;
 	gap: 24px;
-	align-content: center;
+	align-content: start;
 }
 
-.hero-card,
-.menu-card {
+.topbar,
+.page-card {
 	width: min(100%, 980px);
 	margin: 0 auto;
 	border: 1px solid rgba(255, 255, 255, 0.08);
@@ -37,12 +37,18 @@ a {
 	backdrop-filter: blur(18px);
 }
 
-.hero-card {
-	padding: clamp(28px, 5vw, 56px);
+.topbar {
+	padding: 22px 28px;
+	display: flex;
+	justify-content: space-between;
+	gap: 18px;
+	align-items: center;
+	flex-wrap: wrap;
 }
 
 .eyebrow {
 	display: inline-flex;
+	margin: 0;
 	padding: 8px 14px;
 	border-radius: 999px;
 	background: rgba(255, 255, 255, 0.08);
@@ -53,11 +59,34 @@ a {
 }
 
 h1 {
-	margin: 18px 0 14px;
+	margin: 10px 0 0;
 	font-family: Georgia, "Times New Roman", serif;
-	font-size: clamp(3rem, 8vw, 6rem);
-	line-height: 0.95;
-	letter-spacing: -0.04em;
+	font-size: clamp(2rem, 4vw, 3rem);
+	line-height: 1;
+	letter-spacing: -0.03em;
+}
+
+.nav-links {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+.nav-links a {
+	padding: 10px 14px;
+	border-radius: 999px;
+	border: 1px solid transparent;
+	color: rgba(246, 240, 232, 0.8);
+}
+
+.nav-links a.active {
+	background: rgba(244, 201, 139, 0.16);
+	border-color: rgba(244, 201, 139, 0.35);
+	color: #f4c98b;
+}
+
+.page-card {
+	padding: clamp(28px, 5vw, 56px);
 }
 
 .lead {
@@ -73,29 +102,6 @@ h1 {
 	flex-wrap: wrap;
 	gap: 14px;
 	margin-top: 28px;
-}
-
-.primary-action,
-.secondary-action {
-	border-radius: 999px;
-	padding: 14px 20px;
-	font-weight: 600;
-	transition: transform 0.2s ease, background 0.2s ease;
-}
-
-.primary-action {
-	background: #f4c98b;
-	color: #241915;
-}
-
-.secondary-action {
-	border: 1px solid rgba(255, 255, 255, 0.15);
-	background: rgba(255, 255, 255, 0.04);
-}
-
-.primary-action:hover,
-.secondary-action:hover {
-	transform: translateY(-1px);
 }
 
 .info-grid {
@@ -135,10 +141,6 @@ h1 {
 	color: rgba(246, 240, 232, 0.72);
 }
 
-.menu-card {
-	padding: 28px 32px 32px;
-}
-
 .menu-card h2 {
 	margin: 0 0 18px;
 	font-size: 1.35rem;
@@ -155,8 +157,12 @@ h1 {
 }
 
 @media (max-width: 800px) {
-	.page-shell {
+	.app-shell {
 		padding: 18px;
+	}
+
+	.topbar {
+		padding: 18px 20px;
 	}
 
 	.info-grid {
