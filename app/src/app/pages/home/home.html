@@ -1,53 +1,94 @@
-<main class="mx-auto mt-6 w-full max-w-[980px] space-y-6 rounded-[28px] border border-white/10 bg-white/5 p-7 text-[#f6f0e8] shadow-[0_24px_80px_rgba(0,0,0,0.35)] backdrop-blur-lg sm:p-10 lg:p-14">
-  <section class="space-y-6 rounded-[24px] border border-white/10 bg-[rgba(255,255,255,0.04)] p-6 sm:p-8">
-    <p class="inline-flex rounded-full bg-white/10 px-3 py-2 text-[0.82rem] uppercase tracking-[0.12em] text-[#f4c98b]">
-      Home
-    </p>
-    <h2 class="max-w-4xl font-serif text-[clamp(2.4rem,6vw,4.5rem)] leading-[0.95] tracking-[-0.04em]">
-      Fresh food, simple ordering, and a calm dining experience.
-    </h2>
-    <p class="max-w-[40rem] text-[1.05rem] leading-7 text-white/80">
-      MyRestaurant keeps the homepage focused on the essentials: what we serve, when we are open, and how to reach us.
-    </p>
-    <div class="flex flex-wrap gap-3">
-      <a class="inline-flex min-h-11 items-center rounded-full bg-[#f4c98b] px-5 py-3 font-semibold text-[#241915] transition hover:-translate-y-0.5" href="#menu">See menu</a>
-      <a class="inline-flex min-h-11 items-center rounded-full border border-white/15 bg-white/5 px-5 py-3 font-semibold text-white transition hover:-translate-y-0.5 hover:bg-white/10" routerLink="/restaurants">Browse restaurants</a>
-    </div>
+<main class="mx-auto w-full max-w-[90%] space-y-6 backdrop-blur-lg">
+    <section class="space-y-6 rounded-[10px] mt-10 border border-white/10 bg-white/5 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.35)] backdrop-blur-lg sm:p-8">
+        <div 
+        #carousel
+        class="grid grid-flow-col auto-cols-[100%] gap-6 overflow-x-auto pb-2 snap-x snap-mandatory [scrollbar-width:none]">
+            <article class="relative min-w-full snap-center overflow-hidden rounded-[24px] border border-white/10 bg-black/20">
+                <img class="absolute inset-0 h-full w-full object-cover" src="mockimg1.jpg" alt="Italian dishes" />
+                <div class="absolute inset-0 bg-gradient-to-r from-black/75 via-black/45 to-black/15"></div>
+                <div class="relative flex min-h-[min(900px,70vh)] flex-col justify-end gap-6 p-6 text-white sm:p-8">
+                    <div class="max-w-2xl space-y-4">
+                        <h2 class="font-serif text-[clamp(2rem,5vw,3.4rem)] leading-[0.95] tracking-[-0.04em] text-white">
+                            Restaurant 1: Italian
+                        </h2>
+                        <p class="max-w-xl text-[1.05rem] leading-7 text-white/85">
+                            Warm pasta, wood-fired flavors, and a relaxed dining style built around classic Italian comfort food.
+                        </p>
+                    </div>
+                    <div class="flex flex-wrap justify-end gap-3">
+                        <button class="inline-flex min-h-11 items-center rounded-full border border-white/20 bg-white/10 px-5 py-3 font-semibold text-white backdrop-blur-sm transition hover:-translate-y-0.5 hover:bg-white/20">
+                            Wishlist
+                        </button>
+                        <button class="inline-flex min-h-11 items-center rounded-full bg-[#f4c98b] px-5 py-3 font-semibold text-[#241915] transition hover:-translate-y-0.5">
+                            Rate this restaurant
+                        </button>
+                    </div>
+                </div>
+            </article>
 
-    <div class="grid gap-4 md:grid-cols-3">
-      <article class="rounded-[20px] border border-white/10 bg-black/20 p-4">
-        <span class="mb-2 block text-[0.78rem] uppercase tracking-[0.12em] text-[#f4c98b]">Hours</span>
-        <strong class="block text-base">Mon - Sun</strong>
-        <p class="m-0 text-white/70">08:00 - 22:00</p>
-      </article>
-      <article class="rounded-[20px] border border-white/10 bg-black/20 p-4">
-        <span class="mb-2 block text-[0.78rem] uppercase tracking-[0.12em] text-[#f4c98b]">Pickup</span>
-        <strong class="block text-base">20 minutes</strong>
-        <p class="m-0 text-white/70">Fast counter service</p>
-      </article>
-      <article class="rounded-[20px] border border-white/10 bg-black/20 p-4">
-        <span class="mb-2 block text-[0.78rem] uppercase tracking-[0.12em] text-[#f4c98b]">Special</span>
-        <strong class="block text-base">Chef's bowl</strong>
-        <p class="m-0 text-white/70">Seasonal vegetables and rice</p>
-      </article>
-    </div>
-  </section>
+            <article class="relative min-w-full snap-center overflow-hidden rounded-[24px] border border-white/10 bg-black/20">
+                <img class="absolute inset-0 h-full w-full object-cover" src="mockimg2.jpg" alt="French dishes" />
+                <div class="absolute inset-0 bg-gradient-to-r from-black/75 via-black/45 to-black/15"></div>
+                <div class="relative flex min-h-[min(900px,70vh)] flex-col justify-end gap-6 p-6 text-white sm:p-8">
+                    <div class="max-w-2xl space-y-4">
+                        <h2 class="font-serif text-[clamp(2rem,5vw,3.4rem)] leading-[0.95] tracking-[-0.04em] text-white">
+                            Restaurant 2: French
+                        </h2>
+                        <p class="max-w-xl text-[1.05rem] leading-7 text-white/85">
+                            Elegant plating, buttery sauces, and delicate seasonal dishes inspired by French bistro kitchens.
+                        </p>
+                    </div>
+                    <div class="flex flex-wrap justify-end gap-3">
+                        <button class="inline-flex min-h-11 items-center rounded-full border border-white/20 bg-white/10 px-5 py-3 font-semibold text-white backdrop-blur-sm transition hover:-translate-y-0.5 hover:bg-white/20">
+                            Wishlist
+                        </button>
+                        <button class="inline-flex min-h-11 items-center rounded-full bg-[#f4c98b] px-5 py-3 font-semibold text-[#241915] transition hover:-translate-y-0.5">
+                            Rate this restaurant
+                        </button>
+                    </div>
+                </div>
+            </article>
 
-  <section id="menu" class="rounded-[24px] border border-white/10 bg-[rgba(255,255,255,0.04)] p-6 sm:p-8">
-    <h2 class="mb-4 text-[1.35rem] font-semibold text-white">Today's menu</h2>
-    <div class="grid gap-3">
-      <div class="rounded-[20px] border border-white/10 bg-black/20 p-4">
-        <span class="block text-white/70">Signature burger</span>
-        <strong class="block text-base text-white">Grilled beef, house sauce, fries</strong>
-      </div>
-      <div class="rounded-[20px] border border-white/10 bg-black/20 p-4">
-        <span class="block text-white/70">Chicken plate</span>
-        <strong class="block text-base text-white">Herb chicken, salad, roasted potatoes</strong>
-      </div>
-      <div class="rounded-[20px] border border-white/10 bg-black/20 p-4">
-        <span class="block text-white/70">Veggie bowl</span>
-        <strong class="block text-base text-white">Rice, beans, greens, avocado, salsa</strong>
-      </div>
-    </div>
-  </section>
+            <article class="relative min-w-full snap-center overflow-hidden rounded-[24px] border border-white/10 bg-black/20">
+                <img class="absolute inset-0 h-full w-full object-cover" src="mockimg3.jpg" alt="Brazilian dishes" />
+                <div class="absolute inset-0 bg-gradient-to-r from-black/75 via-black/45 to-black/15"></div>
+                <div class="relative flex min-h-[min(900px,70vh)] flex-col justify-end gap-6 p-6 text-white sm:p-8">
+                    <div class="max-w-2xl space-y-4">
+                        <h2 class="font-serif text-[clamp(2rem,5vw,3.4rem)] leading-[0.95] tracking-[-0.04em] text-white">
+                            Restaurant 3: Brazilian
+                        </h2>
+                        <p class="max-w-xl text-[1.05rem] leading-7 text-white/85">
+                            Bold flavors, grilled favorites, and homestyle dishes that bring the energy of Brazilian cooking.
+                        </p>
+                    </div>
+                    <div class="flex flex-wrap justify-end gap-3">
+                        <button class="inline-flex min-h-11 items-center rounded-full border border-white/20 bg-white/10 px-5 py-3 font-semibold text-white backdrop-blur-sm transition hover:-translate-y-0.5 hover:bg-white/20">
+                            Wishlist
+                        </button>
+                        <button class="inline-flex min-h-11 items-center rounded-full bg-[#f4c98b] px-5 py-3 font-semibold text-[#241915] transition hover:-translate-y-0.5">
+                            Rate this restaurant
+                        </button>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <section id="menu" class="rounded-[24px] border border-white/10 bg-[rgba(255,255,255,0.04)] p-6 sm:p-8">
+        <h2 class="mb-4 text-[1.35rem] font-semibold text-white">Today's menu</h2>
+        <div class="grid gap-3">
+            <div class="rounded-[20px] border border-white/10 bg-black/20 p-4">
+                <span class="block text-white/70">Signature burger</span>
+                <strong class="block text-base text-white">Grilled beef, house sauce, fries</strong>
+            </div>
+            <div class="rounded-[20px] border border-white/10 bg-black/20 p-4">
+                <span class="block text-white/70">Chicken plate</span>
+                <strong class="block text-base text-white">Herb chicken, salad, roasted potatoes</strong>
+            </div>
+            <div class="rounded-[20px] border border-white/10 bg-black/20 p-4">
+                <span class="block text-white/70">Veggie bowl</span>
+                <strong class="block text-base text-white">Rice, beans, greens, avocado, salsa</strong>
+            </div>
+        </div>
+    </section>
 </main>
