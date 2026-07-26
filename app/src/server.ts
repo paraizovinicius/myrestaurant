@@ -24,6 +24,14 @@ const angularApp = new AngularNodeAppEngine();
  * ```
  */
 
+app.get('/api/health', (req, res) => {
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'application/json');
+  res.end(JSON.stringify({ status: 'ok' }));
+  console.log('Health check requested');
+  return;
+});
+
 /**
  * Serve static files from /browser
  */
@@ -66,3 +74,5 @@ if (isMainModule(import.meta.url) || process.env['pm_id']) {
  * Request handler used by the Angular CLI (for dev-server and during build) or Firebase Cloud Functions.
  */
 export const reqHandler = createNodeRequestHandler(app);
+
+
