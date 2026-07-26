@@ -6,7 +6,7 @@
     <div class="border-b border-white/10 bg-[radial-gradient(circle_at_top_right,_rgba(244,201,139,0.24),_transparent_35%),linear-gradient(135deg,_rgba(57,30,21,0.95),_rgba(17,14,13,0.98))] p-6 sm:p-8 lg:p-10">
       <h2 class="mt-4 font-serif text-[clamp(2rem,5vw,3.8rem)] leading-[0.95] tracking-[-0.04em] text-white">{{ welcomeMessage() }}</h2>
       <p class="mt-3 max-w-2xl text-[1.02rem] leading-7 text-white/80">
-        Your account is currently connected. This page is using hardcoded profile data and a hardcoded logged-in state until auth and database are implemented.
+        Your account is currently connected. You can view your account summary, recent orders, and favorite cuisines below.
       </p>
 
       <div class="mt-6 flex flex-wrap items-center gap-3 text-sm">
@@ -18,27 +18,58 @@
 
     <div class="grid gap-6 p-6 sm:p-8 lg:grid-cols-[minmax(0,1fr)_340px] lg:p-10">
       <div class="space-y-6">
-        <section class="rounded-[24px] border border-white/10 bg-black/20 p-5 sm:p-6">
-          <h3 class="text-xl font-semibold text-white">Account summary</h3>
-          <div class="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <article class="rounded-[18px] border border-white/10 bg-white/5 p-4">
-              <span class="block text-xs uppercase tracking-[0.13em] text-[#f4c98b]">Full name</span>
-              <strong class="mt-2 block text-base text-white">{{ profile().fullName }}</strong>
-            </article>
-            <article class="rounded-[18px] border border-white/10 bg-white/5 p-4">
-              <span class="block text-xs uppercase tracking-[0.13em] text-[#f4c98b]">Email</span>
-              <strong class="mt-2 block text-base text-white">{{ profile().email }}</strong>
-            </article>
-            <article class="rounded-[18px] border border-white/10 bg-white/5 p-4">
-              <span class="block text-xs uppercase tracking-[0.13em] text-[#f4c98b]">Loyalty tier</span>
-              <strong class="mt-2 block text-base text-white">{{ profile().loyaltyTier }}</strong>
-            </article>
-            <article class="rounded-[18px] border border-white/10 bg-white/5 p-4">
-              <span class="block text-xs uppercase tracking-[0.13em] text-[#f4c98b]">Saved addresses</span>
-              <strong class="mt-2 block text-base text-white">{{ profile().savedAddresses }}</strong>
-            </article>
+        <section>
+          <h3 class="text-xl font-semibold text-white">
+            Account summary
+          </h3>
+
+          <div class="mt-6 divide-y divide-white/10 border-y border-white/10">
+            <!-- Full name -->
+            <div class="flex flex-col gap-1 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <span class="text-sm text-white/50">
+                Full name
+              </span>
+
+              <span class="font-medium text-white sm:text-right">
+                {{ profile().fullName }}
+              </span>
+            </div>
+
+            <!-- Email -->
+            <div class="flex flex-col gap-1 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <span class="text-sm text-white/50">
+                Email
+              </span>
+
+              <span class="min-w-0 max-w-full break-words font-medium text-white sm:max-w-[65%] sm:text-right">
+                {{ profile().email }}
+              </span>
+            </div>
+
+            <!-- Loyalty tier -->
+            <div class="flex flex-col gap-1 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <span class="text-sm text-white/50">
+                Loyalty tier
+              </span>
+
+              <span class="font-medium text-white sm:text-right">
+                {{ profile().loyaltyTier }}
+              </span>
+            </div>
+
+            <!-- Saved addresses -->
+            <div class="flex flex-col gap-1 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <span class="text-sm text-white/50">
+                Saved addresses
+              </span>
+
+              <span class="font-medium text-white sm:text-right">
+                {{ profile().savedAddresses }}
+              </span>
+            </div>
           </div>
         </section>
+
 
         <section class="rounded-[24px] border border-white/10 bg-black/20 p-5 sm:p-6">
           <div class="flex items-center justify-between gap-2">
