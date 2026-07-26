@@ -2,12 +2,14 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  // inject,
   Inject,
   OnDestroy,
   PLATFORM_ID,
   ViewChild
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+// import { SupabaseTestService } from '../../core/supabase/supabase-test.service';
 
 @Component({
   selector: 'app-home-page',
@@ -18,6 +20,14 @@ import { isPlatformBrowser } from '@angular/common';
 export class HomePage implements AfterViewInit, OnDestroy {
   @ViewChild('carousel', { static: true }) // #carousel is needed in the <div>
   private readonly carouselRef!: ElementRef<HTMLDivElement>;
+
+  // private supabaseTest = inject(SupabaseTestService);
+
+  // async ngOnInit() {
+  //   const restaurants = await this.supabaseTest.getRestaurants();
+
+  //   console.log('Restaurants:', restaurants);
+  // }
 
   private readonly slideCount = 3;
   private activeSlide = 0;

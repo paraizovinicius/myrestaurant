@@ -1,8 +1,8 @@
-import { CommonModule } from '@angular/common';
-import { Component, Inject, PLATFORM_ID, inject } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, Inject, PLATFORM_ID, signal, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { getRestaurantBySlug, restaurantCatalog } from '../restaurants/restaurant-catalog';
+import { RestaurantService } from '../../core/services/restaurant.service';
+import { Restaurant } from '../restaurants/types';
 
 @Component({
   selector: 'app-restaurant-details-page',
@@ -15,27 +15,41 @@ import { getRestaurantBySlug, restaurantCatalog } from '../restaurants/restauran
 
 
 export class RestaurantDetailsPage {
+  private readonly restaurantService = inject(RestaurantService);
   private readonly route = inject(ActivatedRoute);
+
+  protected readonly restaurant = signal<Restaurant | null>(null);
+  protected readonly loading = signal(true);
+  protected readonly error = signal<string | null>(null);
+
+  protected priceLabel(priceLevel: number | null): string {
+    if (priceLevel === null) {
+      return 'Unknown';
+    }
+
+    return '$'.repeat(Math.max(1, Math.min(priceLevel, 4)));
+  }
 
   constructor(@Inject(PLATFORM_ID) private readonly platformId: object) {
     this.route.paramMap.subscribe((params) => {
-      const slug = params.get('slug');
+      const id = params.get('id');
 
-      this.restaurant = getRestaurantBySlug(slug);
+      this.loading.set(true);
+      this.error.set(null);
 
-      this.relatedRestaurants = restaurantCatalog
-        .filter((item) => item.slug !== this.restaurant?.slug)
-        .slice(0, 3);
+      this.restaurantService.getRestaurant(id ?? '').then((restaurant) => {
+        this.restaurant.set(restaurant);
+      }).catch((error) => {
+        console.error('Failed to load restaurant:', error);
+        this.error.set('Failed to load restaurant details.');
+        this.restaurant.set(null);
+      }).finally(() => {
+        this.loading.set(false);
 
-      if (isPlatformBrowser(this.platformId)) {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
+        if (isPlatformBrowser(this.platformId)) {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
     });
   }
-
-  protected restaurant = getRestaurantBySlug(
-    this.route.snapshot.paramMap.get('slug')
-  );
-
-  protected relatedRestaurants = restaurantCatalog;
 }

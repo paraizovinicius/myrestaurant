@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { restaurantSummaries, type RestaurantPriceRange } from './restaurant-catalog';
+import { RestaurantService } from '../../core/services/restaurant.service';
+import { Restaurant } from './types';
 
-type SortBy = 'highestRated' | 'closestToMe';
-type PriceRange = 'all' | RestaurantPriceRange;
-type RestaurantSummary = (typeof restaurantSummaries)[number];
+type SortBy = 'name' | 'newest' | 'priceLow' | 'priceHigh';
+type PriceFilter = 'all' | '1' | '2' | '3' | '4' | 'unknown';
 
 @Component({
   selector: 'app-restaurants-page',
@@ -15,78 +15,94 @@ type RestaurantSummary = (typeof restaurantSummaries)[number];
   styleUrl: './restaurants.css'
 })
 export class RestaurantsPage {
-  protected readonly pageSize = 6;
-  private readonly allRestaurants = restaurantSummaries;
+  private readonly restaurantService = inject(RestaurantService);
 
-  protected readonly selectedCuisines = signal<string[]>([]);
-  protected readonly locationFilter = signal('');
-  protected readonly priceRange = signal<PriceRange>('all');
-  protected readonly minimumRating = signal(0);
-  protected readonly openNowOnly = signal(false);
-  protected readonly sortBy = signal<SortBy>('highestRated');
+  protected readonly pageSize = 6;
+  protected readonly restaurants = signal<Restaurant[]>([]);
+  protected readonly loading = signal(true);
+  protected readonly error = signal<string | null>(null);
+
+  protected readonly searchTerm = signal('');
+  protected readonly cityFilter = signal('');
+  protected readonly priceFilter = signal<PriceFilter>('all');
+  protected readonly sortBy = signal<SortBy>('name');
   protected readonly currentPage = signal(1);
   protected readonly sortMenuOpen = signal(false);
 
-  protected readonly cuisines = [
-    'Italian',
-    'Japanese',
-    'Mexican',
-    'Thai',
-    'French',
-    'Latin American',
-    'Healthy',
-    'Chinese',
-    'Spanish'
-  ];
+  protected readonly priceOptions = [
+    { value: 'all', label: 'All prices' },
+    { value: '1', label: '$' },
+    { value: '2', label: '$$' },
+    { value: '3', label: '$$$' },
+    { value: '4', label: '$$$$' },
+    { value: 'unknown', label: 'Unknown' }
+  ] as const;
 
-  protected readonly sortedAndFilteredRestaurants = computed(() => {
-    const cuisineFilters = this.selectedCuisines();
-    const locationFilter = this.locationFilter().trim().toLowerCase();
-    const priceRange = this.priceRange();
-    const minimumRating = this.minimumRating();
-    const openNowOnly = this.openNowOnly();
+  async ngOnInit(): Promise<void> {
+    try {
+      const restaurants = await this.restaurantService.getRestaurants();
+      this.restaurants.set(restaurants);
+    } catch (error) {
+      console.error('Failed to load restaurants:', error);
+      this.error.set('Failed to load restaurants.');
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  protected readonly filteredRestaurants = computed(() => {
+    const searchTerm = this.searchTerm().trim().toLowerCase();
+    const cityFilter = this.cityFilter().trim().toLowerCase();
+    const priceFilter = this.priceFilter();
     const sortBy = this.sortBy();
 
-    const filtered = this.allRestaurants.filter((restaurant) => {
-      const matchesCuisine = cuisineFilters.length === 0 || cuisineFilters.includes(restaurant.cuisine);
-      const matchesLocation =
-        locationFilter.length === 0 ||
-        [restaurant.location, restaurant.neighborhood, restaurant.name].some((field) =>
-          field.toLowerCase().includes(locationFilter)
-        );
-      const matchesPrice = priceRange === 'all' || restaurant.priceRange === priceRange;
-      const matchesRating = restaurant.rating >= minimumRating;
-      const matchesOpenNow = !openNowOnly || restaurant.isOpenNow;
+    const filtered = this.restaurants().filter((restaurant) => {
+      const haystack = [
+        restaurant.name,
+        restaurant.description ?? '',
+        restaurant.city ?? '',
+        restaurant.country ?? '',
+        restaurant.phone ?? '',
+        restaurant.website_url ?? ''
+      ]
+        .join(' ')
+        .toLowerCase();
 
-      return matchesCuisine && matchesLocation && matchesPrice && matchesRating && matchesOpenNow;
+      const matchesSearch = searchTerm.length === 0 || haystack.includes(searchTerm);
+      const matchesCity = cityFilter.length === 0 || (restaurant.city ?? '').toLowerCase().includes(cityFilter);
+      const matchesPrice =
+        priceFilter === 'all' ||
+        (priceFilter === 'unknown' ? restaurant.price_level === null : String(restaurant.price_level ?? '') === priceFilter);
+
+      return matchesSearch && matchesCity && matchesPrice;
     });
 
     return filtered.sort((left, right) => {
-      if (sortBy === 'closestToMe') {
-        if (left.distanceKm !== right.distanceKm) {
-          return left.distanceKm - right.distanceKm;
-        }
-
-        return right.rating - left.rating;
+      if (sortBy === 'newest') {
+        return new Date(right.created_at).getTime() - new Date(left.created_at).getTime();
       }
 
-      if (left.rating !== right.rating) {
-        return right.rating - left.rating;
+      if (sortBy === 'priceLow') {
+        return (left.price_level ?? Number.POSITIVE_INFINITY) - (right.price_level ?? Number.POSITIVE_INFINITY);
       }
 
-      return left.distanceKm - right.distanceKm;
+      if (sortBy === 'priceHigh') {
+        return (right.price_level ?? Number.NEGATIVE_INFINITY) - (left.price_level ?? Number.NEGATIVE_INFINITY);
+      }
+
+      return left.name.localeCompare(right.name);
     });
   });
 
   protected readonly totalPages = computed(() => {
-    return Math.max(1, Math.ceil(this.sortedAndFilteredRestaurants().length / this.pageSize));
+    return Math.max(1, Math.ceil(this.filteredRestaurants().length / this.pageSize));
   });
 
   protected readonly visibleRestaurants = computed(() => {
     const currentPage = this.currentPage();
     const startIndex = (currentPage - 1) * this.pageSize;
 
-    return this.sortedAndFilteredRestaurants().slice(startIndex, startIndex + this.pageSize);
+    return this.filteredRestaurants().slice(startIndex, startIndex + this.pageSize);
   });
 
   protected readonly pageNumbers = computed(() => {
@@ -94,10 +110,10 @@ export class RestaurantsPage {
   });
 
   protected readonly resultLabel = computed(() => {
-    const total = this.sortedAndFilteredRestaurants().length;
+    const total = this.filteredRestaurants().length;
 
     if (total === 0) {
-      return 'No restaurants match these filters.';
+      return this.loading() ? 'Loading restaurants...' : 'No restaurants match these filters.';
     }
 
     const start = (this.currentPage() - 1) * this.pageSize + 1;
@@ -105,38 +121,6 @@ export class RestaurantsPage {
 
     return `Showing ${start}-${end} of ${total} restaurants`;
   });
-
-  protected toggleCuisine(cuisine: string): void {
-    const current = this.selectedCuisines();
-
-    if (current.includes(cuisine)) {
-      this.selectedCuisines.set(current.filter((item) => item !== cuisine));
-    } else {
-      this.selectedCuisines.set([...current, cuisine]);
-    }
-
-    this.currentPage.set(1);
-  }
-
-  protected setLocationFilter(value: string): void {
-    this.locationFilter.set(value);
-    this.currentPage.set(1);
-  }
-
-  protected setPriceRange(value: PriceRange): void {
-    this.priceRange.set(value);
-    this.currentPage.set(1);
-  }
-
-  protected setMinimumRating(value: string): void {
-    this.minimumRating.set(Number(value));
-    this.currentPage.set(1);
-  }
-
-  protected setOpenNowOnly(value: boolean): void {
-    this.openNowOnly.set(value);
-    this.currentPage.set(1);
-  }
 
   protected chooseSort(sort: SortBy): void {
     this.sortBy.set(sort);
@@ -149,12 +133,10 @@ export class RestaurantsPage {
   }
 
   protected resetFilters(): void {
-    this.selectedCuisines.set([]);
-    this.locationFilter.set('');
-    this.priceRange.set('all');
-    this.minimumRating.set(0);
-    this.openNowOnly.set(false);
-    this.sortBy.set('highestRated');
+    this.searchTerm.set('');
+    this.cityFilter.set('');
+    this.priceFilter.set('all');
+    this.sortBy.set('name');
     this.sortMenuOpen.set(false);
     this.currentPage.set(1);
   }
@@ -163,11 +145,43 @@ export class RestaurantsPage {
     this.currentPage.set(page);
   }
 
-  protected trackByRestaurant(index: number, restaurant: RestaurantSummary): string {
-    return restaurant.slug;
+  protected trackByRestaurant(index: number, restaurant: Restaurant): string {
+    return restaurant.id;
   }
 
   protected readonly sortLabel = computed(() => {
-    return this.sortBy() === 'closestToMe' ? 'Closest to me' : 'Highest rated';
+    switch (this.sortBy()) {
+      case 'newest':
+        return 'Newest first';
+      case 'priceLow':
+        return 'Price: low to high';
+      case 'priceHigh':
+        return 'Price: high to low';
+      default:
+        return 'Name A-Z';
+    }
   });
+
+  protected setSearchTerm(value: string): void {
+    this.searchTerm.set(value);
+    this.currentPage.set(1);
+  }
+
+  protected setCityFilter(value: string): void {
+    this.cityFilter.set(value);
+    this.currentPage.set(1);
+  }
+
+  protected setPriceFilter(value: string): void {
+    this.priceFilter.set(value as PriceFilter);
+    this.currentPage.set(1);
+  }
+
+  protected priceLabel(priceLevel: number | null): string {
+    if (priceLevel === null) {
+      return 'Unknown';
+    }
+
+    return '$'.repeat(Math.max(1, Math.min(priceLevel, 4)));
+  }
 }

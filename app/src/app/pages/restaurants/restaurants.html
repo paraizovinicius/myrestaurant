@@ -1,62 +1,28 @@
-<main class="mx-auto w-full px-4 sm:px-6 lg:px-8">
-  <section class="space-y-6 backdrop-blur-lg sm:p-7 lg:p-8">
-    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between">
-      <h2 class="max-w-3xl text-[#f6f0e8] font-serif text-[clamp(2.2rem,5vw,4rem)] leading-[0.95] tracking-[-0.04em]">
-        Restaurant Catalog
-      </h2>
-
-      <div class="relative self-start lg:self-auto">
-        <button
-          type="button"
-          class="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 font-semibold text-white transition hover:border-[#f4c98b]/40 hover:bg-white/15"
-          (click)="toggleSortMenu()"
-          aria-haspopup="menu"
-          [attr.aria-expanded]="sortMenuOpen()"
-        >
-          <span class="uppercase tracking-[0.12em] text-[#f4c98b]">Sort by</span>
-          <span>{{ sortLabel() }}</span>
-        </button>
-
-        <div
-          *ngIf="sortMenuOpen()"
-          class="absolute right-0 z-10 mt-3 w-72 overflow-hidden rounded-[22px] border border-white/10 bg-[#17110f] p-2 shadow-[0_24px_60px_rgba(0,0,0,0.45)]"
-          role="menu"
-        >
-          <button
-            type="button"
-            class="flex w-full items-center justify-between rounded-[16px] px-4 py-3 text-left text-white transition hover:bg-white/10"
-            (click)="chooseSort('highestRated')"
-            role="menuitem"
-          >
-            <span>
-              <span class="block font-semibold">Highest rated</span>
-              <span class="block text-sm text-white/65">Shows the best-reviewed restaurants first</span>
-            </span>
-            <span class="text-[#f4c98b]" *ngIf="sortBy() === 'highestRated'">Selected</span>
-          </button>
-
-          <button
-            type="button"
-            class="flex w-full items-center justify-between rounded-[16px] px-4 py-3 text-left text-white transition hover:bg-white/10"
-            (click)="chooseSort('closestToMe')"
-            role="menuitem"
-          >
-            <span>
-              <span class="block font-semibold">Closest to me</span>
-              <span class="block text-sm text-white/65">Sorts by distance from your location</span>
-            </span>
-            <span class="text-[#f4c98b]" *ngIf="sortBy() === 'closestToMe'">Selected</span>
-          </button>
-        </div>
+<main class="mx-auto w-full ">
+  <section class="space-y-6 rounded-[32px] p-5 text-[#f6f0e8] sm:p-7 lg:p-10">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+      <div class="space-y-3">
+        <h2 class="font-serif text-[clamp(2.2rem,5vw,4rem)] leading-[0.95] tracking-[-0.04em] text-white">Restaurant Catalog</h2>
       </div>
+
+      <button
+        type="button"
+        class="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 font-semibold text-white transition hover:border-[#f4c98b]/40 hover:bg-white/15"
+        (click)="toggleSortMenu()"
+        aria-haspopup="menu"
+        [attr.aria-expanded]="sortMenuOpen()"
+      >
+        <span class="uppercase tracking-[0.12em] text-[#f4c98b]">Sort by</span>
+        <span>{{ sortLabel() }}</span>
+      </button>
     </div>
 
     <div class="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
-      <aside class="h-fit rounded-[28px] border border-white/10 bg-black/20 p-5 text-[#f6f0e8] shadow-[0_18px_60px_rgba(0,0,0,0.25)] backdrop-blur-lg lg:sticky lg:top-6">
+      <aside class="h-fit rounded-[28px] border border-white/10 bg-black/20 p-5 shadow-[0_18px_60px_rgba(0,0,0,0.25)] backdrop-blur-lg lg:sticky lg:top-6">
         <div class="flex items-center justify-between gap-3 border-b border-white/10 pb-4">
           <div>
             <h3 class="text-[1.35rem] font-semibold text-white">Filters</h3>
-            <p class="text-sm text-white/65">Narrow your search.</p>
+            <p class="text-sm text-white/65">Search by DB fields.</p>
           </div>
           <button
             type="button"
@@ -68,231 +34,152 @@
         </div>
 
         <div class="mt-5 space-y-5">
-          <div class="space-y-3">
-            <h4 class="text-sm font-semibold uppercase tracking-[0.14em] text-[#f4c98b]">Cuisine</h4>
-            <div class="flex flex-wrap gap-2">
-              <button
-                *ngFor="let cuisine of cuisines"
-                type="button"
-                class="rounded-full border px-3 py-2 text-sm font-medium transition"
-                [class.border-[#f4c98b]]="selectedCuisines().includes(cuisine)"
-                [class.bg-[#f4c98b]]="selectedCuisines().includes(cuisine)"
-                [class.text-[#241915]]="selectedCuisines().includes(cuisine)"
-                [class.border-white/10]="!selectedCuisines().includes(cuisine)"
-                [class.bg-white/5]="!selectedCuisines().includes(cuisine)"
-                [class.text-white]="!selectedCuisines().includes(cuisine)"
-                (click)="toggleCuisine(cuisine)"
-                [attr.aria-pressed]="selectedCuisines().includes(cuisine)"
-              >
-                {{ cuisine }}
-              </button>
-            </div>
-          </div>
-
-          <div>
-            <h4 class="text-sm font-semibold uppercase tracking-[0.14em] text-[#f4c98b]">Location</h4>
-            <span class="text-sm text-white/70">Search by location or restaurant name</span>
-            <label class="block space-y-2">
-              <input
-                #locationInput
-                class="mt-3 min-h-11 w-full rounded-full border border-white/10 bg-white/5 px-4 py-2 text-white outline-none placeholder:text-white/45 focus:border-[#f4c98b]/50 focus:bg-white/10"
-                type="search"
-                [value]="locationFilter()"
-                (input)="setLocationFilter(locationInput.value)"
-                placeholder="Downtown, Riverside, Old Market"
-              />
-            </label>
-          </div>
-
-          <div class="space-y-3">
-            <h4 class="text-sm font-semibold uppercase tracking-[0.14em] text-[#f4c98b]">Price range</h4>
-            <div class="flex flex-wrap gap-2">
-              <button type="button" class="rounded-full border px-3 py-2 text-sm font-medium transition" [class.border-[#f4c98b]]="priceRange() === 'all'" [class.bg-[#f4c98b]]="priceRange() === 'all'" [class.text-[#241915]]="priceRange() === 'all'" [class.border-white/10]="priceRange() !== 'all'" [class.bg-white/5]="priceRange() !== 'all'" [class.text-white]="priceRange() !== 'all'" (click)="setPriceRange('all')">All</button>
-              <button type="button" class="rounded-full border px-3 py-2 text-sm font-medium transition" [class.border-[#f4c98b]]="priceRange() === '$'" [class.bg-[#f4c98b]]="priceRange() === '$'" [class.text-[#241915]]="priceRange() === '$'" [class.border-white/10]="priceRange() !== '$'" [class.bg-white/5]="priceRange() !== '$'" [class.text-white]="priceRange() !== '$'" (click)="setPriceRange('$')">$</button>
-              <button type="button" class="rounded-full border px-3 py-2 text-sm font-medium transition" [class.border-[#f4c98b]]="priceRange() === '$$'" [class.bg-[#f4c98b]]="priceRange() === '$$'" [class.text-[#241915]]="priceRange() === '$$'" [class.border-white/10]="priceRange() !== '$$'" [class.bg-white/5]="priceRange() !== '$$'" [class.text-white]="priceRange() !== '$$'" (click)="setPriceRange('$$')">$$</button>
-              <button type="button" class="rounded-full border px-3 py-2 text-sm font-medium transition" [class.border-[#f4c98b]]="priceRange() === '$$$'" [class.bg-[#f4c98b]]="priceRange() === '$$$'" [class.text-[#241915]]="priceRange() === '$$$'" [class.border-white/10]="priceRange() !== '$$$'" [class.bg-white/5]="priceRange() !== '$$$'" [class.text-white]="priceRange() !== '$$$'" (click)="setPriceRange('$$$')">$$$</button>
-              <button type="button" class="rounded-full border px-3 py-2 text-sm font-medium transition" [class.border-[#f4c98b]]="priceRange() === '$$$$'" [class.bg-[#f4c98b]]="priceRange() === '$$$$'" [class.text-[#241915]]="priceRange() === '$$$$'" [class.border-white/10]="priceRange() !== '$$$$'" [class.bg-white/5]="priceRange() !== '$$$$'" [class.text-white]="priceRange() !== '$$$$'" (click)="setPriceRange('$$$$')">$$$$</button>
-            </div>
-          </div>
-
-          <div>
-            <h4 class="text-sm font-semibold uppercase tracking-[0.14em] text-[#f4c98b]">Minimum rating</h4>
-            <span class="text-sm text-white/70">Only show restaurants rated this high or above</span>
-            <label class="block space-y-2 mt-3">
-              <select
-                class="min-h-11 w-full rounded-full border border-white/10 bg-white/5 px-4 py-2 text-white outline-none focus:border-[#f4c98b]/50 focus:bg-white/10"
-                [value]="minimumRating()"
-                (change)="setMinimumRating(ratingSelect.value)"
-                #ratingSelect
-              >
-                <option value="0">Any rating</option>
-                <option value="3.5">3.5+</option>
-                <option value="4">4.0+</option>
-                <option value="4.5">4.5+</option>
-              </select>
-            </label>
-          </div>
-
-          <label class="flex cursor-pointer items-center justify-between gap-4 rounded-[22px] border border-white/10 bg-white/5 p-4 transition-colors hover:bg-white/[0.07]">
-            <div>
-              <span class="block font-semibold text-white">Open now</span>
-            </div>
-
-            <div class="relative inline-flex items-center">
-              <input
-                type="checkbox"
-                class="peer sr-only"
-                [checked]="openNowOnly()"
-                (change)="setOpenNowOnly(openNowCheckbox.checked)"
-                #openNowCheckbox
-              />
-              <!-- Switch track -->
-              <div class="h-6 w-11 rounded-full bg-white/20 transition-colors peer-checked:bg-[#f4c98b] peer-focus-visible:ring-2 peer-focus-visible:ring-[#f4c98b]/50"></div>
-              <!-- Switch thumb (knob) -->
-              <div class="absolute left-1 top-1 h-4 w-4 rounded-full bg-white transition-transform peer-checked:translate-x-5 peer-checked:bg-[#1f1d1a]"></div>
-            </div>
+          <label class="block space-y-2">
+            <span class="text-sm font-semibold uppercase tracking-[0.14em] text-[#f4c98b]">Search</span>
+            <input
+              #searchInput
+              class="min-h-11 w-full rounded-full border border-white/10 bg-white/5 px-4 py-2 text-white outline-none placeholder:text-white/45 focus:border-[#f4c98b]/50 focus:bg-white/10"
+              type="search"
+              [value]="searchTerm()"
+              (input)="setSearchTerm(searchInput.value)"
+              placeholder="Name, city, country, phone"
+            />
           </label>
+
+          <label class="block space-y-2">
+            <span class="text-sm font-semibold uppercase tracking-[0.14em] text-[#f4c98b]">Location</span>
+            <input
+              #cityInput
+              class="min-h-11 w-full rounded-full border border-white/10 bg-white/5 px-4 py-2 text-white outline-none placeholder:text-white/45 focus:border-[#f4c98b]/50 focus:bg-white/10"
+              type="search"
+              [value]="cityFilter()"
+              (input)="setCityFilter(cityInput.value)"
+              placeholder="City or country"
+            />
+          </label>
+
+          <label class="block space-y-2">
+            <span class="text-sm font-semibold uppercase tracking-[0.14em] text-[#f4c98b]">Price level</span>
+            <select
+              class="min-h-11 w-full rounded-full border border-white/10 bg-white/5 px-4 py-2 text-white outline-none focus:border-[#f4c98b]/50 focus:bg-white/10"
+              [value]="priceFilter()"
+              (change)="setPriceFilter(priceSelect.value)"
+              #priceSelect
+            >
+              <option *ngFor="let option of priceOptions" [value]="option.value">{{ option.label }}</option>
+            </select>
+          </label>
+
+          <div *ngIf="sortMenuOpen()" class="space-y-2 rounded-[22px] border border-white/10 bg-[#17110f] p-2">
+            <button type="button" class="flex w-full items-center justify-between rounded-[16px] px-4 py-3 text-left text-white transition hover:bg-white/10" (click)="chooseSort('name')">
+              <span>
+                <span class="block font-semibold">Name A-Z</span>
+                <span class="block text-sm text-white/65">Alphabetical order</span>
+              </span>
+              <span class="text-[#f4c98b]" *ngIf="sortBy() === 'name'">Selected</span>
+            </button>
+            <button type="button" class="flex w-full items-center justify-between rounded-[16px] px-4 py-3 text-left text-white transition hover:bg-white/10" (click)="chooseSort('newest')">
+              <span>
+                <span class="block font-semibold">Newest first</span>
+                <span class="block text-sm text-white/65">Most recent records first</span>
+              </span>
+              <span class="text-[#f4c98b]" *ngIf="sortBy() === 'newest'">Selected</span>
+            </button>
+            <button type="button" class="flex w-full items-center justify-between rounded-[16px] px-4 py-3 text-left text-white transition hover:bg-white/10" (click)="chooseSort('priceLow')">
+              <span>
+                <span class="block font-semibold">Price low to high</span>
+                <span class="block text-sm text-white/65">Lower price levels first</span>
+              </span>
+              <span class="text-[#f4c98b]" *ngIf="sortBy() === 'priceLow'">Selected</span>
+            </button>
+            <button type="button" class="flex w-full items-center justify-between rounded-[16px] px-4 py-3 text-left text-white transition hover:bg-white/10" (click)="chooseSort('priceHigh')">
+              <span>
+                <span class="block font-semibold">Price high to low</span>
+                <span class="block text-sm text-white/65">Higher price levels first</span>
+              </span>
+              <span class="text-[#f4c98b]" *ngIf="sortBy() === 'priceHigh'">Selected</span>
+            </button>
+          </div>
         </div>
       </aside>
 
       <div class="space-y-5">
-        <div class="flex flex-col gap-3 rounded-[24px] border border-white/10 bg-black/20 p-4 text-[#f6f0e8] sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex flex-col gap-3 rounded-[24px] border border-white/10 bg-black/20 p-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p class="text-base text-white">{{ resultLabel() }}</p>
           </div>
 
-          <div class="flex flex-wrap items-center gap-2 text-sm">
-            <button
-              type="button"
-              class="inline-flex min-h-10 items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-40"
-              [disabled]="currentPage() === 1"
-              (click)="goToPage(currentPage() - 1)"
-            >
-              Previous
-            </button>
-
-            <span class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-white/80">
-              Page {{ currentPage() }} of {{ totalPages() }}
-            </span>
-
-            <button
-              type="button"
-              class="inline-flex min-h-10 items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-40"
-              [disabled]="currentPage() === totalPages()"
-              (click)="goToPage(currentPage() + 1)"
-            >
-              Next
-            </button>
+          <div class="flex items-center gap-2 text-sm">
+            <button type="button" class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition disabled:cursor-not-allowed disabled:opacity-40" [disabled]="currentPage() === 1" (click)="goToPage(currentPage() - 1)">Previous</button>
+            <span class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-white/80">Page {{ currentPage() }} of {{ totalPages() }}</span>
+            <button type="button" class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition disabled:cursor-not-allowed disabled:opacity-40" [disabled]="currentPage() === totalPages()" (click)="goToPage(currentPage() + 1)">Next</button>
           </div>
         </div>
 
-        <div *ngIf="visibleRestaurants().length > 0; else emptyState" class="grid gap-4 xl:grid-cols-3">
-          <article
-            *ngFor="let restaurant of visibleRestaurants(); trackBy: trackByRestaurant"
-            class="overflow-hidden rounded-[26px] border border-white/10 bg-[linear-gradient(180deg,_rgba(255,255,255,0.06)_0%,_rgba(255,255,255,0.03)_100%)] shadow-[0_18px_60px_rgba(0,0,0,0.25)] transition hover:-translate-y-1 hover:border-[#f4c98b]/30"
-          >
-            <div class="flex h-full flex-col">
-              <div class="flex items-start justify-between gap-4 bg-[radial-gradient(circle_at_top_right,_rgba(244,201,139,0.22),_transparent_30%),linear-gradient(135deg,_rgba(64,32,18,0.95),_rgba(17,14,13,0.98))] p-5 sm:p-6">
-                <div class="space-y-3">
-                  <span class="inline-flex rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs uppercase tracking-[0.14em] text-[#f4c98b]">
-                    {{ restaurant.cuisine }}
-                  </span>
-                  <div class="space-y-2">
-                    <h3 class="font-serif text-[clamp(1.6rem,3vw,2.2rem)] leading-[1] tracking-[-0.03em] text-white">
-                      {{ restaurant.name }}
-                    </h3>
-                    <p class="max-w-xl text-sm leading-6 text-white/78">
-                      {{ restaurant.description }}
-                    </p>
+        @if (loading()) {
+          <div class="rounded-[26px] border border-white/10 bg-black/20 p-8 text-center text-white">Loading restaurants...</div>
+        } @else if (error()) {
+          <div class="rounded-[26px] border border-white/10 bg-black/20 p-8 text-center text-white">{{ error() }}</div>
+        } @else if (visibleRestaurants().length === 0) {
+          <div class="rounded-[26px] border border-white/10 bg-black/20 p-8 text-center text-[#f6f0e8]">
+            <h3 class="font-serif text-3xl tracking-[-0.03em] text-white">No restaurants match your filters.</h3>
+            <p class="mt-3 text-white/75">Try resetting the filters to see the full database list again.</p>
+            <button type="button" class="mt-6 inline-flex min-h-11 items-center rounded-full bg-[#f4c98b] px-5 py-2 font-semibold text-[#241915] transition hover:bg-[#ffd99b]" (click)="resetFilters()">Reset all filters</button>
+          </div>
+        } @else {
+          <div class="grid gap-4 h-[60%] sm:h-[90%] grid-cols-1 xl:grid-cols-3">
+            <article *ngFor="let restaurant of visibleRestaurants(); trackBy: trackByRestaurant" class="overflow-hidden rounded-[26px] border border-white/10 bg-[linear-gradient(180deg,_rgba(255,255,255,0.06)_0%,_rgba(255,255,255,0.03)_100%)] shadow-[0_18px_60px_rgba(0,0,0,0.25)] transition hover:-translate-y-1 hover:border-[#f4c98b]/30">
+              <div class="flex h-full flex-col">
+
+                <div class="h-[45%] flex items-start justify-between gap-4 bg-[radial-gradient(circle_at_top_right,_rgba(244,201,139,0.22),_transparent_30%),linear-gradient(135deg,_rgba(64,32,18,0.95),_rgba(17,14,13,0.98))] p-5">
+                  <div class="space-y-3">
+                    <div class="space-y-2">
+                      <h3 class="font-serif text-[35px] w-[90%] leading-[1] tracking-[-0.03em] text-white">{{ restaurant.name }}</h3>
+                      <p class="max-w-xl text-sm leading-6 text-white/78">{{ restaurant.description ?? 'No description available yet.' }}</p>
+                    </div>
+                  </div>
+
+                  <div class="w-[20%] rounded-[18px] border border-white/10 bg-white/10 px-4 py-3 text-right text-white"> <! -- TODO: need to add rating -->
+                    <strong class="block text-2xl font-bold">{{ priceLabel(restaurant.price_level) }}</strong>
+                  </div>
+                </div>
+                
+                <! -- white boxes -->
+                <div class="grid gap-3 border-white/10 p-3 text-sm text-white/80 sm:grid-cols-2"> 
+                  <div class="rounded-[18px] bg-white/5 p-4">
+                    <span class="block text-white">{{ restaurant.city || 'Unknown city' }}</span>
+                    <span class="block text-white/65">{{ restaurant.country || 'Unknown country' }}</span>
+                  </div>
+                  <div class="rounded-[18px] bg-white/5 p-4">
+                    <!-- <span class="block text-xs uppercase tracking-[0.12em] text-[#f4c98b]">Contact</span> -->
+                    <span class="block text-white">{{ restaurant.phone || 'No phone listed' }}</span>
+                    <span class="block text-white/65">{{ restaurant.website_url || 'No website listed' }}</span>
                   </div>
                 </div>
 
-                <div class="rounded-[18px] border border-white/10 bg-white/10 px-4 py-3 text-right text-white">
-                  <span class="block text-xs uppercase tracking-[0.14em] text-white/65">Rating</span>
-                  <strong class="block text-2xl font-bold">{{ restaurant.rating }}</strong>
+                <! -- box with location / $$ / create date -->
+                <div class="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-white/10 bg-black/20 p-5">
+                  <div class="flex flex-wrap gap-2 text-sm text-white/75">
+                    <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">{{ restaurant.city || 'Unknown city' }}</span>
+                    <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">{{ priceLabel(restaurant.price_level) }}</span>
+                    <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">{{ restaurant.created_at | date: 'mediumDate' }}</span>
+                  </div>
+
+                  <a [routerLink]="['/restaurants', restaurant.id]" class="inline-flex min-h-10 items-center rounded-full bg-[#f4c98b] px-4 py-2 font-semibold text-[#241915] transition hover:-translate-y-0.5 hover:bg-[#ffd99b]">View details</a>
                 </div>
               </div>
-
-              <div class="grid gap-3 border-t border-white/10 p-5 text-sm text-white/80 sm:grid-cols-2">
-                <div class="rounded-[18px] bg-white/5 p-4">
-                  <span class="block text-xs uppercase tracking-[0.12em] text-[#f4c98b]">Location</span>
-                  <span class="block text-white">{{ restaurant.location }}</span>
-                  <span class="block text-white/65">{{ restaurant.neighborhood }}</span>
-                </div>
-                <div class="rounded-[18px] bg-white/5 p-4">
-                  <span class="block text-xs uppercase tracking-[0.12em] text-[#f4c98b]">Price</span>
-                  <span class="block text-white">{{ restaurant.priceRange }}</span>
-                  <span class="block text-white/65">{{ restaurant.isOpenNow ? 'Open now' : 'Currently closed' }}</span>
-                </div>
-              </div>
-
-              <div class="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-white/10 bg-black/20 p-5">
-                <div class="flex flex-wrap gap-2 text-sm text-white/75">
-                  <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">{{ restaurant.cuisine }}</span>
-                  <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">{{ restaurant.priceRange }}</span>
-                  <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">{{ restaurant.distanceKm }} km</span>
-                </div>
-
-                <a
-                  [routerLink]="['/restaurants', restaurant.slug]"
-                  class="inline-flex min-h-10 items-center rounded-full bg-[#f4c98b] px-4 py-2 font-semibold text-[#241915] cursor-pointer transition hover:-translate-y-0.5 hover:bg-[#ffd99b]"
-                >
-                  View details
-                </a>
-              </div>
-            </div>
-          </article>
-        </div>
-
-        <ng-template #emptyState>
-          <div class="rounded-[26px] border border-white/10 bg-black/20 p-8 text-center text-[#f6f0e8]">
-            <h3 class="font-serif text-3xl tracking-[-0.03em] text-white">No restaurants match your filters.</h3>
-            <p class="mt-3 text-white/75">Try widening the cuisine, rating, or location filters, or reset everything to see the full list again.</p>
-            <button
-              type="button"
-              class="mt-6 inline-flex min-h-11 items-center rounded-full bg-[#f4c98b] px-5 py-2 font-semibold text-[#241915] transition hover:bg-[#ffd99b]"
-              (click)="resetFilters()"
-            >
-              Reset all filters
-            </button>
+            </article>
           </div>
-        </ng-template>
+        }
 
         <div class="flex items-center justify-between gap-3 rounded-[24px] border border-white/10 bg-black/20 p-4 text-sm text-white/75">
           <span>Displaying 6 restaurants per page.</span>
           <div class="flex items-center gap-2">
-            <button
-              type="button"
-              class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition disabled:cursor-not-allowed disabled:opacity-40"
-              [disabled]="currentPage() === 1"
-              (click)="goToPage(currentPage() - 1)"
-            >
-              Previous
-            </button>
+            <button type="button" class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition disabled:cursor-not-allowed disabled:opacity-40" [disabled]="currentPage() === 1" (click)="goToPage(currentPage() - 1)">Previous</button>
             <div class="flex items-center gap-2">
-              <button
-                *ngFor="let page of pageNumbers()"
-                type="button"
-                class="h-10 min-w-10 rounded-full border px-3 py-2 font-semibold transition"
-                [class.border-[#f4c98b]]="currentPage() === page"
-                [class.bg-[#f4c98b]]="currentPage() === page"
-                [class.text-[#241915]]="currentPage() === page"
-                [class.border-white/10]="currentPage() !== page"
-                [class.bg-white/5]="currentPage() !== page"
-                [class.text-white]="currentPage() !== page"
-                (click)="goToPage(page)"
-              >
-                {{ page }}
-              </button>
+              <button *ngFor="let page of pageNumbers()" type="button" class="h-10 min-w-10 rounded-full border px-3 py-2 font-semibold transition" [class.border-[#f4c98b]]="currentPage() === page" [class.bg-[#f4c98b]]="currentPage() === page" [class.text-[#241915]]="currentPage() === page" [class.border-white/10]="currentPage() !== page" [class.bg-white/5]="currentPage() !== page" [class.text-white]="currentPage() !== page" (click)="goToPage(page)">{{ page }}</button>
             </div>
-            <button
-              type="button"
-              class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition disabled:cursor-not-allowed disabled:opacity-40"
-              [disabled]="currentPage() === totalPages()"
-              (click)="goToPage(currentPage() + 1)"
-            >
-              Next
-            </button>
+            <button type="button" class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition disabled:cursor-not-allowed disabled:opacity-40" [disabled]="currentPage() === totalPages()" (click)="goToPage(currentPage() + 1)">Next</button>
           </div>
         </div>
       </div>
