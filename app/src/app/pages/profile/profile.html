@@ -1,22 +1,125 @@
-<main class="mx-auto mt-6 w-full max-w-[980px] space-y-4 rounded-[28px] border border-white/10 bg-white/5 p-7 text-[#f6f0e8] shadow-[0_24px_80px_rgba(0,0,0,0.35)] backdrop-blur-lg sm:p-10 lg:p-14">
-  <p class="inline-flex rounded-full bg-white/10 px-3 py-2 text-[0.82rem] uppercase tracking-[0.12em] text-[#f4c98b]">Profile</p>
-  <h2 class="font-serif text-[clamp(2rem,5vw,3.5rem)] leading-[1] tracking-[-0.03em]">Your account at a glance.</h2>
-  <p class="max-w-[40rem] text-[1.05rem] leading-7 text-white/80">
-    Keep this page for saved orders, preferences, and contact details.
-  </p>
+<main class="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+  <section
+    *ngIf="isLoggedIn(); else guestState"
+    class="overflow-hidden rounded-[32px] border border-white/10 bg-[linear-gradient(180deg,_rgba(255,255,255,0.06)_0%,_rgba(255,255,255,0.03)_100%)] text-[#f6f0e8] shadow-[0_24px_90px_rgba(0,0,0,0.35)] backdrop-blur-lg"
+  >
+    <div class="border-b border-white/10 bg-[radial-gradient(circle_at_top_right,_rgba(244,201,139,0.24),_transparent_35%),linear-gradient(135deg,_rgba(57,30,21,0.95),_rgba(17,14,13,0.98))] p-6 sm:p-8 lg:p-10">
+      <h2 class="mt-4 font-serif text-[clamp(2rem,5vw,3.8rem)] leading-[0.95] tracking-[-0.04em] text-white">{{ welcomeMessage() }}</h2>
+      <p class="mt-3 max-w-2xl text-[1.02rem] leading-7 text-white/80">
+        Your account is currently connected. This page is using hardcoded profile data and a hardcoded logged-in state until auth and database are implemented.
+      </p>
 
-  <div class="grid gap-3 md:grid-cols-3">
-    <article class="rounded-[20px] border border-white/10 bg-black/20 p-4">
-      <span class="mb-2 block text-[0.78rem] uppercase tracking-[0.12em] text-[#f4c98b]">Name</span>
-      <strong class="block text-base text-white">Guest</strong>
-    </article>
-    <article class="rounded-[20px] border border-white/10 bg-black/20 p-4">
-      <span class="mb-2 block text-[0.78rem] uppercase tracking-[0.12em] text-[#f4c98b]">Orders</span>
-      <strong class="block text-base text-white">4 saved meals</strong>
-    </article>
-    <article class="rounded-[20px] border border-white/10 bg-black/20 p-4">
-      <span class="mb-2 block text-[0.78rem] uppercase tracking-[0.12em] text-[#f4c98b]">Status</span>
-      <strong class="block text-base text-white">Active</strong>
-    </article>
-  </div>
+      <div class="mt-6 flex flex-wrap items-center gap-3 text-sm">
+        <span class="rounded-full border border-emerald-300/40 bg-emerald-400/15 px-4 py-2 font-semibold text-emerald-200">Logged in</span>
+        <span class="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-white/80">Member since {{ profile().memberSince }}</span>
+        <span class="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-white/80">{{ profile().city }}</span>
+      </div>
+    </div>
+
+    <div class="grid gap-6 p-6 sm:p-8 lg:grid-cols-[minmax(0,1fr)_340px] lg:p-10">
+      <div class="space-y-6">
+        <section class="rounded-[24px] border border-white/10 bg-black/20 p-5 sm:p-6">
+          <h3 class="text-xl font-semibold text-white">Account summary</h3>
+          <div class="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <article class="rounded-[18px] border border-white/10 bg-white/5 p-4">
+              <span class="block text-xs uppercase tracking-[0.13em] text-[#f4c98b]">Full name</span>
+              <strong class="mt-2 block text-base text-white">{{ profile().fullName }}</strong>
+            </article>
+            <article class="rounded-[18px] border border-white/10 bg-white/5 p-4">
+              <span class="block text-xs uppercase tracking-[0.13em] text-[#f4c98b]">Email</span>
+              <strong class="mt-2 block text-base text-white">{{ profile().email }}</strong>
+            </article>
+            <article class="rounded-[18px] border border-white/10 bg-white/5 p-4">
+              <span class="block text-xs uppercase tracking-[0.13em] text-[#f4c98b]">Loyalty tier</span>
+              <strong class="mt-2 block text-base text-white">{{ profile().loyaltyTier }}</strong>
+            </article>
+            <article class="rounded-[18px] border border-white/10 bg-white/5 p-4">
+              <span class="block text-xs uppercase tracking-[0.13em] text-[#f4c98b]">Saved addresses</span>
+              <strong class="mt-2 block text-base text-white">{{ profile().savedAddresses }}</strong>
+            </article>
+          </div>
+        </section>
+
+        <section class="rounded-[24px] border border-white/10 bg-black/20 p-5 sm:p-6">
+          <div class="flex items-center justify-between gap-2">
+            <h3 class="text-xl font-semibold text-white">Recent orders</h3>
+            <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.13em] text-white/70">
+              {{ profile().recentOrders.length }} items
+            </span>
+          </div>
+
+          <div class="mt-4 space-y-3">
+            <article
+              *ngFor="let order of profile().recentOrders"
+              class="rounded-[18px] border border-white/10 bg-white/5 p-4"
+            >
+              <div class="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h4 class="font-semibold text-white">{{ order.restaurant }}</h4>
+                  <p class="text-sm text-white/70">{{ order.dish }}</p>
+                </div>
+                <div class="text-right">
+                  <span
+                    class="inline-flex rounded-full border px-3 py-1 text-xs font-semibold"
+                    [class.border-emerald-300/35]="order.status === 'Delivered'"
+                    [class.bg-emerald-400/15]="order.status === 'Delivered'"
+                    [class.text-emerald-200]="order.status === 'Delivered'"
+                    [class.border-amber-300/35]="order.status === 'Scheduled'"
+                    [class.bg-amber-300/15]="order.status === 'Scheduled'"
+                    [class.text-amber-100]="order.status === 'Scheduled'"
+                  >
+                    {{ order.status }}
+                  </span>
+                  <p class="mt-2 text-sm text-white/70">{{ order.date }}</p>
+                </div>
+              </div>
+              <div class="mt-3 border-t border-white/10 pt-3 text-sm text-white/75">Total: {{ order.total }}</div>
+            </article>
+          </div>
+        </section>
+      </div>
+
+      <aside class="space-y-6">
+        <section class="rounded-[24px] border border-white/10 bg-black/20 p-5 sm:p-6">
+          <h3 class="text-xl font-semibold text-white">Activity</h3>
+          <div class="mt-4 grid gap-3">
+            <article class="rounded-[18px] border border-white/10 bg-white/5 p-4">
+              <span class="block text-xs uppercase tracking-[0.13em] text-[#f4c98b]">Total orders</span>
+              <strong class="mt-2 block text-3xl font-bold text-white">{{ profile().totalOrders }}</strong>
+            </article>
+            <article class="rounded-[18px] border border-white/10 bg-white/5 p-4">
+              <span class="block text-xs uppercase tracking-[0.13em] text-[#f4c98b]">Wishlist items</span>
+              <strong class="mt-2 block text-3xl font-bold text-white">{{ profile().wishlistItems }}</strong>
+            </article>
+          </div>
+        </section>
+
+        <section class="rounded-[24px] border border-white/10 bg-black/20 p-5 sm:p-6">
+          <h3 class="text-xl font-semibold text-white">Favorite cuisines</h3>
+          <div class="mt-4 space-y-3">
+            <article
+              *ngFor="let cuisine of profile().favoriteCuisines"
+              class="rounded-[18px] border border-white/10 bg-white/5 p-4"
+            >
+              <div class="flex items-center justify-between gap-2">
+                <strong class="text-white">{{ cuisine.name }}</strong>
+                <span class="text-sm text-white/70">{{ cuisine.visitsThisMonth }} visits</span>
+              </div>
+            </article>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </section>
+
+  <ng-template #guestState>
+    <section class="mx-auto max-w-[840px] rounded-[30px] border border-white/10 bg-black/25 p-8 text-center text-[#f6f0e8] shadow-[0_24px_80px_rgba(0,0,0,0.35)] backdrop-blur-lg sm:p-10">
+      <p class="inline-flex rounded-full border border-white/10 bg-white/10 px-3 py-2 text-[0.78rem] uppercase tracking-[0.16em] text-[#f4c98b]">Profile</p>
+      <h2 class="mt-5 font-serif text-[clamp(2rem,5vw,3.2rem)] leading-[1] tracking-[-0.03em] text-white">You are not logged in.</h2>
+      <p class="mx-auto mt-3 max-w-xl text-white/75">Once authentication is integrated, this area can redirect guests to Sign in and load user metadata from your database.</p>
+      <button type="button" class="mt-6 inline-flex min-h-11 items-center rounded-full bg-[#f4c98b] px-5 py-2 font-semibold text-[#241915] transition hover:bg-[#ffd99b]">
+        Go to Sign in
+      </button>
+    </section>
+  </ng-template>
 </main>
