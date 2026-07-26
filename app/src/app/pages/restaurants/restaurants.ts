@@ -69,7 +69,7 @@ export class RestaurantsPage {
         .toLowerCase();
 
       const matchesSearch = searchTerm.length === 0 || haystack.includes(searchTerm);
-      const matchesCity = cityFilter.length === 0 || (restaurant.city ?? '').toLowerCase().includes(cityFilter);
+      const matchesCity = cityFilter.length === 0 || (restaurant.city ?? '').toLowerCase().includes(cityFilter) || (restaurant.country ?? '').toLowerCase().includes(cityFilter);
       const matchesPrice =
         priceFilter === 'all' ||
         (priceFilter === 'unknown' ? restaurant.price_level === null : String(restaurant.price_level ?? '') === priceFilter);
