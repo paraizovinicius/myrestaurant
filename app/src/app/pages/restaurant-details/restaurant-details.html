@@ -34,10 +34,12 @@
                     <strong class="mt-2 block text-lg font-semibold text-white">{{ restaurant.city || 'Unknown city' }}</strong>
                     <span class="mt-1 block text-sm text-white/70">{{ restaurant.country || 'Unknown country' }}</span>
                 </article>
+                @if (restaurant.price_level) {
                 <article class="rounded-[24px] border border-white/10 bg-black/20 p-4">
                     <span class="block text-xs uppercase tracking-[0.14em] text-[#f4c98b]">Price level</span>
                     <strong class="mt-2 text-[30px] block font-semibold text-white">{{ restaurant.price_level === null ? 'Unknown' : priceLabel(restaurant.price_level) }}</strong>
                 </article>
+                }
             </div>
         </div>
 

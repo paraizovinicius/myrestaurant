@@ -137,10 +137,12 @@
                       <p class="max-w-xl text-sm leading-6 text-white/78">{{ restaurant.description ?? 'No description available yet.' }}</p>
                     </div>
                   </div>
-
+                  
+                  @if (restaurant.price_level) {
                   <div class="w-[20%] rounded-[18px] border border-white/10 bg-white/10 px-4 py-3 text-right text-white"> <! -- TODO: need to add rating -->
-                    <strong class="block text-2xl font-bold">{{ restaurant.price_level === null ? '' : priceLabel(restaurant.price_level) }}</strong>
+                    <strong class="block text-2xl font-bold">{{ priceLabel(restaurant.price_level) }}</strong>
                   </div>
+                }
                 </div>
                 
                 <! -- white boxes -->
