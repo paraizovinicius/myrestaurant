@@ -1,18 +1,301 @@
-<main class="mx-auto mt-6 w-full max-w-[980px] space-y-4 rounded-[28px] border border-white/10 bg-white/5 p-7 text-[#f6f0e8] shadow-[0_24px_80px_rgba(0,0,0,0.35)] backdrop-blur-lg sm:p-10 lg:p-14">
-  <p class="inline-flex rounded-full bg-white/10 px-3 py-2 text-[0.82rem] uppercase tracking-[0.12em] text-[#f4c98b]">Restaurants</p>
-  <h2 class="font-serif text-[clamp(2rem,5vw,3.5rem)] leading-[1] tracking-[-0.03em]">Find the right place for lunch or dinner.</h2>
-  <p class="max-w-[40rem] text-[1.05rem] leading-7 text-white/80">
-    This page is intentionally small. It can later hold a list, filters, or a map without changing the app shell.
-  </p>
+<main class="mx-auto w-full px-4 sm:px-6 lg:px-8">
+  <section class="space-y-6 backdrop-blur-lg sm:p-7 lg:p-8">
+    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between">
+      <h2 class="max-w-3xl text-[#f6f0e8] font-serif text-[clamp(2.2rem,5vw,4rem)] leading-[0.95] tracking-[-0.04em]">
+        Restaurant Catalog
+      </h2>
 
-  <div class="grid gap-3">
-    <article class="rounded-[20px] border border-white/10 bg-black/20 p-4">
-      <strong class="block text-base text-white">MyRestaurant Central</strong>
-      <span class="block text-white/70">Main branch, dine-in and pickup</span>
-    </article>
-    <article class="rounded-[20px] border border-white/10 bg-black/20 p-4">
-      <strong class="block text-base text-white">MyRestaurant Garden</strong>
-      <span class="block text-white/70">Outdoor seating and weekend specials</span>
-    </article>
-  </div>
+      <div class="relative self-start lg:self-auto">
+        <button
+          type="button"
+          class="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 font-semibold text-white transition hover:border-[#f4c98b]/40 hover:bg-white/15"
+          (click)="toggleSortMenu()"
+          aria-haspopup="menu"
+          [attr.aria-expanded]="sortMenuOpen()"
+        >
+          <span class="uppercase tracking-[0.12em] text-[#f4c98b]">Sort by</span>
+          <span>{{ sortLabel() }}</span>
+        </button>
+
+        <div
+          *ngIf="sortMenuOpen()"
+          class="absolute right-0 z-10 mt-3 w-72 overflow-hidden rounded-[22px] border border-white/10 bg-[#17110f] p-2 shadow-[0_24px_60px_rgba(0,0,0,0.45)]"
+          role="menu"
+        >
+          <button
+            type="button"
+            class="flex w-full items-center justify-between rounded-[16px] px-4 py-3 text-left text-white transition hover:bg-white/10"
+            (click)="chooseSort('highestRated')"
+            role="menuitem"
+          >
+            <span>
+              <span class="block font-semibold">Highest rated</span>
+              <span class="block text-sm text-white/65">Shows the best-reviewed restaurants first</span>
+            </span>
+            <span class="text-[#f4c98b]" *ngIf="sortBy() === 'highestRated'">Selected</span>
+          </button>
+
+          <button
+            type="button"
+            class="flex w-full items-center justify-between rounded-[16px] px-4 py-3 text-left text-white transition hover:bg-white/10"
+            (click)="chooseSort('closestToMe')"
+            role="menuitem"
+          >
+            <span>
+              <span class="block font-semibold">Closest to me</span>
+              <span class="block text-sm text-white/65">Sorts by distance from your location</span>
+            </span>
+            <span class="text-[#f4c98b]" *ngIf="sortBy() === 'closestToMe'">Selected</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
+      <aside class="h-fit rounded-[28px] border border-white/10 bg-black/20 p-5 text-[#f6f0e8] shadow-[0_18px_60px_rgba(0,0,0,0.25)] backdrop-blur-lg lg:sticky lg:top-6">
+        <div class="flex items-center justify-between gap-3 border-b border-white/10 pb-4">
+          <div>
+            <h3 class="text-[1.35rem] font-semibold text-white">Filters</h3>
+            <p class="text-sm text-white/65">Narrow your search.</p>
+          </div>
+          <button
+            type="button"
+            class="rounded-full border border-white/10 px-3 py-2 text-sm font-semibold text-[#f4c98b] transition hover:border-[#f4c98b]/40 hover:bg-white/10"
+            (click)="resetFilters()"
+          >
+            Reset all
+          </button>
+        </div>
+
+        <div class="mt-5 space-y-5">
+          <div class="space-y-3">
+            <h4 class="text-sm font-semibold uppercase tracking-[0.14em] text-[#f4c98b]">Cuisine</h4>
+            <div class="flex flex-wrap gap-2">
+              <button
+                *ngFor="let cuisine of cuisines"
+                type="button"
+                class="rounded-full border px-3 py-2 text-sm font-medium transition"
+                [class.border-[#f4c98b]]="selectedCuisines().includes(cuisine)"
+                [class.bg-[#f4c98b]]="selectedCuisines().includes(cuisine)"
+                [class.text-[#241915]]="selectedCuisines().includes(cuisine)"
+                [class.border-white/10]="!selectedCuisines().includes(cuisine)"
+                [class.bg-white/5]="!selectedCuisines().includes(cuisine)"
+                [class.text-white]="!selectedCuisines().includes(cuisine)"
+                (click)="toggleCuisine(cuisine)"
+                [attr.aria-pressed]="selectedCuisines().includes(cuisine)"
+              >
+                {{ cuisine }}
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <h4 class="text-sm font-semibold uppercase tracking-[0.14em] text-[#f4c98b]">Location</h4>
+            <span class="text-sm text-white/70">Search by location or restaurant name</span>
+            <label class="block space-y-2">
+              <input
+                #locationInput
+                class="mt-3 min-h-11 w-full rounded-full border border-white/10 bg-white/5 px-4 py-2 text-white outline-none placeholder:text-white/45 focus:border-[#f4c98b]/50 focus:bg-white/10"
+                type="search"
+                [value]="locationFilter()"
+                (input)="setLocationFilter(locationInput.value)"
+                placeholder="Downtown, Riverside, Old Market"
+              />
+            </label>
+          </div>
+
+          <div class="space-y-3">
+            <h4 class="text-sm font-semibold uppercase tracking-[0.14em] text-[#f4c98b]">Price range</h4>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" class="rounded-full border px-3 py-2 text-sm font-medium transition" [class.border-[#f4c98b]]="priceRange() === 'all'" [class.bg-[#f4c98b]]="priceRange() === 'all'" [class.text-[#241915]]="priceRange() === 'all'" [class.border-white/10]="priceRange() !== 'all'" [class.bg-white/5]="priceRange() !== 'all'" [class.text-white]="priceRange() !== 'all'" (click)="setPriceRange('all')">All</button>
+              <button type="button" class="rounded-full border px-3 py-2 text-sm font-medium transition" [class.border-[#f4c98b]]="priceRange() === '$'" [class.bg-[#f4c98b]]="priceRange() === '$'" [class.text-[#241915]]="priceRange() === '$'" [class.border-white/10]="priceRange() !== '$'" [class.bg-white/5]="priceRange() !== '$'" [class.text-white]="priceRange() !== '$'" (click)="setPriceRange('$')">$</button>
+              <button type="button" class="rounded-full border px-3 py-2 text-sm font-medium transition" [class.border-[#f4c98b]]="priceRange() === '$$'" [class.bg-[#f4c98b]]="priceRange() === '$$'" [class.text-[#241915]]="priceRange() === '$$'" [class.border-white/10]="priceRange() !== '$$'" [class.bg-white/5]="priceRange() !== '$$'" [class.text-white]="priceRange() !== '$$'" (click)="setPriceRange('$$')">$$</button>
+              <button type="button" class="rounded-full border px-3 py-2 text-sm font-medium transition" [class.border-[#f4c98b]]="priceRange() === '$$$'" [class.bg-[#f4c98b]]="priceRange() === '$$$'" [class.text-[#241915]]="priceRange() === '$$$'" [class.border-white/10]="priceRange() !== '$$$'" [class.bg-white/5]="priceRange() !== '$$$'" [class.text-white]="priceRange() !== '$$$'" (click)="setPriceRange('$$$')">$$$</button>
+              <button type="button" class="rounded-full border px-3 py-2 text-sm font-medium transition" [class.border-[#f4c98b]]="priceRange() === '$$$$'" [class.bg-[#f4c98b]]="priceRange() === '$$$$'" [class.text-[#241915]]="priceRange() === '$$$$'" [class.border-white/10]="priceRange() !== '$$$$'" [class.bg-white/5]="priceRange() !== '$$$$'" [class.text-white]="priceRange() !== '$$$$'" (click)="setPriceRange('$$$$')">$$$$</button>
+            </div>
+          </div>
+
+          <div>
+            <h4 class="text-sm font-semibold uppercase tracking-[0.14em] text-[#f4c98b]">Minimum rating</h4>
+            <span class="text-sm text-white/70">Only show restaurants rated this high or above</span>
+            <label class="block space-y-2 mt-3">
+              <select
+                class="min-h-11 w-full rounded-full border border-white/10 bg-white/5 px-4 py-2 text-white outline-none focus:border-[#f4c98b]/50 focus:bg-white/10"
+                [value]="minimumRating()"
+                (change)="setMinimumRating(ratingSelect.value)"
+                #ratingSelect
+              >
+                <option value="0">Any rating</option>
+                <option value="3.5">3.5+</option>
+                <option value="4">4.0+</option>
+                <option value="4.5">4.5+</option>
+              </select>
+            </label>
+          </div>
+
+          <label class="flex cursor-pointer items-center justify-between gap-4 rounded-[22px] border border-white/10 bg-white/5 p-4 transition-colors hover:bg-white/[0.07]">
+            <div>
+              <span class="block font-semibold text-white">Open now</span>
+            </div>
+
+            <div class="relative inline-flex items-center">
+              <input
+                type="checkbox"
+                class="peer sr-only"
+                [checked]="openNowOnly()"
+                (change)="setOpenNowOnly(openNowCheckbox.checked)"
+                #openNowCheckbox
+              />
+              <!-- Switch track -->
+              <div class="h-6 w-11 rounded-full bg-white/20 transition-colors peer-checked:bg-[#f4c98b] peer-focus-visible:ring-2 peer-focus-visible:ring-[#f4c98b]/50"></div>
+              <!-- Switch thumb (knob) -->
+              <div class="absolute left-1 top-1 h-4 w-4 rounded-full bg-white transition-transform peer-checked:translate-x-5 peer-checked:bg-[#1f1d1a]"></div>
+            </div>
+          </label>
+        </div>
+      </aside>
+
+      <div class="space-y-5">
+        <div class="flex flex-col gap-3 rounded-[24px] border border-white/10 bg-black/20 p-4 text-[#f6f0e8] sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p class="text-base text-white">{{ resultLabel() }}</p>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 text-sm">
+            <button
+              type="button"
+              class="inline-flex min-h-10 items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-40"
+              [disabled]="currentPage() === 1"
+              (click)="goToPage(currentPage() - 1)"
+            >
+              Previous
+            </button>
+
+            <span class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-white/80">
+              Page {{ currentPage() }} of {{ totalPages() }}
+            </span>
+
+            <button
+              type="button"
+              class="inline-flex min-h-10 items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-40"
+              [disabled]="currentPage() === totalPages()"
+              (click)="goToPage(currentPage() + 1)"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="visibleRestaurants().length > 0; else emptyState" class="grid gap-4 xl:grid-cols-3">
+          <article
+            *ngFor="let restaurant of visibleRestaurants(); trackBy: trackByRestaurant"
+            class="overflow-hidden rounded-[26px] border border-white/10 bg-[linear-gradient(180deg,_rgba(255,255,255,0.06)_0%,_rgba(255,255,255,0.03)_100%)] shadow-[0_18px_60px_rgba(0,0,0,0.25)] transition hover:-translate-y-1 hover:border-[#f4c98b]/30"
+          >
+            <div class="flex h-full flex-col">
+              <div class="flex items-start justify-between gap-4 bg-[radial-gradient(circle_at_top_right,_rgba(244,201,139,0.22),_transparent_30%),linear-gradient(135deg,_rgba(64,32,18,0.95),_rgba(17,14,13,0.98))] p-5 sm:p-6">
+                <div class="space-y-3">
+                  <span class="inline-flex rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs uppercase tracking-[0.14em] text-[#f4c98b]">
+                    {{ restaurant.cuisine }}
+                  </span>
+                  <div class="space-y-2">
+                    <h3 class="font-serif text-[clamp(1.6rem,3vw,2.2rem)] leading-[1] tracking-[-0.03em] text-white">
+                      {{ restaurant.name }}
+                    </h3>
+                    <p class="max-w-xl text-sm leading-6 text-white/78">
+                      {{ restaurant.description }}
+                    </p>
+                  </div>
+                </div>
+
+                <div class="rounded-[18px] border border-white/10 bg-white/10 px-4 py-3 text-right text-white">
+                  <span class="block text-xs uppercase tracking-[0.14em] text-white/65">Rating</span>
+                  <strong class="block text-2xl font-bold">{{ restaurant.rating }}</strong>
+                </div>
+              </div>
+
+              <div class="grid gap-3 border-t border-white/10 p-5 text-sm text-white/80 sm:grid-cols-2">
+                <div class="rounded-[18px] bg-white/5 p-4">
+                  <span class="block text-xs uppercase tracking-[0.12em] text-[#f4c98b]">Location</span>
+                  <span class="block text-white">{{ restaurant.location }}</span>
+                  <span class="block text-white/65">{{ restaurant.neighborhood }}</span>
+                </div>
+                <div class="rounded-[18px] bg-white/5 p-4">
+                  <span class="block text-xs uppercase tracking-[0.12em] text-[#f4c98b]">Price</span>
+                  <span class="block text-white">{{ restaurant.priceRange }}</span>
+                  <span class="block text-white/65">{{ restaurant.isOpenNow ? 'Open now' : 'Currently closed' }}</span>
+                </div>
+              </div>
+
+              <div class="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-white/10 bg-black/20 p-5">
+                <div class="flex flex-wrap gap-2 text-sm text-white/75">
+                  <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">{{ restaurant.cuisine }}</span>
+                  <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">{{ restaurant.priceRange }}</span>
+                  <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">{{ restaurant.distanceKm }} km</span>
+                </div>
+
+                <button
+                  type="button"
+                  class="inline-flex min-h-10 items-center rounded-full bg-[#f4c98b] px-4 py-2 font-semibold text-[#241915] transition hover:-translate-y-0.5 hover:bg-[#ffd99b]"
+                >
+                  View details
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <ng-template #emptyState>
+          <div class="rounded-[26px] border border-white/10 bg-black/20 p-8 text-center text-[#f6f0e8]">
+            <h3 class="font-serif text-3xl tracking-[-0.03em] text-white">No restaurants match your filters.</h3>
+            <p class="mt-3 text-white/75">Try widening the cuisine, rating, or location filters, or reset everything to see the full list again.</p>
+            <button
+              type="button"
+              class="mt-6 inline-flex min-h-11 items-center rounded-full bg-[#f4c98b] px-5 py-2 font-semibold text-[#241915] transition hover:bg-[#ffd99b]"
+              (click)="resetFilters()"
+            >
+              Reset all filters
+            </button>
+          </div>
+        </ng-template>
+
+        <div class="flex items-center justify-between gap-3 rounded-[24px] border border-white/10 bg-black/20 p-4 text-sm text-white/75">
+          <span>Displaying 6 restaurants per page.</span>
+          <div class="flex items-center gap-2">
+            <button
+              type="button"
+              class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition disabled:cursor-not-allowed disabled:opacity-40"
+              [disabled]="currentPage() === 1"
+              (click)="goToPage(currentPage() - 1)"
+            >
+              Previous
+            </button>
+            <div class="flex items-center gap-2">
+              <button
+                *ngFor="let page of pageNumbers()"
+                type="button"
+                class="h-10 min-w-10 rounded-full border px-3 py-2 font-semibold transition"
+                [class.border-[#f4c98b]]="currentPage() === page"
+                [class.bg-[#f4c98b]]="currentPage() === page"
+                [class.text-[#241915]]="currentPage() === page"
+                [class.border-white/10]="currentPage() !== page"
+                [class.bg-white/5]="currentPage() !== page"
+                [class.text-white]="currentPage() !== page"
+                (click)="goToPage(page)"
+              >
+                {{ page }}
+              </button>
+            </div>
+            <button
+              type="button"
+              class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition disabled:cursor-not-allowed disabled:opacity-40"
+              [disabled]="currentPage() === totalPages()"
+              (click)="goToPage(currentPage() + 1)"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </main>
