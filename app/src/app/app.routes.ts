@@ -11,6 +11,10 @@ export const routes: Routes = [
 		loadComponent: () => import('./pages/restaurants/restaurants').then((m) => m.RestaurantsPage),
 	},
 	{
+		path: 'restaurants/:slug',
+		loadComponent: () => import('./pages/restaurant-details/restaurant-details').then((m) => m.RestaurantDetailsPage),
+	},
+	{
 		path: 'profile',
 		loadComponent: () => import('./pages/profile/profile').then((m) => m.ProfilePage),
 	},

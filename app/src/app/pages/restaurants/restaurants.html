@@ -233,12 +233,12 @@
                   <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">{{ restaurant.distanceKm }} km</span>
                 </div>
 
-                <button
-                  type="button"
-                  class="inline-flex min-h-10 items-center rounded-full bg-[#f4c98b] px-4 py-2 font-semibold text-[#241915] transition hover:-translate-y-0.5 hover:bg-[#ffd99b]"
+                <a
+                  [routerLink]="['/restaurants', restaurant.slug]"
+                  class="inline-flex min-h-10 items-center rounded-full bg-[#f4c98b] px-4 py-2 font-semibold text-[#241915] cursor-pointer transition hover:-translate-y-0.5 hover:bg-[#ffd99b]"
                 >
                   View details
-                </button>
+                </a>
               </div>
             </div>
           </article>
