@@ -125,13 +125,17 @@ export class RestaurantsPage {
       return null;
     }
 
-    const winner = votes.reduce((best, current) =>
-      current.vote_count > best.vote_count
-        ? current
-        : best
+    const totalVotes = votes.reduce(
+      (sum, vote) => sum + vote.vote_count,
+      0
     );
 
-    return winner.price_level;
+    const weightedSum = votes.reduce(
+      (sum, vote) => sum + vote.price_level * vote.vote_count,
+      0
+    );
+
+    return weightedSum / totalVotes;
   }
 
   protected priceLabel(priceLevel: number | null): string {
