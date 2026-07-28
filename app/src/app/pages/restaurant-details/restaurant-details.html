@@ -7,14 +7,14 @@
     <section class="rounded-[30px] border border-white/10 bg-black/25 p-8 text-center text-white shadow-[0_24px_80px_rgba(0,0,0,0.35)] backdrop-blur-lg">
       {{ error() }}
       <div class="mt-6">
-        <a routerLink="/restaurants" class="inline-flex min-h-11 items-center rounded-full bg-[#f4c98b] px-5 py-2 font-semibold text-[#241915] transition hover:bg-[#ffd99b]">Back to restaurants</a>
+        <a routerLink="/restaurants" class="cursor-pointer inline-flex min-h-11 items-center rounded-full bg-[#f4c98b] px-5 py-2 font-semibold text-[#241915] transition hover:bg-[#ffd99b]">Back to restaurants</a>
       </div>
     </section>
   } @else if (restaurant(); as restaurant) {
     <section class="space-y-6 rounded-[32px] border border-white/10 bg-[linear-gradient(180deg,_rgba(255,255,255,0.06)_0%,_rgba(255,255,255,0.03)_100%)] p-5 text-[#f6f0e8] shadow-[0_24px_90px_rgba(0,0,0,0.35)] backdrop-blur-lg sm:p-7 lg:p-10">
         <a
             routerLink="/restaurants"
-            class="group inline-flex items-center gap-2 text-sm font-medium text-white/60 transition hover:text-[#f4c98b]"
+            class="cursor-pointer group inline-flex items-center gap-2 text-sm font-medium text-white/60 transition hover:text-[#f4c98b]"
         >
             <span class="mb-2 text-lg transition-transform duration-200 group-hover:-translate-x-1">←</span>
             <span>Restaurants</span>
@@ -34,10 +34,10 @@
                     <strong class="mt-2 block text-lg font-semibold text-white">{{ restaurant.city || 'Unknown city' }}</strong>
                     <span class="mt-1 block text-sm text-white/70">{{ restaurant.country || 'Unknown country' }}</span>
                 </article>
-                @if (restaurant.price_level) {
+                @if (priceLevel() !== null) {
                 <article class="rounded-[24px] border border-white/10 bg-black/20 p-4">
                     <span class="block text-xs uppercase tracking-[0.14em] text-[#f4c98b]">Price level</span>
-                    <strong class="mt-2 text-[30px] block font-semibold text-white">{{ restaurant.price_level === null ? 'Unknown' : priceLabel(restaurant.price_level) }}</strong>
+                    <strong class="mt-2 text-[20px] block font-semibold text-white">{{ priceLevel() === null ? 'Unknown' : priceLabel(priceLevel()) }}</strong>
                 </article>
                 }
             </div>
@@ -77,9 +77,11 @@
                 <strong class="mt-2 block text-lg text-white">{{ restaurant.longitude === null ? 'Unknown' : restaurant.longitude }}</strong>
               </article>
             </div>
-            <p class="mt-4 text-sm leading-7 text-white/70">
-              Menu, reviews, category, and rating can be added here once those fields exist in the database.
-            </p>
+
+            <article class="mt-5 rounded-[20px] border border-white/10 bg-white/5 p-4">
+                <span class="block text-xs uppercase tracking-[0.13em] text-[#f4c98b]">Price Level reviews</span>
+                <strong class="mt-2 block text-lg text-white">{{ priceLevel() === null ? 'Unknown' : priceLabel(priceLevel()) }}</strong>
+            </article>
           </section>
         </div>
 

@@ -14,3 +14,20 @@ export interface Restaurant {
   created_at: string;
   updated_at: string;
 }
+
+export interface Reviews {
+  restaurant_id: string;
+  user_id: string;
+  rating: number;
+  title: string | null;
+  body: string | null;
+  visited_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PriceLevelVoteCount {
+  restaurant_id: string;
+  price_level: number;
+  vote_count: number;
+}

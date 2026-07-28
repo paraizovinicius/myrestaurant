@@ -138,9 +138,9 @@
                     </div>
                   </div>
                   
-                  @if (restaurant.price_level) {
+                  @if (priceLevelFor(restaurant.id) !== null) {
                   <div class="w-[20%] rounded-[18px] border border-white/10 bg-white/10 px-4 py-3 text-right text-white"> <! -- TODO: need to add rating -->
-                    <strong class="block text-2xl font-bold">{{ priceLabel(restaurant.price_level) }}</strong>
+                    <strong class="text-[10px] block text-2xl font-bold">{{ priceLabel(priceLevelFor(restaurant.id)) }}</strong>
                   </div>
                 }
                 </div>
@@ -162,9 +162,9 @@
                 <div class="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-white/10 bg-black/20 p-5">
                   <div class="flex flex-wrap gap-2 text-sm text-white/75">
                     <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">{{ restaurant.city || 'Unknown city' }}</span>
-                    @if (restaurant.price_level) {
-                      <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">
-                        {{ priceLabel(restaurant.price_level) }}
+                    @if (priceLevelFor(restaurant.id) !== null) {
+                      <span class="text-sm rounded-full border border-white/10 bg-white/5 px-3 py-1">
+                        {{ priceLabel(priceLevelFor(restaurant.id)) }}
                       </span>
                     }
                     <!-- <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">{{ restaurant.created_at | date: 'mediumDate' }}</span> -->
