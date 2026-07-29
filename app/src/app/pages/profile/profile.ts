@@ -1,31 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { UserProfile } from './types';
+import { AuthService } from '../../core/services/auth.service';
 
-interface FavoriteCuisine {
-  name: string;
-  visitsThisMonth: number;
-}
-
-interface RecentOrder {
-  restaurant: string;
-  dish: string;
-  date: string;
-  total: string;
-  status: 'Delivered' | 'Scheduled';
-}
-
-interface UserProfile {
-  fullName: string;
-  email: string;
-  city: string;
-  memberSince: string;
-  loyaltyTier: string;
-  savedAddresses: number;
-  totalOrders: number;
-  wishlistItems: number;
-  favoriteCuisines: FavoriteCuisine[];
-  recentOrders: RecentOrder[];
-}
 
 @Component({
   selector: 'app-profile-page',
@@ -34,9 +11,14 @@ interface UserProfile {
   templateUrl: './profile.html',
   styleUrl: './profile.css'
 })
+
 export class ProfilePage {
-  // Temporary auth state until real auth/database integration is available.
-  protected readonly isLoggedIn = signal(true);
+
+  private readonly authService = inject(AuthService);
+
+  protected readonly user = this.authService.user;
+
+  protected readonly isLoggedIn =   computed(() => !!this.user());
 
   protected readonly profile = signal<UserProfile>({
     fullName: 'Vinicius Paraizo',
