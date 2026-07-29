@@ -61,29 +61,72 @@ async ngOnInit(): Promise<void> {
   }
 
   // Price level methods
-  protected priceLevel(): number | null {
-    const votes = this.priceVotes();
+  protected priceLevelFor(restaurantId: string): number | null {
+    const votes = this.priceVotes()
+      .filter(vote => vote.restaurant_id === restaurantId);
 
     if (votes.length === 0) {
       return null;
     }
 
-    const winner = votes.reduce((best, current) =>
-      current.vote_count > best.vote_count
-        ? current
-        : best
+    const totalVotes = votes.reduce(
+      (sum, vote) => sum + vote.vote_count,
+      0
     );
 
-    return winner.price_level;
+    const weightedSum = votes.reduce(
+      (sum, vote) => sum + vote.price_level * vote.vote_count,
+      0
+    );
+
+    return weightedSum / totalVotes;
   }
 
-  protected priceLabel(priceLevel: number | null): string {
+  protected fullPriceLabel(priceLevel: number | null): string {
     if (priceLevel === null) {
       return 'Unknown';
     }
 
-    return '$'.repeat(Math.max(1, Math.min(priceLevel, 4)));
+    const full = Math.floor(Math.max(1, Math.min(priceLevel, 4)));
+
+    return (
+      '$'.repeat(full)
+    );
   }
+
+  protected hasHalfPrice(priceLevel: number | null): boolean {
+    if (priceLevel === null) {
+      return false;
+    }
+
+    const fraction = priceLevel % 1;
+
+    return fraction > 0 && fraction < 1;
+  }
+
+  protected priceOpacity(priceLevel: number | null): number {
+    if (priceLevel === null) {
+      return 0;
+    }
+
+    const fraction = priceLevel % 1;
+
+    if (fraction === 0) {
+      return 0;
+    }
+
+    if (fraction < 0.3) {
+      return 0.3;
+    }
+
+    if (fraction < 0.6) {
+      return 0.5;
+    }
+
+    return 0.65;
+  }
+
+  // Constructor
 
   constructor(@Inject(PLATFORM_ID) private readonly platformId: object) {
     this.route.paramMap.subscribe((params) => {

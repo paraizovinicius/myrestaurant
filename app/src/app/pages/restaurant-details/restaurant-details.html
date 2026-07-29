@@ -34,10 +34,15 @@
                     <strong class="mt-2 block text-lg font-semibold text-white">{{ restaurant.city || 'Unknown city' }}</strong>
                     <span class="mt-1 block text-sm text-white/70">{{ restaurant.country || 'Unknown country' }}</span>
                 </article>
-                @if (priceLevel() !== null) {
+
+                @let priceLevel = priceLevelFor(restaurant.id);
+                @if (priceLevel !== null) {
                 <article class="rounded-[24px] border border-white/10 bg-black/20 p-4">
                     <span class="block text-xs uppercase tracking-[0.14em] text-[#f4c98b]">Price level</span>
-                    <strong class="mt-2 text-[20px] block font-semibold text-white">{{ priceLevel() === null ? 'Unknown' : priceLabel(priceLevel()) }}</strong>
+                    <strong class="mt-2 text-[20px] block font-semibold text-white">{{ fullPriceLabel(priceLevel) }}@if (hasHalfPrice(priceLevel)) {
+                        <span [style.opacity]="priceOpacity(priceLevel)">$</span>
+                      }
+                    </strong>
                 </article>
                 }
             </div>
@@ -80,7 +85,7 @@
 
             <article class="mt-5 rounded-[20px] border border-white/10 bg-white/5 p-4">
                 <span class="block text-xs uppercase tracking-[0.13em] text-[#f4c98b]">Price Level reviews</span>
-                <strong class="mt-2 block text-lg text-white">{{ priceLevel() === null ? 'Unknown' : priceLabel(priceLevel()) }}</strong>
+                <strong class="mt-2 block text-lg text-white">{{ priceLevelFor(restaurant.id) === null ? 'Unknown' : fullPriceLabel(priceLevelFor(restaurant.id)) }}</strong>
             </article>
           </section>
         </div>

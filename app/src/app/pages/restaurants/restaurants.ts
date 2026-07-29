@@ -138,12 +138,48 @@ export class RestaurantsPage {
     return weightedSum / totalVotes;
   }
 
-  protected priceLabel(priceLevel: number | null): string {
+  protected fullPriceLabel(priceLevel: number | null): string {
     if (priceLevel === null) {
       return 'Unknown';
     }
 
-    return '$'.repeat(Math.max(1, Math.min(priceLevel, 4)));
+    const full = Math.floor(Math.max(1, Math.min(priceLevel, 4)));
+
+    return (
+      '$'.repeat(full)
+    );
+  }
+
+  protected hasHalfPrice(priceLevel: number | null): boolean {
+    if (priceLevel === null) {
+      return false;
+    }
+
+    const fraction = priceLevel % 1;
+
+    return fraction > 0 && fraction < 1;
+  }
+
+  protected priceOpacity(priceLevel: number | null): number {
+    if (priceLevel === null) {
+      return 0;
+    }
+
+    const fraction = priceLevel % 1;
+
+    if (fraction === 0) {
+      return 0;
+    }
+
+    if (fraction < 0.3) {
+      return 0.3;
+    }
+
+    if (fraction < 0.6) {
+      return 0.5;
+    }
+
+    return 0.65;
   }
 
 

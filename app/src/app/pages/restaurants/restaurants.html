@@ -138,11 +138,13 @@
                     </div>
                   </div>
                   
-                  @if (priceLevelFor(restaurant.id) !== null) {
-                  <div class="w-[20%] rounded-[18px] border border-white/10 bg-white/10 px-4 py-3 text-right text-white"> <! -- TODO: need to add rating -->
-                    <strong class="text-[20px] block text-2xl font-bold">{{ priceLabel(priceLevelFor(restaurant.id)) }}</strong>
-                  </div>
-                }
+                  <! -- TODO: need to add rating -->
+                  <!-- @if (rating)-->
+                    <div class="w-[20%] rounded-[18px] border border-white/10 bg-white/10 px-4 py-3 text-right text-white"> 
+                      <strong class="text-2xl font-bold">
+                        9.5
+                      </strong>
+                    </div>
                 </div>
                 
                 <! -- white boxes -->
@@ -162,9 +164,15 @@
                 <div class="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-white/10 bg-black/20 p-5">
                   <div class="flex flex-wrap gap-2 text-sm text-white/75">
                     <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">{{ restaurant.city || 'Unknown city' }}</span>
-                    @if (priceLevelFor(restaurant.id) !== null) {
+                    @let priceLevel = priceLevelFor(restaurant.id);
+
+                    @if (priceLevel !== null) {
                       <span class="text-sm rounded-full border border-white/10 bg-white/5 px-3 py-1">
-                        {{ priceLabel(priceLevelFor(restaurant.id)) }}
+                        <strong class="text-sm font-bold">
+                          {{ fullPriceLabel(priceLevel) }}@if (hasHalfPrice(priceLevel)) {
+                            <span [style.opacity]="priceOpacity(priceLevel)">$</span>
+                          }
+                        </strong>
                       </span>
                     }
                     <!-- <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">{{ restaurant.created_at | date: 'mediumDate' }}</span> -->
