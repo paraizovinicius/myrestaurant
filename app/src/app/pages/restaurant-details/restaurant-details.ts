@@ -126,6 +126,10 @@ async ngOnInit(): Promise<void> {
     return 0.65;
   }
 
+  protected returnPriceVotes() : PriceLevelVoteCount[] {
+    return this.priceVotes();
+  }
+
   // Constructor
 
   constructor(@Inject(PLATFORM_ID) private readonly platformId: object) {

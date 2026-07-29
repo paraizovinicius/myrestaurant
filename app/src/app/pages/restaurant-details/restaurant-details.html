@@ -84,8 +84,16 @@
             </div>
 
             <article class="mt-5 rounded-[20px] border border-white/10 bg-white/5 p-4">
-                <span class="block text-xs uppercase tracking-[0.13em] text-[#f4c98b]">Price Level reviews</span>
-                <strong class="mt-2 block text-lg text-white">{{ priceLevelFor(restaurant.id) === null ? 'Unknown' : fullPriceLabel(priceLevelFor(restaurant.id)) }}</strong>
+              <span class="block text-xs uppercase tracking-[0.13em] text-[#f4c98b]">
+                Price level reviews
+              </span>
+
+              @for (vote of returnPriceVotes(); track vote.price_level) {
+                <div class="mt-2 flex text-white">
+                  <span class="w-[10%]">{{ fullPriceLabel(vote.price_level) }}</span>
+                  <span>{{ vote.vote_count }} votes</span>
+                </div>
+              }
             </article>
           </section>
         </div>
