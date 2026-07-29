@@ -16,76 +16,141 @@
             </p>
         </div>
     </section>
-    <section class="space-y-6 mt-10 p-6 sm:p-8">
-        <div>
-            <h1 class="font-serif text-[#9e3d00] text-2xl font-semibold ">Log In</h1>
-            <p class="text-sm text-[#351000] mt-2">Welcome back to MyRestaurant!</p>
-        </div>
-        
 
-        @if (error()) {
-            <div class="rounded-md bg-red-500/20 p-3 text-sm text-red-200">
-                {{ error() }}
-            </div>
-        }
-        <form class="space-y-4" (ngSubmit)="login()">
+    <!-- Login Form & Password Reset -->
+     @if (resetPassword()) {
+        <section class="space-y-6 mt-10 p-6 sm:p-8">
             <div>
-                <label for="email" class="block text-sm font-medium]">Email</label>
-                <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    [(ngModel)]="email"
-                    required
-                    placeholder="email@email.com"
-                    class="mt-1 block w-full rounded-md border border-black bg-transparent p-2 text-black placeholder-black/40 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                <h1 class="font-serif text-[#9e3d00] text-2xl font-semibold">
+                    Reset password
+                </h1>
+
+                <p class="mt-2 text-sm text-[#351000]">
+                    Enter your email address and we'll send you a password reset link.
+                </p>
             </div>
 
-            <div>
-                <div class="grid grid-cols-2">
-                    <label for="password" class="block text-sm font-medium">Password</label>
-                    <div class="flex justify-end">
-                        <a
-                            routerLink="/forgot-password"
-                            class="cursor-pointer text-sm text-[#9e3d00] transition hover:text-[#7f3100] hover:underline">
-                            Forgot password?
-                        </a>
-                    </div>
+            @if (error()) {
+                <div class="rounded-md bg-red-500/20 p-3 text-red-200">
+                    {{ error() }}
                 </div>
-                
-                <input
-                    type="password"
-                    id="password"
-                    name="password"
-                    [(ngModel)]="password"
-                    required
-                    class="mt-1 block w-full rounded-md border border-black bg-transparent p-2 text-black placeholder-white/50 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-            </div>
+            }
+
+            @if (success()) {
+                <div class="rounded-md bg-green-500/20 p-3 text-green-900">
+                    {{ success() }}
+                </div>
+            }
+
+            <form (ngSubmit)="sendResetPassword()" class="space-y-4">
+
+                <div>
+                    <label>Email</label>
+
+                    <input
+                        [(ngModel)]="email"
+                        name="email"
+                        type="email"
+                        required
+                        class="mt-1 block w-full rounded-md border border-black p-2">
+                </div>
+
+                <button
+                    type="submit"
+                    [disabled]="loading()"
+                    class="cursor-pointer w-full rounded-md bg-[#9e3d00] py-2 text-white">
+
+                    Send reset link
+
+                </button>
+
+            </form>
 
             <button
-                type="submit"
-                [disabled]="loading()"
-                class="cursor-pointer w-full rounded-md bg-[#9e3d00] py-2 px-4 text-white hover:bg-[#7f3100] disabled:opacity-50">
+                type="button"
+                (click)="resetPassword.set(false)"
+                class="cursor-pointer text-sm text-[#9e3d00] hover:underline">
 
-                @if (loading()) {
-                    Logging in...
-                } @else {
-                    Log In
-                }
+                ← Back to login
 
             </button>
 
-            <div class="pt-4 text-center">
-                <p class="text-sm text-[#351000]/70">
-                    New to MyRestaurant?
+        </section>
 
-                    <a
-                    routerLink="/signup"
-                    class="ml-1 font-semibold text-[#9e3d00] transition hover:text-[#7f3100] hover:underline">
-                    Sign Up
-                    </a>
-                </p>
+     } @else {
+        <!-- Login form -->
+        <section class="space-y-6 mt-10 p-6 sm:p-8">
+            <div>
+                <h1 class="font-serif text-[#9e3d00] text-2xl font-semibold ">Log In</h1>
+                <p class="text-sm text-[#351000] mt-2">Welcome back to MyRestaurant!</p>
             </div>
-        </form>
-    </section>
+            
+
+            @if (error()) {
+                <div class="rounded-md bg-red-500/20 p-3 text-sm text-red-200">
+                    {{ error() }}
+                </div>
+            }
+            <form class="space-y-4" (ngSubmit)="login()">
+                <div>
+                    <label for="email" class="block text-sm font-medium]">Email</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        [(ngModel)]="email"
+                        required
+                        placeholder="email@email.com"
+                        class="mt-1 block w-full rounded-md border border-black bg-transparent p-2 text-black placeholder-black/40 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                </div>
+
+                <div>
+                    <div class="grid grid-cols-2">
+                        <label for="password" class="block text-sm font-medium">Password</label>
+                        <div class="flex justify-end">
+                            <button
+                                type="button"
+                                (click)="resetPassword.set(true)"
+                                class="cursor-pointer text-sm text-[#9e3d00] hover:underline bg-transparent border-0 p-0">
+                                Forgot password?
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        [(ngModel)]="password"
+                        required
+                        class="mt-1 block w-full rounded-md border border-black bg-transparent p-2 text-black placeholder-white/50 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                </div>
+
+                <button
+                    type="submit"
+                    [disabled]="loading()"
+                    class="cursor-pointer w-full rounded-md bg-[#9e3d00] py-2 px-4 text-white hover:bg-[#7f3100] disabled:opacity-50">
+
+                    @if (loading()) {
+                        Logging in...
+                    } @else {
+                        Log In
+                    }
+
+                </button>
+
+                <div class="pt-4 text-center">
+                    <p class="text-sm text-[#351000]/70">
+                        New to MyRestaurant?
+
+                        <a
+                        routerLink="/signup"
+                        class="ml-1 font-semibold text-[#9e3d00] transition hover:text-[#7f3100] hover:underline">
+                        Sign Up
+                        </a>
+                    </p>
+                </div>
+            </form>
+        </section>
+    }
 </main>

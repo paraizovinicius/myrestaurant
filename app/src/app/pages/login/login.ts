@@ -25,6 +25,8 @@ export class LoginPage {
 
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
+  protected readonly resetPassword = signal(false);
+  protected readonly success = signal<string | null>(null);
 
 
   async login(): Promise<void> {
@@ -55,4 +57,31 @@ export class LoginPage {
 
     }
   }
+
+  async sendResetPassword(): Promise<void> {
+
+    this.loading.set(true);
+    this.error.set(null);
+    this.success.set(null);
+
+    try {
+
+        await this.authService.resetPassword(this.email);
+
+        this.success.set(
+        'If an account exists for this email, a password reset link has been sent.'
+        );
+
+    } catch (error: any) {
+
+        this.error.set(
+        error.message ?? 'Unable to send reset email.'
+        );
+
+    } finally {
+
+        this.loading.set(false);
+
+    }
+    }
 }
