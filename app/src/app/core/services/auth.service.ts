@@ -96,4 +96,16 @@ export class AuthService {
       throw error;
     }
   }
+
+  async updatePassword(password: string): Promise<void> {
+
+    const { error } = await supabase.auth.updateUser({
+      password
+    });
+
+    if (error) {
+      throw error;
+    }
+
+  }
 }

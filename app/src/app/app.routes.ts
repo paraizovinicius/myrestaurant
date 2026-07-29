@@ -27,6 +27,12 @@ export const routes: Routes = [
 		loadComponent: () => import('./pages/signup/signup').then((m) => m.SignupPage),
 	},
 	{
+	path: 'auth/update-password',
+	loadComponent: () =>
+		import('./pages/auth/update-password/update-password')
+		.then(m => m.UpdatePasswordPage)
+	},
+	{
 		path: '**',
 		redirectTo: '',
 	},
