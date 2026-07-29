@@ -63,4 +63,8 @@ export class ProfilePage {
     const firstName = this.profile().fullName.split(' ')[0];
     return `Welcome back, ${firstName}.`;
   });
+
+  protected logout(): void {
+    this.authService.signOut();
+  }
 }

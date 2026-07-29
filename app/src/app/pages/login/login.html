@@ -1,40 +1,71 @@
-<main class="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-    <section class="space-y-6 rounded-[10px] mt-10 border border-white/10 bg-white/5 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.35)] backdrop-blur-lg sm:p-8">
-        <h1 class="text-2xl font-semibold text-white">Login</h1>
-        <p class="text-sm text-white/50">Please enter your credentials to log in.</p>
+<main class="grid grid-cols-2 gap-8 flex flex-col items-center justify-between bg-white">
+    <section class="relative">
+        <img class="w-full h-full object-cover" src="login_page.png" alt="login" />
+        <!-- Overlay layer -->
+        <div 
+            class="absolute inset-0 pointer-events-none"
+            style="background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 80%, rgba(0,0,0,0.1) 100%);"
+        ></div>
+        <!-- I want this text to be in the middle  -->
+        <div class="absolute top-3/4 -translate-y-1/2 left-8 right-8 max-w-xl space-y-4 z-10">
+            <h1 class="text-4xl sm:text-5xl font-bold text-white leading-tight">
+                Find where the locals actually eat.
+            </h1>
+            <p class="text-base sm:text-lg text-white/80">
+                Community-driven ratings that help you discover understated restaurants and extraordinary food.
+            </p>
+        </div>
+    </section>
+    <section class="space-y-6 mt-10 p-6 sm:p-8">
+        <div>
+            <h1 class="font-serif text-[#9e3d00] text-2xl font-semibold ">Log In</h1>
+            <p class="text-sm text-[#351000] mt-2">Welcome back to MyRestaurant!</p>
+        </div>
+        
 
+        @if (error()) {
+            <div class="rounded-md bg-red-500/20 p-3 text-sm text-red-200">
+                {{ error() }}
+            </div>
+        }
         <form class="space-y-4" (ngSubmit)="login()">
             <div>
-                <label for="email" class="block text-sm font-medium text-white">Email</label>
+                <label for="email" class="block text-sm font-medium]">Email</label>
                 <input
                     type="email"
                     id="email"
                     name="email"
                     [(ngModel)]="email"
                     required
-                    class="p-2 text-white mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    placeholder="email@email.com"
+                    class="mt-1 block w-full rounded-md border border-black bg-transparent p-2 text-black placeholder-black/40 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
             </div>
 
             <div>
-                <label for="password" class="block text-sm font-medium text-white">Password</label>
+                <div class="grid grid-cols-2">
+                    <label for="password" class="block text-sm font-medium">Password</label>
+                    <div class="flex justify-end">
+                        <a
+                            routerLink="/forgot-password"
+                            class="cursor-pointer text-sm text-[#9e3d00] transition hover:text-[#7f3100] hover:underline">
+                            Forgot password?
+                        </a>
+                    </div>
+                </div>
+                
                 <input
                     type="password"
                     id="password"
                     name="password"
                     [(ngModel)]="password"
                     required
-                    class="p-2 text-white mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    class="mt-1 block w-full rounded-md border border-black bg-transparent p-2 text-black placeholder-white/50 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
             </div>
 
-            @if (error()) {
-                <div class="rounded-md bg-red-500/20 p-3 text-sm text-red-200">
-                    {{ error() }}
-                </div>
-            }
             <button
                 type="submit"
                 [disabled]="loading()"
-                class="w-full rounded-md bg-indigo-600 py-2 px-4 text-white hover:bg-indigo-700 disabled:opacity-50">
+                class="cursor-pointer w-full rounded-md bg-[#9e3d00] py-2 px-4 text-white hover:bg-[#7f3100] disabled:opacity-50">
 
                 @if (loading()) {
                     Logging in...
@@ -43,6 +74,18 @@
                 }
 
             </button>
+
+            <div class="pt-4 text-center">
+                <p class="text-sm text-[#351000]/70">
+                    New to MyRestaurant?
+
+                    <a
+                    routerLink="/signup"
+                    class="ml-1 font-semibold text-[#9e3d00] transition hover:text-[#7f3100] hover:underline">
+                    Sign Up
+                    </a>
+                </p>
+            </div>
         </form>
     </section>
 </main>

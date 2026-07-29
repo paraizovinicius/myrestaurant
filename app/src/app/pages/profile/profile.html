@@ -10,7 +10,7 @@
       </p>
 
       <div class="mt-6 flex flex-wrap items-center gap-3 text-sm">
-        <span class="rounded-full border border-emerald-300/40 bg-emerald-400/15 px-4 py-2 font-semibold text-emerald-200">Logged in</span>
+        <a (click)="logout()" href="/login" class="cursor-pointer rounded-full border border-red-300/40 bg-red-400/15 px-4 py-2 font-semibold text-red-200">Log Out</a>
         <span class="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-white/80">Member since {{ profile().memberSince }}</span>
         <span class="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-white/80">{{ profile().city }}</span>
       </div>
