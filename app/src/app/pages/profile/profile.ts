@@ -2,12 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { UserProfile } from './types';
 import { AuthService } from '../../core/services/auth.service';
+import { RouterLink } from '@angular/router';
 
 
 @Component({
   selector: 'app-profile-page',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './profile.html',
   styleUrl: './profile.css'
 })
