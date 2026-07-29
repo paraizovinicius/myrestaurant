@@ -26,6 +26,11 @@ export interface Reviews {
   updated_at: string;
 }
 
+export interface ReviewRating {
+  restaurant_id: string;
+  rating: number;
+}
+
 export interface PriceLevelVoteCount {
   restaurant_id: string;
   price_level: number;

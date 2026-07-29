@@ -3,7 +3,8 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { RestaurantService } from '../../core/services/restaurant.service';
 import { PriceLevelService } from '../../core/services/price-level.service';
-import { Restaurant, PriceLevelVoteCount } from './types';
+import { ReviewService } from '../../core/services/review.service';
+import { Restaurant, PriceLevelVoteCount, ReviewRating } from './types';
 
 type SortBy = 'name' | 'newest' | 'priceLow' | 'priceHigh';
 type PriceFilter = 'all' | '1' | '2' | '3' | '4' | 'unknown';
@@ -18,10 +19,12 @@ type PriceFilter = 'all' | '1' | '2' | '3' | '4' | 'unknown';
 export class RestaurantsPage {
   private readonly restaurantService = inject(RestaurantService);
   private readonly priceLevelService = inject(PriceLevelService);
+  private readonly reviewService = inject(ReviewService);
 
   protected readonly pageSize = 6;
   protected readonly restaurants = signal<Restaurant[]>([]);
   protected readonly priceVotes = signal<PriceLevelVoteCount[]>([]);
+  protected readonly reviews = signal<ReviewRating[]>([]);
   protected readonly loading = signal(true);
   protected readonly error = signal<string | null>(null);
 
@@ -55,6 +58,20 @@ export class RestaurantsPage {
     this.priceVotes.set(priceVotes);
   }
 
+  private async loadReviews(): Promise<void> {
+    const visible = this.visibleRestaurants();
+
+    const restaurantIds = visible.map(
+      restaurant => restaurant.id
+    );
+
+    const reviews = await this.reviewService.getReviewsRates(restaurantIds);
+    this.reviews.set(reviews);
+
+    console.log(reviews);
+
+  }
+
   async ngOnInit(): Promise<void> {
     try {
       const restaurants = await this.restaurantService.getRestaurants();
@@ -62,6 +79,8 @@ export class RestaurantsPage {
       this.restaurants.set(restaurants);
 
       await this.loadPriceLevels();
+
+      await this.loadReviews();
 
     } catch (error) {
       console.error('Failed to load restaurants:', error);
@@ -115,7 +134,7 @@ export class RestaurantsPage {
     });
   });
 
-  // Price level handler
+  // Price level methods
 
   protected priceLevelFor(restaurantId: string): number | null {
     const votes = this.priceVotes()
@@ -182,6 +201,25 @@ export class RestaurantsPage {
     return 0.65;
   }
 
+  // Review methods
+
+  protected averageRatingFor(restaurantId: string): number | null {
+    const reviews = this.reviews().filter(
+      review => review.restaurant_id === restaurantId
+    );
+
+    if (reviews.length === 0) {
+      return null;
+    }
+
+    const total = reviews.reduce(
+      (sum, review) => sum + review.rating,
+      0
+    );
+
+    return total / reviews.length;
+  }
+
 
   // Pagination and Sorting
 
@@ -235,6 +273,7 @@ export class RestaurantsPage {
   protected async goToPage(page: number): Promise<void> {
     this.currentPage.set(page);
     await this.loadPriceLevels();
+    await this.loadReviews();
   }
 
   protected trackByRestaurant(index: number, restaurant: Restaurant): string {

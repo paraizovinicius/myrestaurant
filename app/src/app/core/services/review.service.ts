@@ -20,6 +20,23 @@ export class ReviewService {
     return data;
   }
 
+  async getReviewsRates(restaurantIds: string[]) {
+    if (restaurantIds.length === 0) {
+      return [];
+    }
+
+    const { data, error } = await supabase
+      .from('reviews')
+      .select('restaurant_id, rating')
+      .in('restaurant_id', restaurantIds);
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  }
+
   async getReview(id: string) {
     const { data, error } = await supabase
       .from('reviews')
