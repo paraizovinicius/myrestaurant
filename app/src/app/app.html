@@ -32,13 +32,22 @@
         title="Find a restaurant"
       />
 
-      <a
-        routerLink="/profile"
-        routerLinkActive="bg-[#7f3100] font-bold"
-        class="ml-auto inline-flex min-h-11 items-center rounded-full bg-[#9e3d00] px-4 py-2 font-medium text-white transition hover:bg-[#7f3100]"
-      >
-        Profile
-      </a>
+      @if (isLoggedIn()) {
+        <a
+          routerLink="/profile"
+          routerLinkActive="bg-[#7f3100] font-bold"
+          class="ml-auto inline-flex min-h-11 items-center rounded-full bg-[#9e3d00] px-4 py-2 font-medium text-white transition hover:bg-[#7f3100]"
+        >
+          Profile
+        </a>
+      } @else {
+        <a
+          routerLink="/login"
+          class="ml-auto inline-flex min-h-11 items-center rounded-full bg-[#9e3d00] px-4 py-2 font-medium text-white transition hover:bg-[#7f3100]"
+        >
+          Log In
+        </a>
+      }
     </nav>
   </header>
 

@@ -19,7 +19,7 @@ export class ProfilePage {
 
   protected readonly user = this.authService.user;
 
-  protected readonly isLoggedIn =   computed(() => !!this.user());
+  protected readonly isLoggedIn = computed(() => !!this.user());
 
   protected readonly profile = signal<UserProfile>({
     fullName: 'Vinicius Paraizo',
