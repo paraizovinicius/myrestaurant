@@ -22,6 +22,8 @@ export class UpdatePasswordPage {
   protected readonly loading = signal(false);
   protected readonly error = signal<string |null>(null);
   protected readonly success = signal<string |null>(null);
+  protected showPassword = false;
+  
   async updatePassword() {
 
     if (this.password !== this.confirmPassword) {

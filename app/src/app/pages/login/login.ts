@@ -27,6 +27,7 @@ export class LoginPage {
   protected readonly error = signal<string | null>(null);
   protected readonly resetPassword = signal(false);
   protected readonly success = signal<string | null>(null);
+  protected showPassword = false;
 
 
   async login(): Promise<void> {
@@ -85,5 +86,4 @@ export class LoginPage {
     }
     }
 
-  protected showPassword = false;
 }
