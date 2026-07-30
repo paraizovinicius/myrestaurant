@@ -84,4 +84,6 @@ export class LoginPage {
 
     }
     }
+
+  protected showPassword = false;
 }
