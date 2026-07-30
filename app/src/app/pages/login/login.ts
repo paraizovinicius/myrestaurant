@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-login-page',
@@ -19,6 +19,7 @@ export class LoginPage {
 
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   protected email = '';
   protected password = '';
@@ -31,31 +32,22 @@ export class LoginPage {
 
 
   async login(): Promise<void> {
-
     this.loading.set(true);
     this.error.set(null);
 
     try {
+      await this.authService.signIn(this.email, this.password);
 
-      await this.authService.signIn(
-        this.email,
-        this.password
-      );
-
-      await this.router.navigate(['/profile']);
+      // Get returnUrl from query params, defaulting to '/' if not present
+      const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+      
+      await this.router.navigateByUrl(returnUrl);
 
     } catch (error: any) {
-
       console.error('Login failed:', error);
-
-      this.error.set(
-        error.message ?? 'Unable to login.'
-      );
-
+      this.error.set(error.message ?? 'Unable to login.');
     } finally {
-
       this.loading.set(false);
-
     }
   }
 
