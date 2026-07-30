@@ -31,7 +31,8 @@ export class AuthService {
   async signUp(
     email: string,
     password: string,
-    name: string
+    name: string,
+    phone?: string
   ) {
 
     const { data, error } =
@@ -45,16 +46,27 @@ export class AuthService {
     }
 
 
-    if (data.user) {
+    const user = data.user;
 
+    if (!user) {
+      throw new Error('Unable to create user.');
+    }
+
+
+    const { error: profileError } =
       await supabase
         .from('profiles')
         .insert({
-          id: data.user.id,
-          name
+          id: user.id,
+          name,
+          phone: phone || null
         });
 
+
+    if (profileError) {
+      throw profileError;
     }
+
 
     return data;
   }
