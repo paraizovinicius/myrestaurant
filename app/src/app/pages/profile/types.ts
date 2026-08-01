@@ -12,14 +12,18 @@ export interface RecentOrder {
 }
 
 export interface UserProfile {
+  id: string;
+
   fullName: string;
-  email: string;
-  city: string;
-  memberSince: string;
+  email: string | undefined;
+  phone: string | null;
+
+  city: string | null;
+  country: string | null;
+  address: string | null;
+  zipcode: string | null;
+
   loyaltyTier: string;
-  savedAddresses: number;
-  totalOrders: number;
-  wishlistItems: number;
-  favoriteCuisines: FavoriteCuisine[];
-  recentOrders: RecentOrder[];
+
+  memberSince: string;
 }

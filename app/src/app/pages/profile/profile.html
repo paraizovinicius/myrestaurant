@@ -11,8 +11,9 @@
 
       <div class="mt-6 flex flex-wrap items-center gap-3 text-sm">
         <a (click)="logout()" href="/login" class="cursor-pointer rounded-full border border-red-300/40 bg-red-400/15 px-4 py-2 font-semibold text-red-200">Log Out</a>
-        <span class="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-white/80">Member since {{ profile().memberSince }}</span>
-        <span class="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-white/80">{{ profile().city }}</span>
+        <span class="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-white/80">
+          Member since {{ profile()?.memberSince | date:'longDate' }}
+        </span>
       </div>
     </div>
 
@@ -29,10 +30,12 @@
               <span class="text-sm text-white/50">
                 Full name
               </span>
-
+              
+              @if(profile()) {
               <span class="font-medium text-white sm:text-right">
-                {{ profile().fullName }}
+                {{ profile()?.fullName }}
               </span>
+            }
             </div>
 
             <!-- Email -->
@@ -41,9 +44,24 @@
                 Email
               </span>
 
+              @if(profile()) {
               <span class="min-w-0 max-w-full break-words font-medium text-white sm:max-w-[65%] sm:text-right">
-                {{ profile().email }}
+                {{ profile()?.email }}
               </span>
+            }
+            </div>
+
+            <!-- Telephone -->
+            <div class="flex flex-col gap-1 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <span class="text-sm text-white/50">
+                Telephone
+              </span>
+
+              @if(profile()) {
+              <span class="font-medium text-white sm:text-right">
+                {{ profile()?.phone }}
+              </span>
+            }
             </div>
 
             <!-- Loyalty tier -->
@@ -53,35 +71,123 @@
               </span>
 
               <span class="font-medium text-white sm:text-right">
-                {{ profile().loyaltyTier }}
+                {{ profile()?.loyaltyTier }}
               </span>
             </div>
 
-            <!-- Saved addresses -->
+            <!-- Saved address -->
             <div class="flex flex-col gap-1 py-4 sm:flex-row sm:items-center sm:justify-between">
               <span class="text-sm text-white/50">
-                Saved addresses
+                Saved address
               </span>
 
-              <span class="font-medium text-white sm:text-right">
-                {{ profile().savedAddresses }}
-              </span>
+              @if (!editingAddress()) {
+                <div class="flex items-center gap-3">
+                  <!-- Display address if available, or placeholder text if empty -->
+                  <span class="font-medium text-white">
+                    @if (profile()?.address || profile()?.zipcode || profile()?.city || profile()?.country) {
+                      {{ profile()?.address }} 
+                      {{profile()?.zipcode ? '|' : ''}} {{ profile()?.zipcode }} 
+                      {{profile()?.city ? '|' : ''}} {{ profile()?.city }} 
+                      {{profile()?.country ? '|' : ''}} {{ profile()?.country }}
+                    } @else {
+                      <span class="text-white/60 italic text-center items-center">No address provided</span>
+                    }
+                  </span>
+
+                  <!-- Edit/Add Button always shows when not editing -->
+                  <button
+                    (click)="startEditingAddress()"
+                    type="button"
+                    title="Edit address"
+                    class="p-1 text-white/70 hover:text-white transition cursor-pointer rounded hover:bg-white/10"
+                    aria-label="Edit address">
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      fill="none" 
+                      viewBox="0 0 24 24" 
+                      stroke-width="1.5" 
+                      stroke="currentColor" 
+                      class="w-5 h-5">
+                      <path 
+                        stroke-linecap="round" 
+                        stroke-linejoin="round" 
+                        d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.89 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                    </svg>
+                  </button>
+                </div>
+              } @else {
+                <!-- Edit Form -->
+                <div class="flex flex-col gap-2">
+                  <input [(ngModel)]="address" name="address" placeholder="Address" class="rounded p-2 text-white/50 bg-black/40" />
+                  <input [(ngModel)]="zipcode" name="zipcode" placeholder="ZIP code" class="rounded p-2 text-white/50 bg-black/40" />
+                  <input [(ngModel)]="city" name="city" placeholder="City" class="rounded p-2 text-white/50 bg-black/40" />
+                  <input [(ngModel)]="country" name="country" placeholder="Country" class="rounded p-2 text-white/50 bg-black/40" />
+                  
+                  <div class="flex gap-2 mt-2">
+                    <button (click)="saveAddress()" class="rounded bg-green-600 px-4 py-2 text-white cursor-pointer">Save</button>
+                    <button (click)="editingAddress.set(false)" class="rounded bg-gray-600 px-4 py-2 text-white cursor-pointer">Cancel</button>
+                  </div>
+                </div>
+              }
             </div>
           </div>
         </section>
 
+        <section>
+          
+          <div class="flex items-center justify-between gap-4">
+            <h3 class="text-xl font-semibold text-white">
+              Account settings
+            </h3>
 
-        <section class="rounded-[24px] border border-white/10 bg-black/20 p-5 sm:p-6">
+            @if (error()) {
+              <div class="rounded-md bg-red-500/20 px-3 py-1 text-sm text-red-300">
+                {{ error() }}
+              </div>
+            }
+
+            @if (success()) {
+              <div class="rounded-md bg-green-500/20 px-3 py-1 text-sm text-green-300">
+                {{ success() }}
+              </div>
+            }
+          </div>
+
+          <div class="mt-6 divide-y divide-white/10 border-y border-white/10">
+
+            <div class="flex flex-col gap-1 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <span class="text-sm text-white/50">
+                Change password
+              </span>
+              <button
+                (click)="resetPassword.set(true)"
+                class="cursor-pointer rounded-full border border-[#f4c98b]/40 bg-[#f4c98b]/15 px-4 py-2 font-semibold text-[#241915] transition hover:bg-[#ffd99b]"
+              >
+                Reset password
+              </button>
+            </div>
+
+            <!-- TODO: implement delete account functionality
+            <div class="flex flex-col gap-1 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <span class="text-sm text-white/50">
+                Delete account
+              </span>
+            </div> -->
+          </div>
+        </section>
+
+        <!-- <section class="rounded-[24px] border border-white/10 bg-black/20 p-5 sm:p-6">
           <div class="flex items-center justify-between gap-2">
             <h3 class="text-xl font-semibold text-white">Recent orders</h3>
             <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.13em] text-white/70">
-              {{ profile().recentOrders.length }} items
+              {{ profile()?.recentOrders.length }} items
             </span>
           </div>
 
           <div class="mt-4 space-y-3">
             <article
-              *ngFor="let order of profile().recentOrders"
+              *ngFor="let order of profile()?.recentOrders"
               class="rounded-[18px] border border-white/10 bg-white/5 p-4"
             >
               <div class="flex flex-wrap items-start justify-between gap-3">
@@ -107,20 +213,20 @@
               <div class="mt-3 border-t border-white/10 pt-3 text-sm text-white/75">Total: {{ order.total }}</div>
             </article>
           </div>
-        </section>
+        </section> -->
       </div>
 
-      <aside class="space-y-6">
+      <!-- <aside class="space-y-6">
         <section class="rounded-[24px] border border-white/10 bg-black/20 p-5 sm:p-6">
           <h3 class="text-xl font-semibold text-white">Activity</h3>
           <div class="mt-4 grid gap-3">
             <article class="rounded-[18px] border border-white/10 bg-white/5 p-4">
               <span class="block text-xs uppercase tracking-[0.13em] text-[#f4c98b]">Total orders</span>
-              <strong class="mt-2 block text-3xl font-bold text-white">{{ profile().totalOrders }}</strong>
+              <strong class="mt-2 block text-3xl font-bold text-white">{{ profile()?.totalOrders }}</strong>
             </article>
             <article class="rounded-[18px] border border-white/10 bg-white/5 p-4">
               <span class="block text-xs uppercase tracking-[0.13em] text-[#f4c98b]">Wishlist items</span>
-              <strong class="mt-2 block text-3xl font-bold text-white">{{ profile().wishlistItems }}</strong>
+              <strong class="mt-2 block text-3xl font-bold text-white">{{ profile()?.wishlistItems }}</strong>
             </article>
           </div>
         </section>
@@ -129,7 +235,7 @@
           <h3 class="text-xl font-semibold text-white">Favorite cuisines</h3>
           <div class="mt-4 space-y-3">
             <article
-              *ngFor="let cuisine of profile().favoriteCuisines"
+              *ngFor="let cuisine of profile()?.favoriteCuisines"
               class="rounded-[18px] border border-white/10 bg-white/5 p-4"
             >
               <div class="flex items-center justify-between gap-2">
@@ -139,7 +245,7 @@
             </article>
           </div>
         </section>
-      </aside>
+      </aside> -->
     </div>
   </section>
 

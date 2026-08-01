@@ -11,11 +11,15 @@ export class AuthService {
   constructor() {
     this.loadUser();
 
-    supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        this.user.set(session?.user ?? null);
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      // Update user state for all auth events
+      this.user.set(session?.user ?? null);
+
+      // Trigger profile creation specifically when signing in
+      if (event === 'SIGNED_IN' && session?.user) {
+        await this.createProfileIfNeeded();
       }
-    );
+    });
   }
 
 
@@ -38,39 +42,21 @@ export class AuthService {
     const { data, error } =
       await supabase.auth.signUp({
         email,
-        password
+        password,
+        options: {
+          data: {
+            name,
+            phone: phone || null
+          }
+        }
       });
 
     if (error) {
       throw error;
     }
 
-
-    const user = data.user;
-
-    if (!user) {
-      throw new Error('Unable to create user.');
-    }
-
-
-    const { error: profileError } =
-      await supabase
-        .from('profiles')
-        .insert({
-          id: user.id,
-          name,
-          phone: phone || null
-        });
-
-
-    if (profileError) {
-      throw profileError;
-    }
-
-
     return data;
   }
-
 
   async signIn(
     email: string,
@@ -89,7 +75,6 @@ export class AuthService {
 
     return data;
   }
-
 
   async signOut() {
     await supabase.auth.signOut();
@@ -119,5 +104,45 @@ export class AuthService {
       throw error;
     }
 
+  }
+
+  async createProfileIfNeeded() {
+
+    const { data: userData, error } =
+      await supabase.auth.getUser();
+
+    if (error || !userData.user) {
+      throw new Error('No authenticated user.');
+    }
+
+    const user = userData.user;
+
+
+    const { data: existingProfile } =
+      await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', user.id)
+        .maybeSingle();
+
+
+    if (existingProfile) {
+      return;
+    }
+
+
+    const { error: insertError } =
+      await supabase
+        .from('profiles')
+        .insert({
+          id: user.id,
+          name: user.user_metadata['name'],
+          phone: user.user_metadata['phone']
+        });
+
+
+    if (insertError) {
+      throw insertError;
+    }
   }
 }

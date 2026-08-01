@@ -24,6 +24,7 @@ export class SignupPage {
   protected name = '';
   protected phone = '';
   protected password = '';
+  protected confirmPassword = '';
 
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
@@ -36,7 +37,12 @@ export class SignupPage {
     this.success.set(null);
 
     try {
-    const data = await this.authService.signUp(
+      if (this.password !== this.confirmPassword) {
+        this.error.set('Passwords do not match.');
+        return;
+      }
+
+      const data = await this.authService.signUp(
         this.email,
         this.password,
         this.name,
