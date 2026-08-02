@@ -33,8 +33,6 @@ export class ProfilePage {
   protected city = '';
   protected country = '';
 
-  protected readonly resetPassword = signal(false);
-
   protected readonly isLoggedIn = computed(() => !!this.user());
 
   async ngOnInit(): Promise<void> {

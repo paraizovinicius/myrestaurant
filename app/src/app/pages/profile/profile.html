@@ -6,8 +6,7 @@
     <div class="border-b border-white/10 bg-[radial-gradient(circle_at_top_right,_rgba(244,201,139,0.24),_transparent_35%),linear-gradient(135deg,_rgba(57,30,21,0.95),_rgba(17,14,13,0.98))] p-6 sm:p-8 lg:p-10">
       <h2 class="mt-4 font-serif text-[clamp(2rem,5vw,3.8rem)] leading-[0.95] tracking-[-0.04em] text-white">{{ welcomeMessage() }}</h2>
       <p class="mt-3 max-w-2xl text-[1.02rem] leading-7 text-white/80">
-        Your account is currently connected. You can view your account summary, recent orders, and favorite cuisines below.
-      </p>
+        Your account is currently connected. You can view your account summary, update your settings, and manage your preferences here.
 
       <div class="mt-6 flex flex-wrap items-center gap-3 text-sm">
         <a (click)="logout()" href="/login" class="cursor-pointer rounded-full border border-red-300/40 bg-red-400/15 px-4 py-2 font-semibold text-red-200">Log Out</a>
@@ -160,12 +159,20 @@
               <span class="text-sm text-white/50">
                 Change password
               </span>
-              <button
-                (click)="resetPassword.set(true)"
-                class="cursor-pointer rounded-full border border-[#f4c98b]/40 bg-[#f4c98b]/15 px-4 py-2 font-semibold text-[#241915] transition hover:bg-[#ffd99b]"
-              >
-                Reset password
-              </button>
+              @if (!loading()) {
+                <button
+                  (click)="sendResetPassword()"
+                  [disabled]="loading()"
+                  class="cursor-pointer rounded-full border border-[#f4c98b]/40 bg-[#f4c98b]/15 px-4 py-2 font-semibold text-[#241915] transition hover:bg-[#ffd99b]"
+                >
+                  Reset password
+                </button>
+              } @else {
+                <span class="font-medium text-white sm:text-right">
+                  <span class="text-white/60 italic">Sending reset email...</span>
+                </span>
+              }
+              
             </div>
 
             <!-- TODO: implement delete account functionality
