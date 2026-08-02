@@ -2,19 +2,62 @@
   <section class="space-y-6 rounded-[32px] p-5 text-[#f6f0e8] sm:p-7 lg:p-10">
     <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
       <div class="space-y-3">
-        <h2 class="font-serif text-[clamp(2.2rem,5vw,4rem)] leading-[0.95] tracking-[-0.04em] text-white">Restaurant Catalog</h2>
+        <h2 class="font-serif text-[clamp(2.2rem,5vw,4rem)] leading-[0.95] tracking-[-0.04em] text-white">
+          Restaurant Catalog
+        </h2>
       </div>
 
-      <button
-        type="button"
-        class="inline-flex min-h-4 items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 font-semibold text-white transition hover:border-[#f4c98b]/40 hover:bg-white/15"
-        (click)="toggleSortMenu()"
-        aria-haspopup="menu"
-        [attr.aria-expanded]="sortMenuOpen()"
-      >
-        <span class="uppercase tracking-[0.12em] text-[#f4c98b]">Sort by</span>
-        <span>{{ sortLabel() }}</span>
-      </button>
+      <div class="relative min-w-[200px]" (keydown.escape)="dropdownOpen.set(false)">
+  <!-- Trigger Button -->
+  <button
+    type="button"
+    (click)="dropdownOpen.set(!dropdownOpen())"
+    class="flex w-full items-center justify-between gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-medium text-white shadow-sm backdrop-blur-md transition-all hover:border-[#f4c98b]/40 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-[#f4c98b]/50"
+    [attr.aria-expanded]="dropdownOpen()"
+  >
+    <span class="truncate">{{ currentSortLabel() }}</span>
+    
+    <!-- Chevron Icon -->
+    <svg
+      class="h-4 w-4 text-[#f4c98b] transition-transform duration-200"
+      [class.rotate-180]="dropdownOpen()"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+    </svg>
+  </button>
+
+  <!-- Options Menu -->
+  @if (dropdownOpen()) {
+    <div
+      class="absolute right-0 z-50 mt-2 w-full overflow-hidden rounded-2xl border border-white/10 bg-[#1e1b18]/95 p-1.5 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-100"
+    >
+      @for (option of sortOptions; track option.value) {
+        <button
+          type="button"
+          (click)="selectOption(option.value)"
+          class="flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-left text-sm font-medium transition-colors"
+          [class]="
+            sortBy() === option.value
+              ? 'bg-[#f4c98b]/15 text-[#f4c98b]'
+              : 'text-white/80 hover:bg-white/5 hover:text-white'
+          "
+        >
+          <span>{{ option.label }}</span>
+
+          <!-- Active Checkmark -->
+          @if (sortBy() === option.value) {
+            <svg class="h-4 w-4 text-[#f4c98b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+            </svg>
+          }
+        </button>
+      }
+    </div>
+  }
+</div>
     </div>
 
     <div class="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
@@ -57,48 +100,63 @@
             />
           </label>
 
-          <label class="block space-y-2">
-            <span class="text-sm font-semibold uppercase tracking-[0.14em] text-[#f4c98b]">Price level</span>
-            <select
-              class="min-h-4 w-full rounded-full border border-white/10 bg-white/5 px-4 py-2 text-white outline-none focus:border-[#f4c98b]/50 focus:bg-white/10"
-              [value]="priceFilter()"
-              (change)="setPriceFilter(priceSelect.value)"
-              #priceSelect
-            >
-              <option *ngFor="let option of priceOptions" [value]="option.value">{{ option.label }}</option>
-            </select>
-          </label>
+          <div class="space-y-2">
+          <span class="block text-sm font-semibold uppercase tracking-[0.14em] text-[#f4c98b]">
+            Price level
+          </span>
 
-          <div *ngIf="sortMenuOpen()" class="space-y-2 rounded-[22px] border border-white/10 bg-[#17110f] p-2">
-            <button type="button" class="flex w-full items-center justify-between rounded-[16px] px-4 py-3 text-left text-white transition hover:bg-white/10" (click)="chooseSort('name')">
-              <span>
-                <span class="block font-semibold">Name A-Z</span>
-                <span class="block text-sm text-white/65">Alphabetical order</span>
-              </span>
-              <span class="text-[#f4c98b]" *ngIf="sortBy() === 'name'">Selected</span>
+          <div class="relative min-w-[200px]" (keydown.escape)="priceDropdownOpen.set(false)">
+            <!-- Trigger Button -->
+            <button
+              type="button"
+              (click)="priceDropdownOpen.set(!priceDropdownOpen())"
+              class="flex w-full items-center justify-between gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-medium text-white shadow-sm backdrop-blur-md transition-all hover:border-[#f4c98b]/40 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-[#f4c98b]/50"
+              [attr.aria-expanded]="priceDropdownOpen()"
+            >
+              <span class="truncate">{{ currentPriceLabel() }}</span>
+
+              <!-- Chevron Icon -->
+              <svg
+                class="h-4 w-4 text-[#f4c98b] transition-transform duration-200"
+                [class.rotate-180]="priceDropdownOpen()"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
             </button>
-            <button type="button" class="flex w-full items-center justify-between rounded-[16px] px-4 py-3 text-left text-white transition hover:bg-white/10" (click)="chooseSort('newest')">
-              <span>
-                <span class="block font-semibold">Newest first</span>
-                <span class="block text-sm text-white/65">Most recent records first</span>
-              </span>
-              <span class="text-[#f4c98b]" *ngIf="sortBy() === 'newest'">Selected</span>
-            </button>
-            <button type="button" class="flex w-full items-center justify-between rounded-[16px] px-4 py-3 text-left text-white transition hover:bg-white/10" (click)="chooseSort('priceLow')">
-              <span>
-                <span class="block font-semibold">Price low to high</span>
-                <span class="block text-sm text-white/65">Lower price levels first</span>
-              </span>
-              <span class="text-[#f4c98b]" *ngIf="sortBy() === 'priceLow'">Selected</span>
-            </button>
-            <button type="button" class="flex w-full items-center justify-between rounded-[16px] px-4 py-3 text-left text-white transition hover:bg-white/10" (click)="chooseSort('priceHigh')">
-              <span>
-                <span class="block font-semibold">Price high to low</span>
-                <span class="block text-sm text-white/65">Higher price levels first</span>
-              </span>
-              <span class="text-[#f4c98b]" *ngIf="sortBy() === 'priceHigh'">Selected</span>
-            </button>
+
+            <!-- Options Menu -->
+            @if (priceDropdownOpen()) {
+              <div
+                class="absolute left-0 z-50 mt-2 w-full overflow-hidden rounded-2xl border border-white/10 bg-[#1e1b18]/95 p-1.5 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-100"
+              >
+                @for (option of priceOptions; track option.value) {
+                  <button
+                    type="button"
+                    (click)="selectPriceOption(option.value)"
+                    class="flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-left text-sm font-medium transition-colors"
+                    [class]="
+                      priceFilter() === option.value
+                        ? 'bg-[#f4c98b]/15 text-[#f4c98b]'
+                        : 'text-white/80 hover:bg-white/5 hover:text-white'
+                    "
+                  >
+                    <span>{{ option.label }}</span>
+
+                    <!-- Active Checkmark -->
+                    @if (priceFilter() === option.value) {
+                      <svg class="h-4 w-4 text-[#f4c98b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                      </svg>
+                    }
+                  </button>
+                }
+              </div>
+            }
           </div>
+        </div>
         </div>
       </aside>
 

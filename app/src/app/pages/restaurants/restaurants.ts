@@ -6,7 +6,7 @@ import { PriceLevelService } from '../../core/services/price-level.service';
 import { ReviewService } from '../../core/services/review.service';
 import { Restaurant, PriceLevelVoteCount, ReviewRating } from './types';
 
-type SortBy = 'name' | 'newest' | 'priceLow' | 'priceHigh';
+type SortBy = 'name' | 'priceLow' | 'priceHigh';
 type PriceFilter = 'all' | '1' | '2' | '3' | '4' | 'unknown';
 type PriceLevelBin = 1 | 2 | 3 | 4;
 
@@ -33,9 +33,10 @@ export class RestaurantsPage {
   protected readonly searchTerm = signal('');
   protected readonly cityFilter = signal('');
   protected readonly priceFilter = signal<PriceFilter>('all');
+  protected readonly priceDropdownOpen = signal<boolean>(false);
   protected readonly sortBy = signal<SortBy>('name');
+  protected readonly dropdownOpen = signal<boolean>(false);
   protected readonly currentPage = signal(1);
-  protected readonly sortMenuOpen = signal(false);
 
   protected readonly priceOptions = [
     { value: 'all', label: 'All prices' },
@@ -45,21 +46,27 @@ export class RestaurantsPage {
     { value: '4', label: '$$$$' },
   ] as const;
 
+  protected readonly sortOptions = [
+    { value: 'name', label: 'Name A-Z' },
+    { value: 'priceLow', label: 'Price low to high' },
+    { value: 'priceHigh', label: 'Price high to low' },
+  ] as const;
+
 
   private priceLevelBin(priceLevel: number | null): PriceLevelBin | null {
     if (priceLevel === null) {
       return null;
     }
 
-    if (priceLevel < 1.5) {
+    if (priceLevel <= 1.5) {
       return 1;
     }
 
-    if (priceLevel < 2.5) {
+    if (priceLevel <= 2.5) {
       return 2;
     }
 
-    if (priceLevel < 3.5) {
+    if (priceLevel <= 3.5) {
       return 3;
     }
 
@@ -139,7 +146,6 @@ export class RestaurantsPage {
     const searchTerm = this.searchTerm().toLowerCase();
     const cityFilter = this.cityFilter().toLowerCase();
     const priceFilter = this.priceFilter();
-    const allWeightedPrices = this.weightedPriceLevels(); // Synchronously read the signal
 
     return this.restaurants().filter((restaurant) => {
       const haystack = [
@@ -172,8 +178,6 @@ export class RestaurantsPage {
   });
 
   // Price level methods
-
-
   protected fullPriceLabel(priceLevel: number | null): string {
     if (priceLevel === null) {
       return 'Unknown';
@@ -219,7 +223,6 @@ export class RestaurantsPage {
   }
 
   // Review methods
-
   protected averageRatingFor(restaurantId: string): number | null {
     const reviews = this.reviews().filter(
       review => review.restaurant_id === restaurantId
@@ -239,7 +242,6 @@ export class RestaurantsPage {
 
 
   // Pagination and Sorting
-
   protected readonly totalPages = computed(() => {
     return Math.max(1, Math.ceil(this.filteredRestaurants().length / this.pageSize));
   });
@@ -268,22 +270,26 @@ export class RestaurantsPage {
     return `Showing ${start}-${end} of ${total} restaurants`;
   });
 
-  protected chooseSort(sort: SortBy): void {
-    this.sortBy.set(sort);
-    this.sortMenuOpen.set(false);
-    this.currentPage.set(1);
+  protected selectOption(value: SortBy): void {
+    this.sortBy.set(value);
+    this.dropdownOpen.set(false);
+    this.currentPage.set(1); // Reset pagination if applicable
   }
 
-  protected toggleSortMenu(): void {
-    this.sortMenuOpen.update((current) => !current);
-  }
+  protected readonly currentSortLabel = computed(() => {
+    return this.sortOptions.find(opt => opt.value === this.sortBy())?.label ?? 'Sort by';
+  });
+
+  protected readonly currentPriceLabel = computed(() => {
+    return this.priceOptions.find(opt => opt.value === this.priceFilter())?.label ?? 'Select price';
+  });
+
 
   protected resetFilters(): void {
     this.searchTerm.set('');
     this.cityFilter.set('');
     this.priceFilter.set('all');
     this.sortBy.set('name');
-    this.sortMenuOpen.set(false);
     this.currentPage.set(1);
   }
 
@@ -297,10 +303,9 @@ export class RestaurantsPage {
     return restaurant.id;
   }
 
+  // TODO: remove
   protected readonly sortLabel = computed(() => {
     switch (this.sortBy()) {
-      case 'newest':
-        return 'Newest first';
       case 'priceLow':
         return 'Price: low to high';
       case 'priceHigh':
@@ -320,8 +325,9 @@ export class RestaurantsPage {
     this.currentPage.set(1);
   }
 
-  protected setPriceFilter(value: string): void {
+  protected selectPriceOption(value: string): void {
     this.priceFilter.set(value as PriceFilter);
+    this.priceDropdownOpen.set(false);
     this.currentPage.set(1);
   }
 }
