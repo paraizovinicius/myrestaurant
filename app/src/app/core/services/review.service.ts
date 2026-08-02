@@ -51,6 +51,20 @@ export class ReviewService {
     return data;
   }
 
+  async getReviewsByUser(userId: string) {
+    const { data, error } = await supabase
+      .from('reviews')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  }
+
   async createReview(
     restaurantId: string,
     userId: string,
@@ -69,6 +83,47 @@ export class ReviewService {
         body,
         visited_at: visitedAt
       })
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  }
+
+  async deleteReview(reviewId: string) {
+    const { data, error } = await supabase
+      .from('reviews')
+      .delete()
+      .eq('id', reviewId)
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  }
+
+  async updateReview(
+    reviewId: string,
+    rating: number,
+    title: string | null,
+    body: string | null,
+    visitedAt: string | null
+  ) {
+    const { data, error } = await supabase
+      .from('reviews')
+      .update({
+        rating,
+        title,
+        body,
+        visited_at: visitedAt
+      })
+      .eq('id', reviewId)
       .select()
       .single();
 

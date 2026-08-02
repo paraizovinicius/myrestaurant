@@ -16,6 +16,7 @@ export interface Restaurant {
 }
 
 export interface Reviews {
+  id: string;
   restaurant_id: string;
   user_id: string;
   rating: number;
