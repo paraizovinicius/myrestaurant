@@ -1,6 +1,6 @@
 <div class="min-h-screen flex flex-col bg-[radial-gradient(circle_at_top_left,_rgba(255,193,117,0.22),_transparent_30%),radial-gradient(circle_at_bottom_right,_rgba(92,67,50,0.55),_transparent_28%),linear-gradient(135deg,_#17110f_0%,_#241915_55%,_#120f0e_100%)] text-[#2b1a10]">
   
-  <header class="mx-auto flex w-full items-center border border-white/10 bg-white py-4 shadow-[0_12px_80px_rgba(0,0,0,0.15)] backdrop-blur-md sm:px-10">
+  <header class="relative z-50 mx-auto flex w-full items-center border border-white/10 bg-white py-4 shadow-[0_12px_80px_rgba(0,0,0,0.15)] backdrop-blur-md sm:px-10">
     <div class="select-none font-serif text-[32px] font-bold tracking-[-0.02em] text-[#9e3d00]" aria-label="MyRestaurant">
       {{ title() }}
     </div>
@@ -23,14 +23,51 @@
         Restaurants
       </a>
 
-      <input
-        class="min-h-5 rounded-full border border-[#9e3d00]/15 bg-white px-4 py-2 text-[#2b1a10] outline-none placeholder:text-[#9e3d00]/60 hover:placeholder:text-[#9e3d00] focus:border-[#9e3d00]/30 focus:shadow-[0_0_0_4px_rgba(158,61,0,0.08)]"
-        type="search"
-        name="restaurant-search"
-        placeholder="Find a restaurant"
-        aria-label="Find a restaurant"
-        title="Find a restaurant"
-      />
+      <div class="relative min-w-[280px] flex-1 max-w-xl">
+        <input
+          #searchInput
+          class="min-h-5 w-full rounded-full border border-[#9e3d00]/15 bg-white px-4 py-2 text-[#2b1a10] outline-none placeholder:text-[#9e3d00]/60 hover:placeholder:text-[#9e3d00] focus:border-[#9e3d00]/30 focus:shadow-[0_0_0_4px_rgba(158,61,0,0.08)]"
+          type="search"
+          name="restaurant-search"
+          [value]="searchTerm()"
+          (input)="typing(searchInput.value)"
+          (focus)="typing(searchInput.value)"
+          (keydown.escape)="clearSearch()"
+          placeholder="Find a restaurant"
+          aria-label="Find a restaurant"
+          title="Find a restaurant"
+        />
+
+        @if (searchOpen()) {
+          <div class="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-50 overflow-hidden rounded-[24px] border border-[#9e3d00]/15 bg-white/98 shadow-[0_24px_80px_rgba(0,0,0,0.18)] backdrop-blur-xl">
+            @if (searchLoading()) {
+              <div class="px-4 py-3 text-sm text-[#2b1a10]/70">Searching restaurants...</div>
+            } @else if (searchResults().length === 0) {
+              <div class="px-4 py-3 text-sm text-[#2b1a10]/70">No restaurants match “{{ searchTerm() }}”.</div>
+            } @else {
+              <div class="max-h-80 overflow-auto py-2">
+                @for (restaurant of searchResults(); track restaurant.id) {
+                  <button
+                    type="button"
+                    class="flex w-full items-start justify-between gap-4 px-4 py-3 text-left transition hover:bg-[#9e3d00]/[0.06]"
+                    (click)="selectSearchResult(restaurant.id)"
+                  >
+                    <span class="min-w-0">
+                      <span class="block truncate font-semibold text-[#2b1a10]">{{ restaurant.name }}</span>
+                      <span class="block truncate text-sm text-[#2b1a10]/65">
+                        {{ restaurant.city || 'Unknown city' }}{{ restaurant.country ? ', ' + restaurant.country : '' }}
+                      </span>
+                    </span>
+                    <span class="shrink-0 rounded-full border border-[#9e3d00]/15 bg-[#9e3d00]/[0.06] px-2.5 py-1 text-xs font-medium text-[#9e3d00]">
+                      View
+                    </span>
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
 
       @if (isLoggedIn()) {
         <a
@@ -52,7 +89,7 @@
     </nav>
   </header>
 
-  <main class="flex-1 w-full">
+  <main class="relative z-0 flex-1 w-full">
       <router-outlet />
   </main>
 
