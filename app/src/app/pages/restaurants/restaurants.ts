@@ -146,8 +146,10 @@ export class RestaurantsPage {
     const searchTerm = this.searchTerm().toLowerCase();
     const cityFilter = this.cityFilter().toLowerCase();
     const priceFilter = this.priceFilter();
+    const sortBy = this.sortBy();
+    const weightedPriceLevels = this.weightedPriceLevels();
 
-    return this.restaurants().filter((restaurant) => {
+    const filtered = this.restaurants().filter((restaurant) => {
       const haystack = [
         restaurant.name,
         restaurant.description ?? '',
@@ -174,6 +176,24 @@ export class RestaurantsPage {
       }
 
       return matchesSearch && matchesCity && matchesPrice;
+    });
+
+    return filtered.sort((left, right) => {
+      if (sortBy === 'priceLow' || sortBy === 'priceHigh') {
+        const leftPrice = weightedPriceLevels[left.id] ?? left.price_level ?? Number.POSITIVE_INFINITY;
+        const rightPrice = weightedPriceLevels[right.id] ?? right.price_level ?? Number.POSITIVE_INFINITY;
+
+        if (sortBy === 'priceLow') {
+          return leftPrice - rightPrice || left.name.localeCompare(right.name);
+        }
+
+        const reverseLeftPrice = weightedPriceLevels[left.id] ?? left.price_level ?? Number.NEGATIVE_INFINITY;
+        const reverseRightPrice = weightedPriceLevels[right.id] ?? right.price_level ?? Number.NEGATIVE_INFINITY;
+
+        return reverseRightPrice - reverseLeftPrice || left.name.localeCompare(right.name);
+      }
+
+      return left.name.localeCompare(right.name);
     });
   });
 
@@ -302,18 +322,6 @@ export class RestaurantsPage {
   protected trackByRestaurant(index: number, restaurant: Restaurant): string {
     return restaurant.id;
   }
-
-  // TODO: remove
-  protected readonly sortLabel = computed(() => {
-    switch (this.sortBy()) {
-      case 'priceLow':
-        return 'Price: low to high';
-      case 'priceHigh':
-        return 'Price: high to low';
-      default:
-        return 'Name A-Z';
-    }
-  });
 
   protected setSearchTerm(value: string): void {
     this.searchTerm.set(value);
