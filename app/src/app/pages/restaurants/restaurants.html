@@ -7,57 +7,60 @@
         </h2>
       </div>
 
-      <div class="relative min-w-[200px]" (keydown.escape)="dropdownOpen.set(false)">
-  <!-- Trigger Button -->
-  <button
-    type="button"
-    (click)="dropdownOpen.set(!dropdownOpen())"
-    class="flex w-full items-center justify-between gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-medium text-white shadow-sm backdrop-blur-md transition-all hover:border-[#f4c98b]/40 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-[#f4c98b]/50"
-    [attr.aria-expanded]="dropdownOpen()"
-  >
-    <span class="truncate">{{ currentSortLabel() }}</span>
-    
-    <!-- Chevron Icon -->
-    <svg
-      class="h-4 w-4 text-[#f4c98b] transition-transform duration-200"
-      [class.rotate-180]="dropdownOpen()"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-    </svg>
-  </button>
-
-  <!-- Options Menu -->
-  @if (dropdownOpen()) {
-    <div
-      class="absolute right-0 z-50 mt-2 w-full overflow-hidden rounded-2xl border border-white/10 bg-[#1e1b18]/95 p-1.5 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-100"
-    >
-      @for (option of sortOptions; track option.value) {
+      <div class="flex items-center gap-3">
+        <span class="text-sm font-semibold uppercase tracking-[0.14em] text-[#f4c98b]">Sort by</span>
+        <div class="relative min-w-[200px]" (keydown.escape)="dropdownOpen.set(false)">
+        <!-- Trigger Button -->
         <button
           type="button"
-          (click)="selectOption(option.value)"
-          class="flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-left text-sm font-medium transition-colors"
-          [class]="
-            sortBy() === option.value
-              ? 'bg-[#f4c98b]/15 text-[#f4c98b]'
-              : 'text-white/80 hover:bg-white/5 hover:text-white'
-          "
+          (click)="dropdownOpen.set(!dropdownOpen())"
+          class="flex w-full items-center justify-between gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-medium text-white shadow-sm backdrop-blur-md transition-all hover:border-[#f4c98b]/40 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-[#f4c98b]/50"
+          [attr.aria-expanded]="dropdownOpen()"
         >
-          <span>{{ option.label }}</span>
-
-          <!-- Active Checkmark -->
-          @if (sortBy() === option.value) {
-            <svg class="h-4 w-4 text-[#f4c98b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-            </svg>
-          }
+          <span class="truncate">{{ currentSortLabel() }}</span>
+          
+          <!-- Chevron Icon -->
+          <svg
+            class="h-4 w-4 text-[#f4c98b] transition-transform duration-200"
+            [class.rotate-180]="dropdownOpen()"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
         </button>
-      }
-    </div>
-  }
-</div>
+
+        <!-- Options Menu -->
+        @if (dropdownOpen()) {
+          <div
+            class="absolute right-0 z-50 mt-2 w-full overflow-hidden rounded-2xl border border-white/10 bg-[#1e1b18]/95 p-1.5 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-100"
+          >
+            @for (option of sortOptions; track option.value) {
+              <button
+                type="button"
+                (click)="selectOption(option.value)"
+                class="flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-left text-sm font-medium transition-colors"
+                [class]="
+                  sortBy() === option.value
+                    ? 'bg-[#f4c98b]/15 text-[#f4c98b]'
+                    : 'text-white/80 hover:bg-white/5 hover:text-white'
+                "
+              >
+                <span>{{ option.label }}</span>
+
+                <!-- Active Checkmark -->
+                @if (sortBy() === option.value) {
+                  <svg class="h-4 w-4 text-[#f4c98b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                  </svg>
+                }
+              </button>
+            }
+          </div>
+        }
+        </div>
+      </div>
     </div>
 
     <div class="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
