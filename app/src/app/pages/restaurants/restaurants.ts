@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { RestaurantService } from '../../core/services/restaurant.service';
 import { PriceLevelService } from '../../core/services/price-level.service';
@@ -8,6 +8,7 @@ import { Restaurant, PriceLevelVoteCount, ReviewRating } from './types';
 
 type SortBy = 'name' | 'newest' | 'priceLow' | 'priceHigh';
 type PriceFilter = 'all' | '1' | '2' | '3' | '4' | 'unknown';
+type PriceLevelBin = 1 | 2 | 3 | 4;
 
 @Component({
   selector: 'app-restaurants-page',
@@ -24,6 +25,7 @@ export class RestaurantsPage {
   protected readonly pageSize = 6;
   protected readonly restaurants = signal<Restaurant[]>([]);
   protected readonly priceVotes = signal<PriceLevelVoteCount[]>([]);
+  protected readonly weightedPriceLevels = signal<Record<string, number>>({});
   protected readonly reviews = signal<ReviewRating[]>([]);
   protected readonly loading = signal(true);
   protected readonly error = signal<string | null>(null);
@@ -41,21 +43,64 @@ export class RestaurantsPage {
     { value: '2', label: '$$' },
     { value: '3', label: '$$$' },
     { value: '4', label: '$$$$' },
-    { value: 'unknown', label: 'Unknown' }
   ] as const;
 
 
+  private priceLevelBin(priceLevel: number | null): PriceLevelBin | null {
+    if (priceLevel === null) {
+      return null;
+    }
+
+    if (priceLevel < 1.5) {
+      return 1;
+    }
+
+    if (priceLevel < 2.5) {
+      return 2;
+    }
+
+    if (priceLevel < 3.5) {
+      return 3;
+    }
+
+    return 4;
+  }
+
   private async loadPriceLevels(): Promise<void> {
-    const visible = this.visibleRestaurants();
 
-    const restaurantIds = visible.map(
-      restaurant => restaurant.id
-    );
+    let restaurantIds = this.restaurants().map(restaurant => restaurant.id);
+  
 
-    const priceVotes =
-      await this.priceLevelService.getPriceSummary(restaurantIds);
+    const priceVotes = await this.priceLevelService.getPriceSummary(restaurantIds);
+
+    if (priceVotes.length === 0) return;
 
     this.priceVotes.set(priceVotes);
+
+    // 1. Group votes by restaurant_id
+    const votesByRestaurant = priceVotes.reduce((acc, vote) => {
+      
+      const rId = vote.restaurant_id; 
+
+      if (!acc[rId]) acc[rId] = [];
+      acc[rId].push(vote);
+      return acc;
+    }, {} as Record<string, PriceLevelVoteCount[]>);
+
+    // 2. Calculate weighted average for each restaurant
+    const updatedWeightedLevels: Record<string, number> = {
+      ...this.weightedPriceLevels()
+    };
+
+    for (const [restaurantId, votes] of Object.entries(votesByRestaurant)) {
+      const totalVotes = votes.reduce((sum, v) => sum + v.vote_count, 0);
+      const weightedSum = votes.reduce((sum, v) => sum + v.price_level * v.vote_count, 0);
+
+      if (totalVotes > 0) {
+        updatedWeightedLevels[restaurantId] = weightedSum / totalVotes;
+      }
+    }
+    this.weightedPriceLevels.set(updatedWeightedLevels);
   }
 
   private async loadReviews(): Promise<void> {
@@ -67,8 +112,6 @@ export class RestaurantsPage {
 
     const reviews = await this.reviewService.getReviewsRates(restaurantIds);
     this.reviews.set(reviews);
-
-    console.log(reviews);
 
   }
 
@@ -82,6 +125,8 @@ export class RestaurantsPage {
 
       await this.loadReviews();
 
+      // console.log(this.weightedPriceLevels());
+
     } catch (error) {
       console.error('Failed to load restaurants:', error);
       this.error.set('Failed to load restaurants.');
@@ -91,12 +136,12 @@ export class RestaurantsPage {
   }
 
   protected readonly filteredRestaurants = computed(() => {
-    const searchTerm = this.searchTerm().trim().toLowerCase();
-    const cityFilter = this.cityFilter().trim().toLowerCase();
+    const searchTerm = this.searchTerm().toLowerCase();
+    const cityFilter = this.cityFilter().toLowerCase();
     const priceFilter = this.priceFilter();
-    const sortBy = this.sortBy();
+    const allWeightedPrices = this.weightedPriceLevels(); // Synchronously read the signal
 
-    const filtered = this.restaurants().filter((restaurant) => {
+    return this.restaurants().filter((restaurant) => {
       const haystack = [
         restaurant.name,
         restaurant.description ?? '',
@@ -109,53 +154,25 @@ export class RestaurantsPage {
         .toLowerCase();
 
       const matchesSearch = searchTerm.length === 0 || haystack.includes(searchTerm);
-      const matchesCity = cityFilter.length === 0 || (restaurant.city ?? '').toLowerCase().includes(cityFilter) || (restaurant.country ?? '').toLowerCase().includes(cityFilter);
-      const matchesPrice =
-        priceFilter === 'all' ||
-        (priceFilter === 'unknown' ? restaurant.price_level === null : String(restaurant.price_level ?? '') === priceFilter);
+      const matchesCity = cityFilter.length === 0 || 
+        (restaurant.city ?? '').toLowerCase().includes(cityFilter) || 
+        (restaurant.country ?? '').toLowerCase().includes(cityFilter);
+
+      let matchesPrice = true;
+      const priceLevelBin = this.priceLevelBin(this.weightedPriceLevels()[restaurant.id] ?? null);
+      
+      if (priceFilter === 'unknown') {
+        matchesPrice = priceLevelBin === null;
+      } else if (priceFilter !== 'all') {
+        matchesPrice = priceLevelBin === parseInt(priceFilter, 10);
+      }
 
       return matchesSearch && matchesCity && matchesPrice;
-    });
-
-    return filtered.sort((left, right) => {
-      if (sortBy === 'newest') {
-        return new Date(right.created_at).getTime() - new Date(left.created_at).getTime();
-      }
-
-      if (sortBy === 'priceLow') {
-        return (left.price_level ?? Number.POSITIVE_INFINITY) - (right.price_level ?? Number.POSITIVE_INFINITY);
-      }
-
-      if (sortBy === 'priceHigh') {
-        return (right.price_level ?? Number.NEGATIVE_INFINITY) - (left.price_level ?? Number.NEGATIVE_INFINITY);
-      }
-
-      return left.name.localeCompare(right.name);
     });
   });
 
   // Price level methods
 
-  protected priceLevelFor(restaurantId: string): number | null {
-    const votes = this.priceVotes()
-      .filter(vote => vote.restaurant_id === restaurantId);
-
-    if (votes.length === 0) {
-      return null;
-    }
-
-    const totalVotes = votes.reduce(
-      (sum, vote) => sum + vote.vote_count,
-      0
-    );
-
-    const weightedSum = votes.reduce(
-      (sum, vote) => sum + vote.price_level * vote.vote_count,
-      0
-    );
-
-    return weightedSum / totalVotes;
-  }
 
   protected fullPriceLabel(priceLevel: number | null): string {
     if (priceLevel === null) {
@@ -272,7 +289,7 @@ export class RestaurantsPage {
 
   protected async goToPage(page: number): Promise<void> {
     this.currentPage.set(page);
-    await this.loadPriceLevels();
+    // await this.loadPriceLevels();
     await this.loadReviews();
   }
 
