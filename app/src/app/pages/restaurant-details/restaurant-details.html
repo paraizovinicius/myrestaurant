@@ -17,7 +17,7 @@
             class="cursor-pointer group inline-flex items-center gap-2 text-sm font-medium text-white/60 transition hover:text-[#f4c98b]"
         >
             <span class="mb-2 text-lg transition-transform duration-200 group-hover:-translate-x-1">←</span>
-            <span>Restaurants</span>
+            <span>Back</span>
         </a>
         <div class="flex flex-col gap-4 border-b border-white/10 pb-6 lg:flex-row lg:items-end lg:justify-between">
         
@@ -50,7 +50,7 @@
 
       <div class="grid gap-6 ">
         <div class="space-y-6">
-          <section class="grid grid-cols-2 gap-4">
+          <section class="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <section class="rounded-[26px] border border-white/10 bg-black/20 p-5 sm:p-6">
               <div class="flex flex-wrap items-center gap-3">
                 <span class="rounded-full border border-white/10 bg-white/10 px-3 py-2 text-sm text-white">{{ restaurant.created_at | date: 'mediumDate' }}</span>
