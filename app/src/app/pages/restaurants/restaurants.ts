@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, computed, DestroyRef, inject, PLATFORM_ID, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { RestaurantService } from '../../core/services/restaurant.service';
 import { PriceLevelService } from '../../core/services/price-level.service';
@@ -34,9 +34,27 @@ export class RestaurantsPage {
   protected readonly cityFilter = signal('');
   protected readonly priceFilter = signal<PriceFilter>('all');
   protected readonly priceDropdownOpen = signal<boolean>(false);
+  protected readonly mobileFiltersOpen = signal<boolean>(false);
   protected readonly sortBy = signal<SortBy>('name');
   protected readonly dropdownOpen = signal<boolean>(false);
   protected readonly currentPage = signal(1);
+
+  private readonly platformId = inject(PLATFORM_ID);
+  protected readonly mobile = signal(false);
+  private readonly destroyRef = inject(DestroyRef);
+
+  constructor() {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    const mediaQuery = window.matchMedia('(max-width: 700px)');
+    const updateMobileState = () => this.mobile.set(mediaQuery.matches);
+
+    updateMobileState();
+    mediaQuery.addEventListener('change', updateMobileState);
+    this.destroyRef.onDestroy(() => mediaQuery.removeEventListener('change', updateMobileState));
+  }
 
   protected readonly priceOptions = [
     { value: 'all', label: 'All prices' },
@@ -311,6 +329,10 @@ export class RestaurantsPage {
     this.priceFilter.set('all');
     this.sortBy.set('name');
     this.currentPage.set(1);
+  }
+
+  protected toggleMobileFilters(): void {
+    this.mobileFiltersOpen.set(!this.mobileFiltersOpen());
   }
 
   protected async goToPage(page: number): Promise<void> {
