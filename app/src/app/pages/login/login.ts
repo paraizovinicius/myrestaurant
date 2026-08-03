@@ -1,5 +1,5 @@
-import { Component, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, DestroyRef, inject, PLATFORM_ID, signal } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
@@ -29,6 +29,23 @@ export class LoginPage {
   protected readonly resetPassword = signal(false);
   protected readonly success = signal<string | null>(null);
   protected showPassword = false;
+
+  private readonly platformId = inject(PLATFORM_ID);
+  protected readonly mobile = signal(false);
+  private readonly destroyRef = inject(DestroyRef);
+  
+  constructor() {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    const mediaQuery = window.matchMedia('(max-width: 700px)');
+    const updateMobileState = () => this.mobile.set(mediaQuery.matches);
+
+    updateMobileState();
+    mediaQuery.addEventListener('change', updateMobileState);
+    this.destroyRef.onDestroy(() => mediaQuery.removeEventListener('change', updateMobileState));
+  }
 
 
   async login(): Promise<void> {

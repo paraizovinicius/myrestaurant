@@ -93,8 +93,6 @@
         </div>
         @if (searchOpenMobile()) {
         <div class="absolute left-3 right-0 top-[calc(100%+0.5rem)] z-50 overflow-hidden bg-white/98 p-4">
-        <!-- <div class="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-50 overflow-hidden rounded-[24px] border border-[#9e3d00]/15 bg-white/98 shadow-[0_24px_80px_rgba(0,0,0,0.18)] backdrop-blur-xl"> -->
-              
           <div class="flex items-center gap-2">
             <input
               #mobileSearchInput
@@ -154,7 +152,7 @@
         <a
           routerLink="/login"
           [queryParams]="{ returnUrl: router.url }"
-          class="ml-auto inline-flex min-h-11 items-center rounded-full bg-[#9e3d00] px-4 py-2 font-medium text-white transition hover:bg-[#7f3100]"
+          class="inline-flex min-h-11 items-center rounded-full bg-[#9e3d00] px-4 py-2 font-medium text-white transition hover:bg-[#7f3100]"
         >
           Log In
         </a>
