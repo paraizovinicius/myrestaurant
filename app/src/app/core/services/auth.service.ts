@@ -31,7 +31,6 @@ export class AuthService {
     this.user.set(session?.user ?? null);
   }
 
-
   async signUp(
     email: string,
     password: string,

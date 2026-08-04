@@ -58,6 +58,21 @@ export class ProfileService {
 
   }
 
+  async getMyUserId(): Promise<string | null> {
+
+    const {
+      data: userData,
+      error: userError
+    } = await supabase.auth.getUser();
+
+    if (userError || !userData.user) {
+      return null;
+    }
+
+    return userData.user?.id ?? null;
+
+  }
+
   async updateProfile(profile: Partial<UserProfile>): Promise<void> {
 
     const {

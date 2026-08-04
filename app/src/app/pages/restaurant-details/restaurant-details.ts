@@ -7,6 +7,7 @@ import { ReviewComments, ReviewLikes } from './types';
 import { PriceLevelService } from '../../core/services/price-level.service';
 import { ReviewService } from '../../core/services/review.service';
 import { ReviewStatsService } from '../../core/services/reviewstats.service';
+import { AuthService } from '../../core/services/auth.service';
 
 type ReviewSortBy = 'likes' | 'mostRecent';
 type ReviewRatingFilter = 'all' | '0-2' | '3-4' | '5-6' | '7-8' | '9-10';
@@ -25,15 +26,21 @@ export class RestaurantDetailsPage {
   private readonly priceLevelService = inject(PriceLevelService);
   private readonly reviewService = inject(ReviewService);
   private readonly reviewStatsService = inject(ReviewStatsService); // fetch likes and comments
+  private readonly authService = inject(AuthService);
+  
   private readonly route = inject(ActivatedRoute);
 
   protected readonly restaurant = signal<Restaurant | null>(null);
   protected readonly priceVotes = signal<PriceLevelVoteCount[]>([]);
+  protected readonly userPriceVote = signal<number | null>(null);
   protected readonly reviews = signal<Reviews[]>([]);
   protected readonly reviewLikes = signal<ReviewLikes[]>([]);
   protected readonly reviewComments = signal<ReviewComments[]>([]);
   protected readonly loading = signal(true);
   protected readonly error = signal<string | null>(null);
+
+  protected readonly user = this.authService.user; // fetches user data
+  protected readonly isLoggedIn = computed(() => !!this.user());
 
   protected readonly reviewPageSize = 5;
   protected readonly reviewSortBy = signal<ReviewSortBy>('mostRecent');
@@ -168,12 +175,30 @@ export class RestaurantDetailsPage {
 
     try {
       const restaurant = await this.restaurantService.getRestaurant(id);
+
+      if (!restaurant) {
+        throw new Error(`Restaurant not found for id: ${id}`);
+      }
+
       this.restaurant.set(restaurant);
 
       const [priceVotes, reviews] = await Promise.all([
         this.priceLevelService.getPriceSummary([restaurant.id]),
         this.reviewService.getReviewsForRestaurant(restaurant.id)
       ]);
+
+      const currentUser = this.authService.user();
+
+      if (currentUser) {
+        const vote = await this.priceLevelService.getUserVote(
+          restaurant.id,
+          currentUser.id
+        );
+
+        this.userPriceVote.set(vote as number | null);
+      } else {
+        this.userPriceVote.set(null);
+      }
 
       const typedReviews = (reviews ?? []) as Reviews[];
       const reviewIds = typedReviews.map((review) => review.id);
@@ -279,6 +304,75 @@ export class RestaurantDetailsPage {
   protected returnPriceVotes() : PriceLevelVoteCount[] {
     return this.priceVotes();
   }
+
+  protected priceVotePercentage(voteCount: number): number {
+    const totalVotes = this.priceVotes().reduce(
+      (sum, vote) => sum + vote.vote_count,
+      0
+    );
+
+    if (totalVotes === 0) {
+      return 0;
+    }
+
+    return (voteCount / totalVotes) * 100;
+  }
+
+  // Voting Price level methods
+  
+  protected async voteForPriceLevel(
+    restaurantId: string,
+    userId: string,
+    priceLevel: number
+  ): Promise<void> {
+
+    try {
+
+      if (priceLevel < 1 || priceLevel > 4) {
+        throw new Error('Price level must be between 1 and 4');
+      }
+
+      await this.priceLevelService.voteForPriceLevel(
+        restaurantId,
+        userId,
+        priceLevel
+      );
+
+      this.userPriceVote.set(priceLevel);
+
+      this.priceVotes.set(
+        await this.priceLevelService.getPriceSummary([restaurantId])
+      );
+
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  protected async deleteVoteForPriceLevel(
+    restaurantId: string,
+    userId: string
+  ): Promise<void> {
+
+    try {
+
+      await this.priceLevelService.deleteVoteForPriceLevel(
+        restaurantId,
+        userId
+      );
+
+      this.userPriceVote.set(null);
+
+      this.priceVotes.set(
+        await this.priceLevelService.getPriceSummary([restaurantId])
+      );
+
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  // Review methods
 
   protected reviewLikesCount(review: Reviews): number {
     return this.reviewLikesFor(review);

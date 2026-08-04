@@ -90,9 +90,74 @@
                 @for (vote of returnPriceVotes(); track vote.price_level) {
                   <div class="mt-2 flex text-white">
                     <span class="w-[10%]">{{ fullPriceLabel(vote.price_level) }}</span>
-                    <span>{{ vote.vote_count }} votes</span>
+                    <span>{{ priceVotePercentage(vote.vote_count) | number:'1.0-0' }}%</span>
                   </div>
                 }
+                <div class="mt-6 border-t border-white/10 pt-5">
+
+                <h4 class="mb-3 text-white font-semibold">
+                  Your vote
+                </h4>
+
+                @if (isLoggedIn()) {
+                  <div class="grid grid-cols-4 gap-2">
+
+                    @for(level of [1,2,3,4]; track level) {
+
+                      <button
+                        type="button"
+                        (click)="voteForPriceLevel(
+                          restaurant.id,
+                          user()!.id,
+                          level
+                        )"
+
+                        class="cursor-pointer rounded-xl border px-4 py-3 transition hover:bg-white/10"
+
+                        [class.bg-[#f4c98b]]="
+                          userPriceVote() === level
+                        "
+
+                        [class.text-[#241915]]="
+                          userPriceVote() === level
+                        "
+
+                        [class.border-white/20]="
+                          userPriceVote() !== level
+                        "
+
+                        [class.text-white]="
+                          userPriceVote() !== level
+                        "
+                      >
+
+                        {{ fullPriceLabel(level) }}
+
+                      </button>
+
+                    }
+
+                  </div>
+
+                  @if(userPriceVote() !== null){
+
+                    <button
+                      class="cursor-pointer mt-4 text-sm text-red-300 hover:underline"
+                      (click)="deleteVoteForPriceLevel(
+                        restaurant.id,
+                        user()!.id
+                      )">
+
+                      Remove my vote
+
+                    </button>
+
+                  }
+                } @else {
+                  <p class="mt-4 text-sm text-white/70">Sign in to vote on the price level.</p>
+                }
+
+              </div>
               </article>
             </section>
           </section>
