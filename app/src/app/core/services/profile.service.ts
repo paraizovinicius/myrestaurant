@@ -107,4 +107,21 @@ export class ProfileService {
 
   }
 
+  async getProfilesByIds(userIds: string[]): Promise<Array<{ id: string; name: string | null; loyalty_tier: string | null }>> {
+    if (userIds.length === 0) {
+      return [];
+    }
+
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, name, loyalty_tier')
+      .in('id', userIds);
+
+    if (error) {
+      throw error;
+    }
+
+    return data ?? [];
+  }
+
 }

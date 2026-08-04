@@ -5,6 +5,7 @@ import { RestaurantService } from '../../core/services/restaurant.service';
 import { Restaurant, PriceLevelVoteCount, Reviews} from '../restaurants/types';
 import { ReviewComments, ReviewLikes } from './types';
 import { PriceLevelService } from '../../core/services/price-level.service';
+import { ProfileService } from '../../core/services/profile.service';
 import { ReviewService } from '../../core/services/review.service';
 import { ReviewStatsService } from '../../core/services/reviewstats.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -24,6 +25,7 @@ type ReviewRatingFilter = 'all' | '0-2' | '3-4' | '5-6' | '7-8' | '9-10';
 export class RestaurantDetailsPage {
   private readonly restaurantService = inject(RestaurantService);
   private readonly priceLevelService = inject(PriceLevelService);
+  private readonly profileService = inject(ProfileService);
   private readonly reviewService = inject(ReviewService);
   private readonly reviewStatsService = inject(ReviewStatsService); // fetch likes and comments
   private readonly authService = inject(AuthService);
@@ -37,6 +39,7 @@ export class RestaurantDetailsPage {
   protected readonly reviews = signal<Reviews[]>([]);
   protected readonly reviewLikes = signal<ReviewLikes[]>([]);
   protected readonly reviewComments = signal<ReviewComments[]>([]);
+  protected readonly reviewAuthorProfiles = signal<Record<string, { name: string; loyaltyTier: string | null }>>({});
   protected readonly loading = signal(true);
   protected readonly error = signal<string | null>(null);
 
@@ -207,16 +210,28 @@ export class RestaurantDetailsPage {
 
       const typedReviews = (reviews ?? []) as Reviews[];
       const reviewIds = typedReviews.map((review) => review.id);
+      const reviewUserIds = Array.from(new Set(typedReviews.map((review) => review.user_id)));
 
-      const [reviewLikes, reviewComments] = await Promise.all([
+      const [reviewLikes, reviewComments, reviewAuthors] = await Promise.all([
         this.reviewStatsService.getReviewLikes(reviewIds),
-        this.reviewStatsService.getReviewComments(reviewIds)
+        this.reviewStatsService.getReviewComments(reviewIds),
+        this.profileService.getProfilesByIds(reviewUserIds)
       ]);
+
+      const authorProfiles: Record<string, { name: string; loyaltyTier: string | null }> = {};
+
+      for (const author of reviewAuthors) {
+        authorProfiles[author.id] = {
+          name: author.name ?? 'Anonymous user',
+          loyaltyTier: author.loyalty_tier ?? null
+        };
+      }
 
       this.priceVotes.set(priceVotes);
       this.reviews.set(typedReviews);
       this.reviewLikes.set((reviewLikes ?? []) as ReviewLikes[]);
       this.reviewComments.set((reviewComments ?? []) as ReviewComments[]);
+      this.reviewAuthorProfiles.set(authorProfiles);
       this.reviewPage.set(1);
 
     } catch (error) {
@@ -227,6 +242,7 @@ export class RestaurantDetailsPage {
       this.reviews.set([]);
       this.reviewLikes.set([]);
       this.reviewComments.set([]);
+      this.reviewAuthorProfiles.set({});
 
     } finally {
       this.loading.set(false);
@@ -387,6 +403,20 @@ export class RestaurantDetailsPage {
     return this.reviewCommentsTotal(review);
   }
 
+  protected reviewAuthorLabel(userId: string): string {
+    const author = this.reviewAuthorProfiles()[userId];
+
+    if (!author) {
+      return 'Anonymous user';
+    }
+
+    if (!author.loyaltyTier) {
+      return author.name;
+    }
+
+    return `${author.name}, ${author.loyaltyTier} user`;
+  }
+
   protected chooseReviewSort(value: string): void {
     this.reviewSortBy.set(value as ReviewSortBy);
     this.reviewSortDropdownOpen.set(false);
@@ -444,6 +474,13 @@ export class RestaurantDetailsPage {
     ).then((newReview) => {
       if (newReview) {
         this.reviews.update((currentReviews) => [newReview, ...currentReviews]);
+        this.reviewAuthorProfiles.update((currentAuthors) => ({
+          ...currentAuthors,
+          [user.id]: {
+            name: user.user_metadata?.['name'] ?? user.email ?? 'Anonymous user',
+            loyaltyTier: null
+          }
+        }));
         this.reviewPage.set(1);
       }
     }).catch((error) => {
