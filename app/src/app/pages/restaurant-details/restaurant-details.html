@@ -65,20 +65,13 @@
                 </article>
                 <article class="rounded-[20px] border border-white/10 bg-white/5 p-4">
                   <span class="block text-xs uppercase tracking-[0.13em] text-[#f4c98b]">Contact</span>
-                  <strong class="mt-2 block text-lg text-white">{{ restaurant.phone || 'No phone listed' }}</strong>
-                  <span class="mt-1 block text-sm text-white/70">{{ restaurant.website_url || 'No website listed' }}</span>
-                </article>
-                <article class="rounded-[20px] border border-white/10 bg-white/5 p-4">
-                  <span class="block text-xs uppercase tracking-[0.13em] text-[#f4c98b]">Website</span>
-                  <strong class="mt-2 block text-lg text-white">{{ restaurant.website_url || 'No website' }}</strong>
-                </article>
-                <article class="rounded-[20px] border border-white/10 bg-white/5 p-4">
-                  <span class="block text-xs uppercase tracking-[0.13em] text-[#f4c98b]">Phone</span>
-                  <strong class="mt-2 block text-lg text-white">{{ restaurant.phone || 'No phone listed' }}</strong>
+                  <span class="mt-2 block text-lg text-white">{{ restaurant.phone || 'No phone listed' }}</span>
+                  <span class="mt-1 block text-lg text-white/70">{{ restaurant.website_url || 'No website listed' }}</span>
                 </article>
               </div>
 
             </section>
+
 
             <section class="rounded-[26px] border border-white/10 bg-black/20 p-5 sm:p-6">
               <h3 class="text-2xl font-semibold text-white">Price Level Reviews</h3>
@@ -154,12 +147,96 @@
 
                   }
                 } @else {
-                  <p class="mt-4 text-sm text-white/70"><a routerLink="/login" class="text-[#f4c98b] hover:underline">Sign in</a> to vote on the price level.</p>
+                  <p class="mt-4 text-sm text-white/70">
+                    <a routerLink="/login" [queryParams]="{ returnUrl: router.url }" class="text-[#f4c98b] hover:underline">Sign in</a> to vote on the price level.</p>
                 }
 
               </div>
               </article>
             </section>
+          </section>
+
+          <section class="rounded-[26px] border border-white/10 bg-black/20 p-5 sm:p-6">
+            <div class="flex items-center justify-between gap-3 border-b border-white/10 pb-5">
+              <div>
+                <h3 class="text-2xl font-semibold text-white">Write a review</h3>
+                <p class="mt-1 text-sm text-white/70">Share your experience at this restaurant.</p>
+              </div>
+            </div>
+
+            @if (isLoggedIn()) {
+              <form class="mt-5 space-y-4" (submit)="$event.preventDefault(); submitReview()">
+                <div class="grid gap-4 sm:grid-cols-2">
+                  <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                      <span class="text-sm font-medium text-white/80">Rating</span>
+                      <span class="text-sm font-semibold text-[#f4c98b]">{{ reviewDraftRating() || 0 }} / 10</span>
+                    </div>
+                    
+                    <input
+                      type="range"
+                      min="0"
+                      max="10"
+                      step="0.1"
+                      class="w-full h-2 rounded-lg bg-white/10 appearance-none cursor-pointer accent-[#f4c98b]"
+                      [value]="reviewDraftRating()"
+                      (input)="reviewDraftRating.set($any($event.target).valueAsNumber ?? 0)"
+                    />
+                  </div>
+
+                  <label class="space-y-2">
+                    <span class="block text-sm font-medium text-white/80">Visited on</span>
+                    <input
+                      type="date"
+                      class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition focus:border-[#f4c98b]/50 focus:bg-white/10"
+                      [value]="reviewDraftVisitedAt()"
+                      (input)="reviewDraftVisitedAt.set(($any($event.target).value))"
+                    />
+                  </label>
+                </div>
+
+                <label class="space-y-2 block">
+                  <span class="block text-sm font-medium text-white/80">Title</span>
+                  <input
+                    type="text"
+                    class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition focus:border-[#f4c98b]/50 focus:bg-white/10"
+                    placeholder="What stood out?"
+                    [value]="reviewDraftTitle()"
+                    (input)="reviewDraftTitle.set(($any($event.target).value))"
+                  />
+                </label>
+
+                <label class="space-y-2 block">
+                  <span class="block text-sm font-medium text-white/80">Review</span>
+                  <textarea
+                    rows="5"
+                    class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition focus:border-[#f4c98b]/50 focus:bg-white/10"
+                    placeholder="Tell people what you thought about the food, service, and atmosphere."
+                    [value]="reviewDraftBody()"
+                    (input)="reviewDraftBody.set(($any($event.target).value))"
+                  ></textarea>
+                </label>
+
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                  <p class="text-sm text-white/60">Logged in as {{ user()?.email || 'your account' }}</p>
+                  <button
+                    type="submit"
+                    class="inline-flex min-h-11 items-center rounded-full bg-[#f4c98b] px-5 py-2 font-semibold text-[#241915] transition hover:bg-[#ffd99b]"
+                  >
+                    Publish review
+                  </button>
+                </div>
+              </form>
+            } @else {
+              <p class="mt-5 text-sm text-white/70">]
+                <a 
+                  routerLink="/login" 
+                  [queryParams]="{ returnUrl: router.url }" 
+                  class="text-[#f4c98b] hover:underline">
+                  Sign in
+                </a>
+                 to write a review.</p>
+            }
           </section>
 
           <section class="rounded-[26px] border border-white/10 bg-black/20 p-5 sm:p-6">

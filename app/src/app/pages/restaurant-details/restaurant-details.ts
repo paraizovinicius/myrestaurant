@@ -1,6 +1,6 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, Inject, PLATFORM_ID, computed, signal, inject } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { RestaurantService } from '../../core/services/restaurant.service';
 import { Restaurant, PriceLevelVoteCount, Reviews} from '../restaurants/types';
 import { ReviewComments, ReviewLikes } from './types';
@@ -27,6 +27,7 @@ export class RestaurantDetailsPage {
   private readonly reviewService = inject(ReviewService);
   private readonly reviewStatsService = inject(ReviewStatsService); // fetch likes and comments
   private readonly authService = inject(AuthService);
+  readonly router = inject(Router);
   
   private readonly route = inject(ActivatedRoute);
 
@@ -48,6 +49,10 @@ export class RestaurantDetailsPage {
   protected readonly reviewSortDropdownOpen = signal(false);
   protected readonly reviewRatingDropdownOpen = signal(false);
   protected readonly reviewPage = signal(1);
+  protected readonly reviewDraftRating = signal(7);
+  protected readonly reviewDraftTitle = signal('');
+  protected readonly reviewDraftBody = signal('');
+  protected readonly reviewDraftVisitedAt = signal('');
 
   protected readonly reviewSortOptions = [
     { value: 'likes', label: 'Likes' },
@@ -414,6 +419,105 @@ export class RestaurantDetailsPage {
 
   protected trackByReview(index: number, review: Reviews): string {
     return review.id ?? `${review.user_id}-${review.created_at}-${index}`;
+  }
+
+  // Review creation methods
+
+  protected createReview(rating: number, title: string | null, body: string | null, visitedAt: Date | null): void {
+    const restaurant = this.restaurant();
+    const user = this.user();
+
+    if (!restaurant || !user) {
+      console.error('Cannot create review: restaurant or user is missing.');
+      return;
+    }
+
+    const visitedAtString = visitedAt ? visitedAt.toISOString() : new Date().toISOString();
+
+    this.reviewService.createReview(
+      restaurant.id,
+      user.id,
+      rating,
+      title,
+      body,
+      visitedAtString
+    ).then((newReview) => {
+      if (newReview) {
+        this.reviews.update((currentReviews) => [newReview, ...currentReviews]);
+        this.reviewPage.set(1);
+      }
+    }).catch((error) => {
+      console.error('Failed to create review:', error);
+    });
+  }
+
+  protected updateReview(reviewId: string, rating: number, title: string | null, body: string | null, visitedAt: Date | null): void {
+    const restaurant = this.restaurant();
+    const user = this.user();
+
+    if (!restaurant || !user) {
+      console.error('Cannot update review: restaurant or user is missing.');
+      return;
+    }
+
+    const visitedAtString = visitedAt ? visitedAt.toISOString() : new Date().toISOString();
+
+    this.reviewService.updateReview(
+      reviewId,
+      rating,
+      title,
+      body,
+      visitedAtString
+    ).then((updatedReview) => {
+      if (updatedReview) {
+        this.reviews.update((currentReviews) => {
+          return currentReviews.map((review) => review.id === updatedReview.id ? updatedReview : review);
+        });
+      }
+    }).catch((error) => {
+      console.error('Failed to update review:', error);
+    });
+  }
+
+  protected deleteReview(reviewId: string): void {
+    this.reviewService.deleteReview(reviewId)
+      .then(() => {
+        this.reviews.update((currentReviews) => currentReviews.filter((review) => review.id !== reviewId));
+      })
+      .catch((error) => {
+        console.error('Failed to delete review:', error);
+      });
+  }
+
+  protected submitReview(): void {
+    const rating = this.reviewDraftRating();
+    const title = this.reviewDraftTitle().trim();
+    const body = this.reviewDraftBody().trim();
+    const visitedAtInput = this.reviewDraftVisitedAt().trim();
+
+    const visitedAt = visitedAtInput ? new Date(visitedAtInput) : null;
+
+    if (Number.isNaN(rating) || rating < 0 || rating > 10) {
+      console.error('Review rating must be between 0 and 10.');
+      return;
+    }
+
+    if (visitedAt && Number.isNaN(visitedAt.getTime())) {
+      console.error('Visited date is invalid.');
+      return;
+    }
+
+    this.createReview(
+      rating,
+      title || null,
+      body || null,
+      visitedAt
+    );
+
+    this.reviewDraftRating.set(7);
+    this.reviewDraftTitle.set('');
+    this.reviewDraftBody.set('');
+    this.reviewDraftVisitedAt.set('');
   }
 
   // Constructor
