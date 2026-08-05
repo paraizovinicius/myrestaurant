@@ -42,7 +42,7 @@
                         {{ review.title || 'Untitled review' }}
                     </h1>
                 </div>
-                <span class=" text-sm text-white/70">by {{ profileName(review.user_id) }}, {{ profileLoyaltyTier(review.user_id) }} user</span>
+                <span class=" text-sm text-white/70">by {{ profileName(review.user_id) }}{{ profileLoyaltyTier(review.user_id) !== null ? ', ' + profileLoyaltyTier(review.user_id) + ' user' : '' }}</span>
 
                 <p class="mt-3 text-base leading-7 text-white/85">{{ review.body || 'No review text available.' }}</p>
 
