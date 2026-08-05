@@ -22,7 +22,6 @@ export class AuthService {
     });
   }
 
-
   async loadUser() {
     const {
       data: { session }
