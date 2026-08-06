@@ -192,7 +192,7 @@
 
                     <blockquote class="text-[15px] leading-7 text-white/80">
                         @if (review.body) {
-                            "{{ review.body }}"
+                            "{{ review.body | slice:0:150 }}{{ review.body.length > 150 ? '...' : '' }}"
                         }
                     </blockquote>
 

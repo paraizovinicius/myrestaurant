@@ -9,7 +9,7 @@ import {
   signal,
   ViewChild
 } from '@angular/core';
-import { isPlatformBrowser, DatePipe } from '@angular/common';
+import { isPlatformBrowser, DatePipe, SlicePipe } from '@angular/common';
 import { StatisticsService } from '../../core/services/statistics.service';
 import { CommunityStatistics, PopularReview, TrendingRestaurant } from './types';
 import { PopularReviewsService } from '../../core/services/popular-reviews.service';
@@ -19,7 +19,7 @@ import { RouterLink } from '@angular/router';
 @Component({
   selector: 'app-home-page',
   standalone: true,
-  imports: [RouterLink, DatePipe],
+  imports: [RouterLink, DatePipe, SlicePipe],
   templateUrl: './home.html',
   styleUrl: './home.css'
 })
