@@ -81,9 +81,9 @@ export class ProfilePage {
       return;
     }
 
-    // 300 KB limit
-    if (file.size > 300 * 1024) {
-      this.setTimedMessage('error', 'File size exceeds 300KB limit.');
+    // 700 KB limit
+    if (file.size > 700 * 1024) {
+      this.setTimedMessage('error', 'File size exceeds 700KB limit.');
       return;
     }
 
