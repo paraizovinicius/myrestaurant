@@ -288,10 +288,51 @@
             <p class="text-base text-white">{{ resultLabel() }}</p>
           </div>
 
-          <div class="flex items-center gap-2 text-sm">
-            <button type="button" class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition disabled:cursor-not-allowed disabled:opacity-40" [disabled]="currentPage() === 1" (click)="goToPage(currentPage() - 1)">Previous</button>
-            <span class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-white/80">Page {{ currentPage() }} of {{ totalPages() }}</span>
-            <button type="button" class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition disabled:cursor-not-allowed disabled:opacity-40" [disabled]="currentPage() === totalPages()" (click)="goToPage(currentPage() + 1)">Next</button>
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <!-- Result label -->
+            <span class="text-sm text-white/60">
+              {{ resultLabel() }}
+            </span>
+
+            <!-- Pagination controls -->
+            <div class="flex items-center gap-2 text-sm">
+              <button 
+                type="button" 
+                class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition disabled:cursor-not-allowed disabled:opacity-40" 
+                [disabled]="currentPage() === 1" 
+                (click)="goToPage(currentPage() - 1)">
+                Previous
+              </button>
+
+              <div class="flex items-center gap-1">
+                @for (page of visiblePages(); track $index) {
+                  @if (page === '...') {
+                    <span class="px-2 py-2 text-white/40 select-none">...</span>
+                  } @else {
+                    <button 
+                      type="button" 
+                      class="h-9 w-9 rounded-full border text-center transition"
+                      [class.border-white]="currentPage() === page"
+                      [class.bg-white]="currentPage() === page"
+                      [class.text-black]="currentPage() === page"
+                      [class.border-white/10]="currentPage() !== page"
+                      [class.bg-white/5]="currentPage() !== page"
+                      [class.text-white/80]="currentPage() !== page"
+                      (click)="goToPage(page)">
+                      {{ page }}
+                    </button>
+                  }
+                }
+              </div>
+
+              <button 
+                type="button" 
+                class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition disabled:cursor-not-allowed disabled:opacity-40" 
+                [disabled]="currentPage() === totalPages()" 
+                (click)="goToPage(currentPage() + 1)">
+                Next
+              </button>
+            </div>
           </div>
         </div>
         }@else{
@@ -301,9 +342,42 @@
             </div>
 
             <div class="flex items-center gap-2 text-sm">
-              <button type="button" class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition disabled:cursor-not-allowed disabled:opacity-40" [disabled]="currentPage() === 1" (click)="goToPage(currentPage() - 1)">Previous</button>
-              <span class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-white/80">Page {{ currentPage() }} of {{ totalPages() }}</span>
-              <button type="button" class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition disabled:cursor-not-allowed disabled:opacity-40" [disabled]="currentPage() === totalPages()" (click)="goToPage(currentPage() + 1)">Next</button>
+              <button 
+                type="button" 
+                class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition disabled:cursor-not-allowed disabled:opacity-40" 
+                [disabled]="currentPage() === 1" 
+                (click)="goToPage(currentPage() - 1)">
+                Previous
+              </button>
+
+              <div class="flex items-center gap-1">
+                @for (page of visiblePages(); track $index) {
+                  @if (page === '...') {
+                    <span class="px-2 py-2 text-white/40 select-none">...</span>
+                  } @else {
+                    <button 
+                      type="button" 
+                      class="h-9 w-9 rounded-full border text-center transition"
+                      [class.border-white]="currentPage() === page"
+                      [class.bg-white]="currentPage() === page"
+                      [class.text-black]="currentPage() === page"
+                      [class.border-white/10]="currentPage() !== page"
+                      [class.bg-white/5]="currentPage() !== page"
+                      [class.text-white/80]="currentPage() !== page"
+                      (click)="goToPage(page)">
+                      {{ page }}
+                    </button>
+                  }
+                }
+              </div>
+
+              <button 
+                type="button" 
+                class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition disabled:cursor-not-allowed disabled:opacity-40" 
+                [disabled]="currentPage() === totalPages()" 
+                (click)="goToPage(currentPage() + 1)">
+                Next
+              </button>
             </div>
           </div>
         }

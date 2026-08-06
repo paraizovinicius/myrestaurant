@@ -335,11 +335,45 @@ export class RestaurantsPage {
     this.mobileFiltersOpen.set(!this.mobileFiltersOpen());
   }
 
-  protected async goToPage(page: number): Promise<void> {
+
+  protected async goToPage(page: number | string): Promise<void> {
+  if (typeof page === 'number' && page >= 1 && page <= this.totalPages()) {
     this.currentPage.set(page);
-    // await this.loadPriceLevels();
-    await this.loadReviews();
   }
+  await this.loadReviews();
+}
+
+  protected readonly visiblePages = computed(() => {
+    const total = this.totalPages();
+    const current = this.currentPage();
+    const pages = this.pageNumbers();
+
+    // Show all pages without truncation if 7 or fewer
+    if (total <= 7) {
+      return pages;
+    }
+
+    const result: (number | string)[] = [1];
+
+    if (current > 3) {
+      result.push('...');
+    }
+
+    const start = Math.max(2, current - 1);
+    const end = Math.min(total - 1, current + 1);
+
+    for (let i = start; i <= end; i++) {
+      result.push(i);
+    }
+
+    if (current < total - 2) {
+      result.push('...');
+    }
+
+    result.push(total);
+
+    return result;
+  });
 
   protected trackByRestaurant(index: number, restaurant: Restaurant): string {
     return restaurant.id;
