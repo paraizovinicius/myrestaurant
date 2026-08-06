@@ -21,8 +21,7 @@ export class PopularReviewsService {
 
                 profiles!reviews_user_id_fkey(
                     id,
-                    name,
-                    avatar_url
+                    name
                 ),
 
                 restaurants!reviews_restaurant_id_fkey(

@@ -152,13 +152,6 @@ export class ProfileService {
     const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
     const avatarUrl = `${data.publicUrl}?t=${Date.now()}`;
 
-    // 3. Update the profile record in your database
-    const { error: updateError } = await supabase
-      .from('profiles')
-      .update({ avatar_url: avatarUrl })
-      .eq('id', userId);
-
-    if (updateError) throw updateError;
   }
 
 }
