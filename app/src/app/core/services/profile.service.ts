@@ -23,7 +23,7 @@ export class ProfileService {
 
     const userId = userData.user.id;
 
-    const avatarUrl = this.getAvatarUrlByUserId(userId);
+    const avatarUrl = this.getAvatarUrlByUserId(userId, Date.now());
 
     const {
       data,
@@ -144,7 +144,7 @@ export class ProfileService {
     // 1. Upload to storage
     const { error: uploadError } = await supabase.storage
       .from('avatars')
-      .upload(filePath, avatarFile, { upsert: true });
+      .upload(filePath, avatarFile, { upsert: true, cacheControl: '0' });
 
     if (uploadError) throw uploadError;
 

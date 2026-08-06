@@ -60,7 +60,7 @@ export class PopularReviewsService {
 
             // 4. Avatar Url's
             const avatars = profileObj?.id 
-                ? this.profileService.getAvatarUrlByUserId(profileObj.id) 
+                ? this.profileService.getAvatarUrlByUserId(profileObj.id, Date.now()) 
                 : null;
 
             return {

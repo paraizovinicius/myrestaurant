@@ -49,7 +49,7 @@ export class HomePage implements AfterViewInit, OnDestroy {
       // 1. Fetch all home page data concurrently instead of waterfalling
       const [stats, reviews, restaurants] = await Promise.all([
         this.statisticsService.getCommunityStatistics(),
-        this.popularReviewsService.getPopularReviews(5),
+        this.popularReviewsService.getPopularReviews(5), // this one fetches avatar photos as well
         this.popularRestaurantsService.getPopularRestaurants(5)
       ]);
 
