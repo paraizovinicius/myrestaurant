@@ -16,6 +16,7 @@ export interface UserProfile {
 
   fullName: string;
   email: string | undefined;
+  avatarUrl: string | null;
   phone: string | null;
 
   city: string | null;

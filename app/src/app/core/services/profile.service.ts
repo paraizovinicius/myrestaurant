@@ -23,6 +23,7 @@ export class ProfileService {
 
     const userId = userData.user.id;
 
+    const avatarUrl = this.getAvatarUrlByUserId(userId);
 
     const {
       data,
@@ -44,6 +45,7 @@ export class ProfileService {
 
       fullName: data.name,
       email: userData.user.email,
+      avatarUrl: avatarUrl,
       phone: data.phone,
 
       city: data.city,
@@ -122,6 +124,41 @@ export class ProfileService {
     }
 
     return data ?? [];
+  }
+
+  getAvatarUrlByUserId(userId: string, timestamp?: number): string {
+    // Always use a fixed file name or extension (e.g., avatar.png or avatar)
+    const filePath = `${userId}/avatar.png`; 
+    
+    const { data } = supabase.storage
+      .from('avatars')
+      .getPublicUrl(filePath);
+
+    return timestamp ? `${data.publicUrl}?t=${timestamp}` : data.publicUrl;
+  }
+
+  async updateProfileAvatar(userId: string, avatarFile: File): Promise<void> {
+    const fileExt = avatarFile.name.split('.').pop();
+    const filePath = `${userId}/avatar.${fileExt}`;
+
+    // 1. Upload to storage
+    const { error: uploadError } = await supabase.storage
+      .from('avatars')
+      .upload(filePath, avatarFile, { upsert: true });
+
+    if (uploadError) throw uploadError;
+
+    // 2. Get public URL with cache-busting query parameter
+    const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
+    const avatarUrl = `${data.publicUrl}?t=${Date.now()}`;
+
+    // 3. Update the profile record in your database
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update({ avatar_url: avatarUrl })
+      .eq('id', userId);
+
+    if (updateError) throw updateError;
   }
 
 }

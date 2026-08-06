@@ -19,6 +19,8 @@ export class ProfilePage {
 
   private readonly authService = inject(AuthService);
   private readonly profileService = inject(ProfileService);
+  private errorClearTimeout: ReturnType<typeof setTimeout> | null = null;
+  private successClearTimeout: ReturnType<typeof setTimeout> | null = null;
   
   protected readonly user = this.authService.user;
   protected readonly profile = signal<UserProfile | null>(null);
@@ -38,21 +40,15 @@ export class ProfilePage {
   async ngOnInit(): Promise<void> {
     try {
 
-      const profile =
-        await this.profileService.getMyProfile();
-
+      const profile = await this.profileService.getMyProfile();
+      this.loading.set(false);
       this.profile.set(profile);
-
     } catch(error) {
 
       console.error(
         'Failed loading profile:',
         error
       );
-
-    } finally {
-
-      this.loading.set(false);
 
     }
 
@@ -71,6 +67,40 @@ export class ProfilePage {
     return `Welcome, ${firstName}.`;
 
   });
+
+  async onFileSelected(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+
+    const userId = await this.profileService.getMyUserId();
+
+    if (!userId) {
+      this.setTimedMessage('error', 'You must be signed in to update your avatar.');
+      return;
+    }
+
+    // 300 KB limit
+    if (file.size > 300 * 1024) {
+      this.setTimedMessage('error', 'File size exceeds 300KB limit.');
+      return;
+    }
+
+    try {
+      await this.profileService.updateProfileAvatar(userId, file);
+
+      const updatedProfile = await this.profileService.getMyProfile();
+
+      this.profile.set(updatedProfile);
+
+      this.error.set(null);
+      this.setTimedMessage('success', 'Avatar updated.');
+    } catch (error) {
+      console.error('Failed to upload avatar', error);
+      this.setTimedMessage('error', 'Failed to upload avatar.');
+    }
+  }
 
   startEditingAddress() {
     const profile = this.profile();
@@ -139,20 +169,53 @@ export class ProfilePage {
 
         await this.authService.resetPassword(this.profile()?.email ?? '');
 
-        this.success.set(
-        'If an account exists for this email, a password reset link has been sent.'
+        this.setTimedMessage(
+          'success',
+          'If an account exists for this email, a password reset link has been sent.'
         );
 
     } catch (error: any) {
 
-        this.error.set(
-        error.message ?? 'Unable to send reset email.'
+        this.setTimedMessage(
+          'error',
+          error.message ?? 'Unable to send reset email.'
         );
 
     } finally {
 
         this.loading.set(false);
 
+    }
+  }
+
+  private setTimedMessage(
+    type: 'error' | 'success',
+    message: string
+  ): void {
+    const signal = type === 'error' ? this.error : this.success;
+    const timeoutRef = type === 'error' ? 'errorClearTimeout' : 'successClearTimeout';
+
+    const currentTimeout = this[timeoutRef];
+
+    if (currentTimeout) {
+      clearTimeout(currentTimeout);
+    }
+
+    signal.set(message);
+
+    this[timeoutRef] = setTimeout(() => {
+      signal.set(null);
+      this[timeoutRef] = null;
+    }, 3000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.errorClearTimeout) {
+      clearTimeout(this.errorClearTimeout);
+    }
+
+    if (this.successClearTimeout) {
+      clearTimeout(this.successClearTimeout);
     }
   }
 

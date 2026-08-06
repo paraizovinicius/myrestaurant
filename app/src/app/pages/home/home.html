@@ -1,5 +1,6 @@
 <main class="mx-auto w-full max-w-[90%] space-y-6 backdrop-blur-lg">
-    <section class="space-y-6 rounded-[10px] mt-10 border border-white/10 bg-white/5 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.35)] backdrop-blur-lg sm:p-8">
+    
+    <!-- <section class="space-y-6 rounded-[10px] mt-10 border border-white/10 bg-white/5 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.35)] backdrop-blur-lg sm:p-8">
         <div 
         #carousel
         class="grid grid-flow-col auto-cols-[100%] gap-6 overflow-x-auto pb-2 snap-x snap-mandatory [scrollbar-width:none]">
@@ -72,11 +73,11 @@
                 </div>
             </article>
         </div>
-    </section>
+    </section> -->
 
     <section
         id="menu"
-        class="rounded-[24px] border border-white/10 bg-[rgba(255,255,255,0.04)] p-6 sm:p-8">
+        class="mt-10 rounded-[24px] border border-white/10 bg-[rgba(255,255,255,0.04)] p-6 sm:p-8">
 
         <div class="mb-6 flex items-center justify-between">
             <h2 class="flex items-center gap-2 text-2xl font-bold text-white">
@@ -148,26 +149,33 @@
                 <article
                     [routerLink]="['/review', review.id]"
                     class="cursor-pointer snap-center lg:min-w-[50%] min-w-full rounded-3xl border border-white/10 bg-black/20 p-6 transition duration-300 hover:border-orange-400/40 hover:bg-black/30">
-                    <div class="mb-5 flex items-center gap-4">
-
-                        <img
-                            [src]="review.avatar || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'"
-                            [alt]="review.reviewer"
-                            class="h-14 w-14 rounded-full object-cover ring-2 ring-white/10">
-                        <div>
-
-                            <h3 class="font-semibold text-white">
-                                {{ review.reviewer }}
-                            </h3>
-
-                            <!-- Later you can replace this with real reputation -->
-                            <p class="text-sm text-white/60">
-                                Community member
-                            </p>
-
+                    @if (loading()) {
+                    <!-- Skeleton Loader -->
+                    <div class="mb-5 flex items-center gap-4 animate-pulse">
+                        <div class="h-14 w-14 rounded-full bg-white/10"></div>
+                        <div class="space-y-2">
+                        <div class="h-4 w-32 rounded bg-white/10"></div>
+                        <div class="h-3 w-24 rounded bg-white/10"></div>
                         </div>
-
                     </div>
+                    } @else {
+                    <!-- Loaded State -->
+                    <div class="mb-5 flex items-center gap-4">
+                        <img
+                        [src]="review.avatar || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'"
+                        [alt]="review.reviewer"
+                        class="h-14 w-14 rounded-full object-cover ring-2 ring-white/10"
+                        (error)="review.avatar = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'">
+                        <div>
+                        <h3 class="font-semibold text-white">
+                            {{ review.reviewer }}
+                        </h3>
+                        <p class="text-sm text-white/60">
+                            Community member
+                        </p>
+                        </div>
+                    </div>
+                    }
 
                     <div class="mb-4 flex items-center gap-2">
 
@@ -219,7 +227,7 @@
     <!-- Community Statistics Section -->
     <section
         id="community-stats"
-        class="rounded-[24px] border border-white/10 bg-[rgba(255,255,255,0.04)] p-6 sm:p-8">
+        class="mb-10 rounded-[24px] border border-white/10 bg-[rgba(255,255,255,0.04)] p-6 sm:p-8">
 
         <div class="mb-6">
             <h2 class="text-2xl font-bold text-white">
@@ -255,7 +263,8 @@
         </div>
     </section>
 
-    <section
+    <!-- Browse by Cuisine Section -->
+    <!-- <section
         id="browse-cuisine"
         class="rounded-[24px] border border-white/10 bg-[rgba(255,255,255,0.04)] p-6 sm:p-8 mb-8">
 
@@ -270,7 +279,7 @@
 
         <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5">
 
-            <!-- Italian -->
+
             <a href="#"
                 class="group relative h-72 overflow-hidden rounded-3xl border border-white/10">
 
@@ -292,7 +301,6 @@
 
             </a>
 
-            <!-- Sushi -->
             <a href="#"
                 class="group relative h-72 overflow-hidden rounded-3xl border border-white/10">
 
@@ -314,7 +322,6 @@
 
             </a>
 
-            <!-- Vegan -->
             <a href="#"
                 class="group relative h-72 overflow-hidden rounded-3xl border border-white/10">
 
@@ -336,7 +343,6 @@
 
             </a>
 
-            <!-- Fine Dining -->
             <a href="#"
                 class="group relative h-72 overflow-hidden rounded-3xl border border-white/10">
 
@@ -358,7 +364,6 @@
 
             </a>
 
-            <!-- Cheap Eats -->
             <a href="#"
                 class="group relative h-72 overflow-hidden rounded-3xl border border-white/10">
 
@@ -381,5 +386,5 @@
             </a>
 
         </div>
-    </section>
+    </section> -->
 </main>

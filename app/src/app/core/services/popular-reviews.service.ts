@@ -1,11 +1,14 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { supabase } from '../supabase/supabase.client';
+import { ProfileService } from './profile.service';
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class PopularReviewsService {
+    private readonly profileService = inject(ProfileService);
+    
     async getPopularReviews(limit: number = 10) {
         const { data, error } = await supabase
             .from('reviews')
@@ -40,6 +43,7 @@ export class PopularReviewsService {
             throw error;
         }
 
+        
 
         const reviews = data.map(review => {
             // 1. Resolve restaurant object whether it's an array or single object
@@ -54,10 +58,15 @@ export class PopularReviewsService {
             const likesCount = review.review_likes?.length ?? 0;
             const commentsCount = review.review_comments?.length ?? 0;
 
+            // 4. Avatar Url's
+            const avatars = profileObj?.id 
+                ? this.profileService.getAvatarUrlByUserId(profileObj.id) 
+                : null;
+
             return {
                 id: review.id,
                 reviewer: profileObj?.name ?? 'Anonymous',
-                avatar: profileObj?.avatar_url ?? null,
+                avatar: avatars,
                 restaurant: restaurantObj?.name ?? 'Anonymous',
                 title: review.title,
                 body: review.body,
