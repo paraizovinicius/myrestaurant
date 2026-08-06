@@ -2,14 +2,19 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
-  // inject,
+  inject,
   Inject,
   OnDestroy,
   PLATFORM_ID,
+  signal,
   ViewChild
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-// import { SupabaseTestService } from '../../core/supabase/supabase-test.service';
+import { ProfileService } from '../../core/services/profile.service';
+import { ReviewLikeService } from '../../core/services/review-like.service';
+import { ReviewCommentService } from '../../core/services/review-comment.service';
+import { StatisticsService } from '../../core/services/statistics.service';
+import { CommunityStatistics } from './types';
 
 @Component({
   selector: 'app-home-page',
@@ -20,22 +25,26 @@ import { isPlatformBrowser } from '@angular/common';
 export class HomePage implements AfterViewInit, OnDestroy {
   @ViewChild('carousel', { static: true }) // #carousel is needed in the <div>
   private readonly carouselRef!: ElementRef<HTMLDivElement>;
-
-  // private supabaseTest = inject(SupabaseTestService);
-
-  // async ngOnInit() {
-  //   const restaurants = await this.supabaseTest.getRestaurants();
-
-  //   console.log('Restaurants:', restaurants);
-  // }
-
   private readonly slideCount = 3;
   private activeSlide = 0;
   private intervalId?: number;
 
+  private readonly profileService = inject(ProfileService);
+  private readonly reviewLikeService = inject(ReviewLikeService);
+  private readonly reviewCommentService = inject(ReviewCommentService);
+  private readonly statisticsService = inject(StatisticsService);
+
+  protected readonly stats = signal<CommunityStatistics | null>(null);
+
   constructor(
     @Inject(PLATFORM_ID) private platformId: object
   ) {}
+
+  async ngOnInit() {
+    this.stats.set(
+      await this.statisticsService.getCommunityStatistics()
+    );
+  }
 
   ngAfterViewInit(): void {
     if (!isPlatformBrowser(this.platformId)) {
