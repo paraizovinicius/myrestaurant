@@ -14,8 +14,9 @@ import { ProfileService } from '../../core/services/profile.service';
 import { ReviewLikeService } from '../../core/services/review-like.service';
 import { ReviewCommentService } from '../../core/services/review-comment.service';
 import { StatisticsService } from '../../core/services/statistics.service';
-import { CommunityStatistics, PopularReview } from './types';
+import { CommunityStatistics, PopularReview, TrendingRestaurant } from './types';
 import { PopularReviewsService } from '../../core/services/popular-reviews.service';
+import { PopularRestaurantsService } from '../../core/services/popular-restaurants.service';
 import { RouterLink } from '@angular/router';
 
 @Component({
@@ -31,15 +32,18 @@ export class HomePage implements AfterViewInit, OnDestroy {
   private readonly slideCount = 3;
   private activeSlide = 0;
   private intervalId?: number;
+  
 
   private readonly profileService = inject(ProfileService);
   private readonly reviewLikeService = inject(ReviewLikeService);
   private readonly reviewCommentService = inject(ReviewCommentService);
   private readonly statisticsService = inject(StatisticsService);
   private readonly popularReviewsService = inject(PopularReviewsService);
+  private readonly popularRestaurantsService = inject(PopularRestaurantsService);
 
   protected readonly stats = signal<CommunityStatistics | null>(null);
   protected readonly popularReviews = signal<PopularReview[]>([]);
+  protected readonly popularRestaurants = signal<TrendingRestaurant[]>([]);
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: object
@@ -52,6 +56,10 @@ export class HomePage implements AfterViewInit, OnDestroy {
 
     this.popularReviews.set(
       await this.popularReviewsService.getPopularReviews(5)
+    );
+
+    this.popularRestaurants.set(
+      await this.popularRestaurantsService.getPopularRestaurants(5)
     );
   }
 

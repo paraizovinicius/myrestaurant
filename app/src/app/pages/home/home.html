@@ -88,178 +88,43 @@
             </span>
         </div>
 
-        <div class="grid gap-6 md:grid-cols-3">
+        <div #carousel class="grid grid-flow-col auto-cols-[calc((100%-1.5rem)/2)] lg:auto-cols-[calc((100%-1.5rem)/3)] gap-6 p-5 overflow-x-auto overflow-x-auto scroll-smooth no-scrollbar">
+            @for (restaurant of popularRestaurants(); track restaurant.id) {
+                <article class="group overflow-hidden rounded-3xl border border-white/10 bg-black/20 transition duration-300 hover:-translate-y-1 hover:border-orange-400/40 hover:shadow-2xl">
+                    <!-- 1. Add flex flex-col to parent -->
+                    <div class="p-4 h-full flex flex-col">
 
-            <!-- Card -->
-            <article
-                class="group overflow-hidden rounded-3xl border border-white/10 bg-black/20 transition duration-300 hover:-translate-y-1 hover:border-orange-400/40 hover:shadow-2xl">
-
-                <div class="relative h-52 overflow-hidden">
-
-                    <img
-                        src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=900"
-                        alt="Mizumi Sushi"
-                        class="h-full w-full object-cover transition duration-500 group-hover:scale-110">
-
-                    <div
-                        class="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent">
-                    </div>
-
-                    <!-- Rating -->
-                    <div
-                        class="absolute right-4 top-4 rounded-full bg-emerald-500 px-3 py-1 text-sm font-bold text-white shadow-lg">
-                        ⭐ 9.6
-                    </div>
-
-                    <!-- Name -->
-                    <div class="absolute bottom-4 left-4">
-                        <h3 class="text-xl font-bold text-white">
-                            Mizumi Sushi
+                        <h3 class="text-xl font-semibold text-white">
+                            {{ restaurant.name }}
                         </h3>
 
-                        <p class="text-sm text-white/80">
-                            Fresh omakase & premium nigiri
+                        <p class="mt-2 mb-6 text-sm text-white/60">
+                            {{ restaurant.city }}
                         </p>
-                    </div>
 
-                </div>
+                        <!-- 2. Change mt-4 to mt-auto to push content to the bottom -->
+                        <div class="mt-auto mb-4 flex items-center gap-2">
+                            <span class="rounded-full bg-emerald-500/20 px-1 lg:px-2 text-sm lg:text-md font-semibold text-emerald-300">
+                                ⭐ {{ restaurant.averageRating }}/10
+                            </span>
 
-                <div class="space-y-4 p-5">
-
-                    <div class="flex flex-wrap gap-2">
-
-                        <span class="rounded-full bg-white/10 px-3 py-1 text-sm text-white">
-                            🍣 Japanese
-                        </span>
-
-                        <span class="rounded-full bg-white/10 px-3 py-1 text-sm text-white">
-                            $$$
-                        </span>
-
-                        <span class="rounded-full bg-white/10 px-3 py-1 text-sm text-white">
-                            📍 1.2 km
-                        </span>
+                            <span class="ml-1 lg:ml-3 text-sm lg:text-md text-white/50">
+                                {{ restaurant.reviewCount }} reviews
+                            </span>
+                        </div>
+                        <a 
+                            [routerLink]="['/restaurants', restaurant.id]"
+                            class="cursor-pointer w-fit inline-flex min-h-11 items-center rounded-full bg-[#f4c98b] px-5 py-3 font-semibold text-[15px] text-[#241915] transition hover:-translate-y-0.5"
+                        >
+                            Rate
+                        </a>
 
                     </div>
 
-                    <button
-                        class="w-full rounded-xl bg-orange-500 py-3 font-semibold text-white transition hover:bg-orange-400">
-                        View Restaurant
-                    </button>
+                </article>
 
-                </div>
+            }
 
-            </article>
-
-            <!-- Card -->
-            <article
-                class="group overflow-hidden rounded-3xl border border-white/10 bg-black/20 transition duration-300 hover:-translate-y-1 hover:border-orange-400/40 hover:shadow-2xl">
-
-                <div class="relative h-52 overflow-hidden">
-
-                    <img
-                        src="https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=900"
-                        alt="Pasta Madre"
-                        class="h-full w-full object-cover transition duration-500 group-hover:scale-110">
-
-                    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/30"></div>
-
-                    <div
-                        class="absolute right-4 top-4 rounded-full bg-lime-500 px-3 py-1 text-sm font-bold text-white">
-                        ⭐ 9.2
-                    </div>
-
-                    <div class="absolute bottom-4 left-4">
-                        <h3 class="text-xl font-bold text-white">
-                            Pasta Madre
-                        </h3>
-
-                        <p class="text-sm text-white/80">
-                            Handmade pasta every morning
-                        </p>
-                    </div>
-
-                </div>
-
-                <div class="space-y-4 p-5">
-
-                    <div class="flex flex-wrap gap-2">
-                        <span class="rounded-full bg-white/10 px-3 py-1 text-sm text-white">
-                            🍝 Italian
-                        </span>
-
-                        <span class="rounded-full bg-white/10 px-3 py-1 text-sm text-white">
-                            $$
-                        </span>
-
-                        <span class="rounded-full bg-white/10 px-3 py-1 text-sm text-white">
-                            📍 0.8 km
-                        </span>
-                    </div>
-
-                    <button
-                        class="w-full rounded-xl bg-orange-500 py-3 font-semibold text-white hover:bg-orange-400">
-                        View Restaurant
-                    </button>
-
-                </div>
-
-            </article>
-
-            <!-- Card -->
-            <article
-                class="group overflow-hidden rounded-3xl border border-white/10 bg-black/20 transition duration-300 hover:-translate-y-1 hover:border-orange-400/40 hover:shadow-2xl">
-
-                <div class="relative h-52 overflow-hidden">
-
-                    <img
-                        src="https://images.unsplash.com/photo-1547592180-85f173990554?w=900"
-                        alt="Green Eats"
-                        class="h-full w-full object-cover transition duration-500 group-hover:scale-110">
-
-                    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/30"></div>
-
-                    <div
-                        class="absolute right-4 top-4 rounded-full bg-yellow-500 px-3 py-1 text-sm font-bold text-white">
-                        ⭐ 8.8
-                    </div>
-
-                    <div class="absolute bottom-4 left-4">
-                        <h3 class="text-xl font-bold text-white">
-                            Green Eats
-                        </h3>
-
-                        <p class="text-sm text-white/80">
-                            Healthy bowls & fresh smoothies
-                        </p>
-                    </div>
-
-                </div>
-
-                <div class="space-y-4 p-5">
-
-                    <div class="flex flex-wrap gap-2">
-                        <span class="rounded-full bg-white/10 px-3 py-1 text-sm text-white">
-                            🥗 Healthy
-                        </span>
-
-                        <span class="rounded-full bg-white/10 px-3 py-1 text-sm text-white">
-                            $$
-                        </span>
-
-                        <span class="rounded-full bg-white/10 px-3 py-1 text-sm text-white">
-                            📍 1.5 km
-                        </span>
-                    </div>
-
-                    <button
-                        class="w-full rounded-xl bg-orange-500 py-3 font-semibold text-white hover:bg-orange-400">
-                        View Restaurant
-                    </button>
-
-                </div>
-
-            </article>
 
         </div>
     </section>
