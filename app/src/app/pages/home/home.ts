@@ -9,16 +9,19 @@ import {
   signal,
   ViewChild
 } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser, DatePipe } from '@angular/common';
 import { ProfileService } from '../../core/services/profile.service';
 import { ReviewLikeService } from '../../core/services/review-like.service';
 import { ReviewCommentService } from '../../core/services/review-comment.service';
 import { StatisticsService } from '../../core/services/statistics.service';
-import { CommunityStatistics } from './types';
+import { CommunityStatistics, PopularReview } from './types';
+import { PopularReviewsService } from '../../core/services/popular-reviews.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-home-page',
   standalone: true,
+  imports: [RouterLink, DatePipe],
   templateUrl: './home.html',
   styleUrl: './home.css'
 })
@@ -33,8 +36,10 @@ export class HomePage implements AfterViewInit, OnDestroy {
   private readonly reviewLikeService = inject(ReviewLikeService);
   private readonly reviewCommentService = inject(ReviewCommentService);
   private readonly statisticsService = inject(StatisticsService);
+  private readonly popularReviewsService = inject(PopularReviewsService);
 
   protected readonly stats = signal<CommunityStatistics | null>(null);
+  protected readonly popularReviews = signal<PopularReview[]>([]);
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: object
@@ -43,6 +48,10 @@ export class HomePage implements AfterViewInit, OnDestroy {
   async ngOnInit() {
     this.stats.set(
       await this.statisticsService.getCommunityStatistics()
+    );
+
+    this.popularReviews.set(
+      await this.popularReviewsService.getPopularReviews(5)
     );
   }
 

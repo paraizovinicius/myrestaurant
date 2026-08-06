@@ -277,135 +277,81 @@
             </p>
         </div>
 
-        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div #carousel class="flex overflow-x-auto scroll-smooth snap-x snap-mandatory gap-6 no-scrollbar">
+            @for (review of popularReviews(); track review.id) {
 
-            <!-- Review Card -->
-            <article
-                class="rounded-3xl border border-white/10 bg-black/20 p-6 transition duration-300 hover:border-orange-400/40 hover:bg-black/30">
+                <article
+                    [routerLink]="['/review', review.id]"
+                    class="cursor-pointer snap-center lg:min-w-[50%] min-w-full rounded-3xl border border-white/10 bg-black/20 p-6 transition duration-300 hover:border-orange-400/40 hover:bg-black/30">
+                    <div class="mb-5 flex items-center gap-4">
 
-                <div class="mb-5 flex items-center gap-4">
+                        <img
+                            [src]="review.avatar || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'"
+                            [alt]="review.reviewer"
+                            class="h-14 w-14 rounded-full object-cover ring-2 ring-white/10">
+                        <div>
 
-                    <img
-                        src="https://i.pravatar.cc/100?img=12"
-                        alt="Miguel Cruz"
-                        class="h-14 w-14 rounded-full object-cover ring-2 ring-white/10">
+                            <h3 class="font-semibold text-white">
+                                {{ review.reviewer }}
+                            </h3>
 
-                    <div>
-                        <h3 class="font-semibold text-white">
-                            Miguel Cruz
-                        </h3>
+                            <!-- Later you can replace this with real reputation -->
+                            <p class="text-sm text-white/60">
+                                Community member
+                            </p>
 
-                        <p class="text-sm text-white/60">
-                            🏆 Elite Reviewer • 142 reviews
-                        </p>
-                    </div>
-
-                </div>
-
-                <div class="mb-4 flex items-center gap-2">
-                    <span class="rounded-full bg-emerald-500/20 px-3 py-1 text-sm font-semibold text-emerald-300">
-                        ★★★★★ 9.8/10
-                    </span>
-
-                    <span class="text-sm text-white/50">
-                        L'art de la Table
-                    </span>
-                </div>
-
-                <blockquote class="text-[15px] leading-7 text-white/80">
-                    “The truffle-infused risotto at <strong class="text-white">L'art de la Table</strong>
-                    is genuinely life-changing. Service was impeccable, and the wine
-                    recommendations were spot on. A masterclass in fine dining.”
-                </blockquote>
-
-                <div class="mt-6 flex items-center justify-between border-t border-white/10 pt-4">
-
-                    <div class="flex items-center gap-5 text-sm text-white/60">
-
-                        <span class="flex items-center gap-1.5">
-                            ❤️ <span>328</span>
-                        </span>
-
-                        <span class="flex items-center gap-1.5">
-                            💬 <span>41</span>
-                        </span>
+                        </div>
 
                     </div>
 
-                    <span class="text-xs text-white/40">
-                        2 hours ago
-                    </span>
+                    <div class="mb-4 flex items-center gap-2">
 
-                </div>
-
-            </article>
-
-            <!-- Review Card -->
-            <article
-                class="rounded-3xl border border-white/10 bg-black/20 p-6 transition duration-300 hover:border-orange-400/40 hover:bg-black/30">
-
-                <div class="mb-5 flex items-center gap-4">
-
-                    <img
-                        src="https://i.pravatar.cc/100?img=32"
-                        alt="Sophia Bennett"
-                        class="h-14 w-14 rounded-full object-cover ring-2 ring-white/10">
-
-                    <div>
-                        <h3 class="font-semibold text-white">
-                            Sophia Bennett
-                        </h3>
-
-                        <p class="text-sm text-white/60">
-                            🌟 Top Contributor • 87 reviews
-                        </p>
-                    </div>
-
-                </div>
-
-                <div class="mb-4 flex items-center gap-2">
-                    <span class="rounded-full bg-yellow-500/20 px-3 py-1 text-sm font-semibold text-yellow-300">
-                        ★★★★☆ 8.9/10
-                    </span>
-
-                    <span class="text-sm text-white/50">
-                        Mizumi Sushi
-                    </span>
-                </div>
-
-                <blockquote class="text-[15px] leading-7 text-white/80">
-                    “Every piece of sushi tasted incredibly fresh, and the chef's
-                    signature nigiri was the highlight of the evening. Cozy atmosphere,
-                    attentive staff, and excellent value for the quality.”
-                </blockquote>
-
-                <div class="mt-6 flex items-center justify-between border-t border-white/10 pt-4">
-
-                    <div class="flex items-center gap-5 text-sm text-white/60">
-
-                        <span class="flex items-center gap-1.5">
-                            ❤️ <span>214</span>
+                        <span class="rounded-full bg-emerald-500/20 px-3 py-1 text-sm font-semibold text-emerald-300">
+                            ★ {{ review.rating }}/10
                         </span>
 
-                        <span class="flex items-center gap-1.5">
-                            💬 <span>27</span>
+                        <span class="text-sm text-white/50">
+                            {{ review.restaurant }}
+                        </span>
+
+                    </div>
+                    <h3 class="font-bold text-white">{{ review.title }}</h3>
+
+                    <blockquote class="text-[15px] leading-7 text-white/80">
+                        @if (review.body) {
+                            "{{ review.body }}"
+                        }
+                    </blockquote>
+
+                    <div class="mt-6 flex items-center justify-between border-t border-white/10 pt-4">
+
+                        <div class="flex items-center gap-5 text-sm text-white/60">
+
+                            <span class="flex items-center gap-1.5">
+                                ❤️ <span>{{ review.likes }}</span>
+                            </span>
+
+                            <span class="flex items-center gap-1.5">
+                                💬 <span>{{ review.comments }}</span>
+                            </span>
+
+                        </div>
+
+                        <span class="text-xs text-white/40">
+                            {{ review.created_at | date: 'mediumDate'  }}
                         </span>
 
                     </div>
 
-                    <span class="text-xs text-white/40">
-                        Yesterday
-                    </span>
+                </article>
 
-                </div>
-
-            </article>
+            }
 
         </div>
 
     </section>
 
-    Let's create a section where we display community statistics:
+    <!-- Community Statistics Section -->
     <section
         id="community-stats"
         class="rounded-[24px] border border-white/10 bg-[rgba(255,255,255,0.04)] p-6 sm:p-8">
