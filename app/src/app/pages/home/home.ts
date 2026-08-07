@@ -1,6 +1,7 @@
 import {
   AfterViewInit,
   Component,
+  DestroyRef,
   ElementRef,
   inject,
   Inject,
@@ -40,9 +41,23 @@ export class HomePage implements AfterViewInit, OnDestroy {
 
   protected readonly loading = signal(true);
 
+  private readonly platformId = inject(PLATFORM_ID);
+  protected readonly mobile = signal(false);
+  private readonly destroyRef = inject(DestroyRef);
+
   constructor(
-    @Inject(PLATFORM_ID) private platformId: object
-  ) {}
+  ) {
+    if (!isPlatformBrowser(this.platformId)) {
+          return;
+        }
+    
+        const mediaQuery = window.matchMedia('(max-width: 700px)');
+        const updateMobileState = () => this.mobile.set(mediaQuery.matches);
+    
+        updateMobileState();
+        mediaQuery.addEventListener('change', updateMobileState);
+        this.destroyRef.onDestroy(() => mediaQuery.removeEventListener('change', updateMobileState));
+  }
 
   async ngOnInit(): Promise<void> {
     try {
