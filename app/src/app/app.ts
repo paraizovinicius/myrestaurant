@@ -13,7 +13,7 @@ import { Restaurant } from './pages/restaurants/types';
 })
 export class App {
   readonly router = inject(Router);
-  protected readonly title = signal('MyRestaurant');
+  protected readonly title = signal('Taste Buddy');
   protected readonly currentYear = new Date().getFullYear();
   protected readonly mobile = signal(false);
   private readonly authService = inject(AuthService);

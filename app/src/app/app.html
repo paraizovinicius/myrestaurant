@@ -1,19 +1,27 @@
 <div class="min-h-screen flex flex-col bg-[radial-gradient(circle_at_top_left,_rgba(255,193,117,0.22),_transparent_30%),radial-gradient(circle_at_bottom_right,_rgba(92,67,50,0.55),_transparent_28%),linear-gradient(135deg,_#17110f_0%,_#241915_55%,_#120f0e_100%)] text-[#2b1a10]">
   
-  <header class="relative z-50 mx-auto flex w-full items-center border border-white/10 bg-white py-4 shadow-[0_12px_80px_rgba(0,0,0,0.15)] backdrop-blur-md sm:px-10">
-    @if (!mobile()) {
-    <div class="select-none font-serif text-[32px] font-bold tracking-[-0.02em] text-[#9e3d00]" aria-label="MyRestaurant">
-      {{ title() }}
-    </div>
+  <header class="relative pl-1 lg:pl-5 z-50 mx-auto flex w-full items-center border border-white/10 bg-white shadow-[0_12px_80px_rgba(0,0,0,0.15)] backdrop-blur-md">
+  @if (!mobile()) {
+  <div class="flex items-center">
+    <img
+      src="/logo.png"
+      alt="MyRestaurant"
+      class="h-25 w-auto block select-none object-contain"
+    />
+  </div>
     } @else {
       <div 
       routerLink="/"
-      class="p-3 cursor-pointer select-none font-serif text-[20px] lg:text-[32px] font-bold tracking-[-0.02em] text-[#9e3d00]" aria-label="MyRestaurant">
-        {{ title() }}
-    </div>
+      class="cursor-pointer select-none tracking-[-0.02em]">
+        <img
+          src="/logo.png"
+          alt="MyRestaurant"
+          class="pl-3 h-20 w-auto block select-none object-contain"
+        />
+      </div>
     }
 
-    <nav class="ml-1 lg:ml-6 flex flex-1 flex-wrap items-center gap-3 space-x-3" aria-label="Primary navigation">
+    <nav class="ml-3 lg:ml-6 flex flex-1 flex-wrap items-center gap-3 space-x-3" aria-label="Primary navigation">
       @if (!mobile()) {
       <a
         routerLink="/"
@@ -144,7 +152,7 @@
         <a
           routerLink="/profile"
           routerLinkActive="bg-[#7f3100] font-bold"  
-          class="lg:ml-auto inline-flex min-h-9 lg:min-h-11 px-2 items-center rounded-full bg-[#9e3d00] text-[14px] lg:text-[15px] xl:text-[16px] font-medium text-white transition hover:bg-[#7f3100]"
+          class="ml-auto mr-5 lg:mr-10 inline-flex min-h-9 lg:min-h-11 px-2 items-center rounded-full bg-[#9e3d00] text-[14px] lg:text-[15px] xl:text-[16px] font-medium text-white transition hover:bg-[#7f3100]"
         >
           Profile
         </a>
@@ -152,7 +160,7 @@
         <a
           routerLink="/login"
           [queryParams]="{ returnUrl: router.url }"
-          class="lg:ml-auto inline-flex min-h-9 lg:min-h-11 px-2 items-center rounded-full bg-[#9e3d00] text-[14px] lg:text-[15px] xl:text-[16px] font-medium text-white transition hover:bg-[#7f3100]"
+          class="ml-auto mr-5 lg:mr-10 inline-flex min-h-9 lg:min-h-11 px-2 items-center rounded-full bg-[#9e3d00] text-[14px] lg:text-[15px] xl:text-[16px] font-medium text-white transition hover:bg-[#7f3100]"
         >
           Log In
         </a>
@@ -176,7 +184,7 @@
           class="select-none font-serif text-[32px] font-bold tracking-[-0.02em]"
           aria-label="MyRestaurant"
         >
-          {{ title() }}
+          {{title()}}
         </div>
 
         <p class="mt-3 max-w-md text-sm leading-6 text-black/55">
@@ -245,7 +253,7 @@
       class="mx-auto mt-10 flex max-w-7xl flex-col gap-2 border-t border-[#9e3d00]/10 pt-5 text-sm text-black/45 sm:flex-row sm:items-center sm:justify-between"
     >
       <span>
-        {{ currentYear }} &copy; MyRestaurant. All rights reserved.
+        {{ currentYear }} &copy; Taste Buddy. All rights reserved.
       </span>
 
       <span>
