@@ -6,7 +6,7 @@ This project was built to demonstrate practical engineering skills for productio
 
 ## Live Project
 
-Production URL: https://myrestaurant-blush.vercel.app
+Production URL: https://tastebuddy-blush.vercel.app
 
 ## Why This Project
 

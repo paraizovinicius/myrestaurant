@@ -30,7 +30,7 @@
             "server": "src/main.server.ts",
             "outputMode": "server",
             "security": {
-              "allowedHosts": ["localhost", "myrestaurant-blush.vercel.app"]
+              "allowedHosts": ["localhost", "myrestaurant-blush.vercel.app", "tastebuddy.vercel.app"]
             },
             "ssr": {
               "entry": "src/server.ts"
