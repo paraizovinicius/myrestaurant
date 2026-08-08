@@ -96,11 +96,11 @@
         }
 
 
-        <div #carousel class="grid grid-flow-col auto-cols-[calc((100%-3rem)/1)] lg:auto-cols-[calc((100%-1.5rem)/3)] gap-6 p-5 overflow-x-auto overflow-x-auto scroll-smooth no-scrollbar">
+        <div #carousel class="grid grid-flow-col auto-cols-[calc((100%)/1)] lg:auto-cols-[calc((100%-1.5rem)/3)] xl:auto-cols-[calc((100%-1.5rem)/4)] overflow-x-auto overflow-x-auto scroll-smooth no-scrollbar">
             @for (restaurant of popularRestaurants(); track restaurant.id) {
-                <article class="group overflow-hidden rounded-3xl border border-white/10 bg-black/20 transition duration-300 hover:-translate-y-1 hover:border-orange-400/40 hover:shadow-2xl">
+                <article class="p-4 group overflow-hidden">
                     <!-- 1. Add flex flex-col to parent -->
-                    <div class="p-4 h-full flex flex-col">
+                    <div class="p-4 h-full flex flex-col rounded-3xl border border-white/10 bg-black/20 transition duration-300 hover:-translate-y-1 hover:border-orange-400/40 hover:shadow-2xl">
 
                         <h3 class="text-xl font-semibold text-white">
                             {{ restaurant.name }}
@@ -110,12 +110,12 @@
                             {{ restaurant.city }}
                         </p>
 
-                        <div class="mt-auto mb-4 flex items-center gap-2 grid grid-cols-1 lg:grid-cols-2">
-                            <span class="rounded-full bg-emerald-500/20 w-fit px-2 text-sm lg:text-md font-semibold text-emerald-300">
+                        <div class="mt-auto mb-4 flex items-center gap-2">
+                            <span class="rounded-full bg-emerald-500/20 px-2 text-sm font-semibold text-emerald-300 lg:text-md">
                                 ⭐ {{ restaurant.averageRating }}/10
                             </span>
 
-                            <span class="ml-1 lg:ml-3 text-sm lg:text-md text-white/50">
+                            <span class="text-sm text-white/50 lg:text-md">
                                 {{ restaurant.reviewCount }} reviews
                             </span>
                         </div>
