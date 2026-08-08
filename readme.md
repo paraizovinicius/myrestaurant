@@ -1,6 +1,6 @@
-# MyRestaurant
+# Taste Buddy
 
-MyRestaurant is a full-stack web application for discovering restaurants, exploring details, and managing user accounts.
+Taste Buddy is a full-stack web application for discovering restaurants, exploring details, and managing user accounts.
 
 This project was built to demonstrate practical engineering skills for production-oriented applications: SSR with Angular, real authentication and profile flows, remote data integration, and clean feature modularization.
 
