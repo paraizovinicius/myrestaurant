@@ -149,79 +149,81 @@
             </p>
         </div>
 
-        <div #carousel class="flex overflow-x-auto scroll-smooth snap-x snap-mandatory gap-6 no-scrollbar">
+        <div #carousel class="grid grid-flow-col auto-cols-[calc((100%)/1)] lg:auto-cols-[calc((100%-1.5rem)/3)] xl:auto-cols-[calc((100%-1.5rem)/4)] overflow-x-auto overflow-x-auto scroll-smooth no-scrollbar">
             @for (review of popularReviews(); track review.id) {
-
                 <article
                     [routerLink]="['/review', review.id]"
-                    class="cursor-pointer snap-center lg:min-w-[50%] min-w-full rounded-3xl border border-white/10 bg-black/20 p-6 transition duration-300 hover:border-orange-400/40 hover:bg-black/30">
-                    @if (loading()) {
-                    <!-- Skeleton Loader -->
-                    <div class="mb-5 flex items-center gap-4 animate-pulse">
-                        <div class="h-14 w-14 rounded-full bg-white/10"></div>
-                        <div class="space-y-2">
-                        <div class="h-4 w-32 rounded bg-white/10"></div>
-                        <div class="h-3 w-24 rounded bg-white/10"></div>
+                    class="cursor-pointer p-4 group overflow-hidden"> 
+                    <div class="min-w-full h-full rounded-3xl border border-white/10 bg-black/20 p-6 transition duration-300 hover:border-orange-400/40 hover:bg-black/30">
+                        @if (loading()) {
+                        <!-- Skeleton Loader -->
+                        <div class="mb-5 flex items-center gap-4 animate-pulse ">
+                            <div class="h-14 w-14 rounded-full bg-white/10"></div>
+                            <div class="space-y-2">
+                            <div class="h-4 w-32 rounded bg-white/10"></div>
+                            <div class="h-3 w-24 rounded bg-white/10"></div>
+                            </div>
                         </div>
-                    </div>
-                    } @else {
-                    <!-- Loaded State -->
-                    <div class="mb-5 flex items-center gap-4">
-                        <img
-                        [src]="review.avatar || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'"
-                        [alt]="review.reviewer"
-                        class="h-14 w-14 rounded-full object-cover ring-2 ring-white/10"
-                        (error)="review.avatar = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'">
-                        <div>
-                        <h3 class="font-semibold text-white">
-                            {{ review.reviewer }}
-                        </h3>
-                        <p class="text-sm text-white/60">
-                            Community member
-                        </p>
+                        } @else {
+                        <!-- Loaded State -->
+                        
+                        <div class="mb-5 flex items-center gap-4 ">
+                            <img
+                            [src]="review.avatar || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'"
+                            [alt]="review.reviewer"
+                            class="h-14 w-14 rounded-full object-cover ring-2 ring-white/10"
+                            (error)="review.avatar = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'">
+                            <div>
+                            <h3 class="font-semibold text-white">
+                                {{ review.reviewer }}
+                            </h3>
+                            <p class="text-sm text-white/60">
+                                Community member
+                            </p>
+                            </div>
                         </div>
-                    </div>
-                    }
-
-                    <div class="mb-4 flex items-center gap-2">
-
-                        <span class="rounded-full bg-emerald-500/20 px-3 py-1 text-sm font-semibold text-emerald-300">
-                            ★ {{ review.rating }}/10
-                        </span>
-
-                        <span class="text-sm text-white/50">
-                            {{ review.restaurant }}
-                        </span>
-
-                    </div>
-                    <h3 class="font-bold text-white">{{ review.title }}</h3>
-
-                    <blockquote class="text-[15px] leading-7 text-white/80">
-                        @if (review.body) {
-                            "{{ review.body | slice:0:150 }}{{ review.body.length > 150 ? '...' : '' }}"
                         }
-                    </blockquote>
 
-                    <div class="mt-6 flex items-center justify-between border-t border-white/10 pt-4">
+                        <div class="mb-4 flex items-center gap-2">
 
-                        <div class="flex items-center gap-5 text-sm text-white/60">
-
-                            <span class="flex items-center gap-1.5">
-                                ❤️ <span>{{ review.likes }}</span>
+                            <span class="rounded-full bg-emerald-500/20 px-3 py-1 text-sm font-semibold text-emerald-300">
+                                ★ {{ review.rating }}/10
                             </span>
 
-                            <span class="flex items-center gap-1.5">
-                                💬 <span>{{ review.comments }}</span>
+                            <span class="text-sm text-white/50">
+                                {{ review.restaurant }}
                             </span>
 
                         </div>
+                        <h3 class="font-bold text-white">{{ review.title }}</h3>
 
-                        <span class="text-xs text-white/40">
-                            {{ review.created_at | date: 'mediumDate'  }}
-                        </span>
+                        <blockquote class="text-[15px] leading-7 text-white/80">
+                            @if (review.body) {
+                                "{{ review.body | slice:0:150 }}{{ review.body.length > 150 ? '...' : '' }}"
+                            }
+                        </blockquote>
 
+                        <div class="mt-6 flex items-center justify-between border-t border-white/10 pt-4">
+
+                            <div class="flex items-center gap-5 text-sm text-white/60">
+
+                                <span class="flex items-center gap-1.5">
+                                    ❤️ <span>{{ review.likes }}</span>
+                                </span>
+
+                                <span class="flex items-center gap-1.5">
+                                    💬 <span>{{ review.comments }}</span>
+                                </span>
+
+                            </div>
+
+                            <span class="text-xs text-white/40">
+                                {{ review.created_at | date: 'mediumDate'  }}
+                            </span>
+
+                        </div>
+                    
                     </div>
-
                 </article>
 
             }

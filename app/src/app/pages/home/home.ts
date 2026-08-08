@@ -4,11 +4,11 @@ import {
   DestroyRef,
   ElementRef,
   inject,
-  Inject,
   OnDestroy,
   PLATFORM_ID,
+  QueryList,
   signal,
-  ViewChild
+  ViewChildren
 } from '@angular/core';
 import { isPlatformBrowser, DatePipe, SlicePipe } from '@angular/common';
 import { StatisticsService } from '../../core/services/statistics.service';
@@ -25,8 +25,8 @@ import { RouterLink } from '@angular/router';
   styleUrl: './home.css'
 })
 export class HomePage implements AfterViewInit, OnDestroy {
-  @ViewChild('carousel', { static: true }) // #carousel is needed in the <div>
-  private readonly carouselRef!: ElementRef<HTMLDivElement>;
+  @ViewChildren('carousel')
+  private readonly carouselsRef!: QueryList<ElementRef<HTMLDivElement>>;
   private readonly slideCount = 3;
   private activeSlide = 0;
   private intervalId?: number;
@@ -86,7 +86,7 @@ export class HomePage implements AfterViewInit, OnDestroy {
       return;
     }
 
-    this.intervalId = window.setInterval(() => this.advanceSlide(), 10000); // every 10 seconds
+    this.intervalId = window.setInterval(() => this.advanceSlide(), 10000);
   }
 
   ngOnDestroy(): void {
@@ -96,13 +96,16 @@ export class HomePage implements AfterViewInit, OnDestroy {
   }
 
   private advanceSlide(): void {
-    const carousel = this.carouselRef.nativeElement;
-
     this.activeSlide = (this.activeSlide + 1) % this.slideCount;
 
-    carousel.scrollTo({
-      left: carousel.clientWidth * this.activeSlide,
-      behavior: 'smooth'
+    // Iterate through every matched carousel
+    this.carouselsRef.forEach((carouselRef) => {
+      const carousel = carouselRef.nativeElement;
+
+      carousel.scrollTo({
+        left: carousel.clientWidth * this.activeSlide,
+        behavior: 'smooth'
+      });
     });
   }
 }
