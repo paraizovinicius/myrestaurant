@@ -341,44 +341,6 @@
               <p class="text-base text-white">{{ resultLabel() }}</p>
             </div>
 
-            <div class="flex items-center gap-2 text-sm">
-              <button 
-                type="button" 
-                class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition disabled:cursor-not-allowed disabled:opacity-40" 
-                [disabled]="currentPage() === 1" 
-                (click)="goToPage(currentPage() - 1)">
-                Previous
-              </button>
-
-              <div class="flex items-center gap-1">
-                @for (page of visiblePages(); track $index) {
-                  @if (page === '...') {
-                    <span class="px-2 py-2 text-white/40 select-none">...</span>
-                  } @else {
-                    <button 
-                      type="button" 
-                      class="h-9 w-9 rounded-full border text-center transition"
-                      [class.border-white]="currentPage() === page"
-                      [class.bg-white]="currentPage() === page"
-                      [class.text-black]="currentPage() === page"
-                      [class.border-white/10]="currentPage() !== page"
-                      [class.bg-white/5]="currentPage() !== page"
-                      [class.text-white/80]="currentPage() !== page"
-                      (click)="goToPage(page)">
-                      {{ page }}
-                    </button>
-                  }
-                }
-              </div>
-
-              <button 
-                type="button" 
-                class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition disabled:cursor-not-allowed disabled:opacity-40" 
-                [disabled]="currentPage() === totalPages()" 
-                (click)="goToPage(currentPage() + 1)">
-                Next
-              </button>
-            </div>
           </div>
         }
         @if (loading()) {
@@ -463,13 +425,44 @@
 
         <div class="flex items-center justify-between gap-3 rounded-[24px] border border-white/10 bg-black/20 p-4 text-sm text-white/75">
           <span>Displaying 6 restaurants per page.</span>
-          <div class="flex items-center gap-2">
-            <button type="button" class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition disabled:cursor-not-allowed disabled:opacity-40" [disabled]="currentPage() === 1" (click)="goToPage(currentPage() - 1)">Previous</button>
-            <div class="flex items-center gap-2">
-              <button *ngFor="let page of pageNumbers()" type="button" class="h-10 min-w-10 rounded-full border px-3 py-2 font-semibold transition" [class.border-[#f4c98b]]="currentPage() === page" [class.bg-[#f4c98b]]="currentPage() === page" [class.text-[#241915]]="currentPage() === page" [class.border-white/10]="currentPage() !== page" [class.bg-white/5]="currentPage() !== page" [class.text-white]="currentPage() !== page" (click)="goToPage(page)">{{ page }}</button>
+          <div class="flex items-center gap-2 text-sm">
+              <button 
+                type="button" 
+                class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition disabled:cursor-not-allowed disabled:opacity-40" 
+                [disabled]="currentPage() === 1" 
+                (click)="goToPage(currentPage() - 1)">
+                Previous
+              </button>
+
+              <div class="flex items-center gap-1">
+                @for (page of visiblePages(); track $index) {
+                  @if (page === '...') {
+                    <span class="px-2 py-2 text-white/40 select-none">...</span>
+                  } @else {
+                    <button 
+                      type="button" 
+                      class="h-9 w-9 rounded-full border text-center transition"
+                      [class.border-white]="currentPage() === page"
+                      [class.bg-white]="currentPage() === page"
+                      [class.text-black]="currentPage() === page"
+                      [class.border-white/10]="currentPage() !== page"
+                      [class.bg-white/5]="currentPage() !== page"
+                      [class.text-white/80]="currentPage() !== page"
+                      (click)="goToPage(page)">
+                      {{ page }}
+                    </button>
+                  }
+                }
+              </div>
+
+              <button 
+                type="button" 
+                class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition disabled:cursor-not-allowed disabled:opacity-40" 
+                [disabled]="currentPage() === totalPages()" 
+                (click)="goToPage(currentPage() + 1)">
+                Next
+              </button>
             </div>
-            <button type="button" class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition disabled:cursor-not-allowed disabled:opacity-40" [disabled]="currentPage() === totalPages()" (click)="goToPage(currentPage() + 1)">Next</button>
-          </div>
         </div>
       </div>
     </div>

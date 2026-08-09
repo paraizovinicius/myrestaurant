@@ -94,8 +94,7 @@ export class RestaurantsPage {
   private async loadPriceLevels(): Promise<void> {
 
     let restaurantIds = this.restaurants().map(restaurant => restaurant.id);
-  
-
+    
     const priceVotes = await this.priceLevelService.getPriceSummary(restaurantIds);
 
     if (priceVotes.length === 0) return;

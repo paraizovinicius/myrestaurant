@@ -7,16 +7,35 @@ import { supabase } from '../supabase/supabase.client';
 export class RestaurantService {
 
   async getRestaurants() {
-    const { data, error } = await supabase
-      .from('restaurants')
-      .select('*')
-      .order('name');
+    const pageSize = 500;
+    let from = 0;
+    let allRestaurants: any[] = [];
 
-    if (error) {
-      throw error;
+    while (true) {
+      const { data, error } = await supabase
+        .from('restaurants')
+        .select('*')
+        .order('name')
+        .range(from, from + pageSize - 1);
+
+      if (error) {
+        throw error;
+      }
+
+      if (!data || data.length === 0) {
+        break;
+      }
+
+      allRestaurants.push(...data);
+
+      if (data.length < pageSize) {
+        break;
+      }
+
+      from += pageSize;
     }
 
-    return data;
+    return allRestaurants;
   }
 
   async getRestaurant(id: string) {

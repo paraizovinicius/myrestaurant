@@ -10,7 +10,7 @@ export interface Restaurant {
   longitude: number | null;
   phone: string | null;
   website_url: string | null;
-  price_level: number | null;
+  price_level: number | null; // this doesn't exist in the Restaurant table
   created_at: string;
   updated_at: string;
 }
