@@ -63,7 +63,8 @@
       </div>
     </div>
 
-    <div class="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
+     <!-- this component grows more than the page width -->
+    <div class="w-full max-w-full overflow-hidden grid gap-6 grid-cols-1 lg:grid-cols-[320px_minmax(0,1fr)]">
       @if (!mobile()){
       <aside class="rounded-[28px] border border-white/10 bg-black/20 p-5 shadow-[0_18px_60px_rgba(0,0,0,0.25)] backdrop-blur-lg lg:sticky lg:top-6">
 
@@ -165,7 +166,7 @@
         </div>
       </aside>
     } @else {
-      <aside class="rounded-[24px] border border-white/10 bg-black/20 p-4 shadow-[0_18px_60px_rgba(0,0,0,0.25)] backdrop-blur-lg">
+        <aside class="w-full rounded-[24px] border border-white/10 bg-black/20 p-4 shadow-[0_18px_60px_rgba(0,0,0,0.25)] backdrop-blur-lg">
         <button
           type="button"
           class="flex w-full items-center justify-between rounded-full border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold uppercase tracking-[0.14em] text-[#f4c98b] transition hover:border-[#f4c98b]/40 hover:bg-white/10"
@@ -295,7 +296,7 @@
             </span>
 
             <!-- Pagination controls -->
-            <div class="flex items-center gap-2 text-sm">
+            <div class="flex w-full items-center gap-2 text-sm">
               <button 
                 type="button" 
                 class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition disabled:cursor-not-allowed disabled:opacity-40" 
@@ -424,15 +425,8 @@
         }
 
         <div class="flex items-center justify-between gap-3 rounded-[24px] border border-white/10 bg-black/20 p-4 text-sm text-white/75">
-          <span>Displaying 6 restaurants per page.</span>
+          <span class="w-[27%]">Displaying 6 restaurants per page.</span>
           <div class="flex items-center gap-2 text-sm">
-              <button 
-                type="button" 
-                class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition disabled:cursor-not-allowed disabled:opacity-40" 
-                [disabled]="currentPage() === 1" 
-                (click)="goToPage(currentPage() - 1)">
-                Previous
-              </button>
 
               <div class="flex items-center gap-1">
                 @for (page of visiblePages(); track $index) {
@@ -455,13 +449,6 @@
                 }
               </div>
 
-              <button 
-                type="button" 
-                class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-white transition disabled:cursor-not-allowed disabled:opacity-40" 
-                [disabled]="currentPage() === totalPages()" 
-                (click)="goToPage(currentPage() + 1)">
-                Next
-              </button>
             </div>
         </div>
       </div>
