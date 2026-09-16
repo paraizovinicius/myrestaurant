@@ -9,6 +9,8 @@ import { ReviewCommentService } from '../../core/services/review-comment.service
 import { ProfileService } from '../../core/services/profile.service';
 import { Reviews, ReviewComments, ReviewLikes } from './types';
 import { ActivatedRoute } from '@angular/router';
+import { RestaurantService } from '../../core/services/restaurant.service';
+import { Restaurant } from '../restaurants/types';
 
 @Component({
   selector: 'app-review-details-page',
@@ -23,6 +25,8 @@ export class ReviewDetailsPage {
     private readonly reviewService = inject(ReviewService);
     private readonly reviewStatsService = inject(ReviewStatsService);
 
+    private readonly restaurantService = inject(RestaurantService);
+
     private readonly authService = inject(AuthService);
     private readonly reviewLikeService = inject(ReviewLikeService);
     private readonly reviewCommentService = inject(ReviewCommentService);
@@ -32,6 +36,7 @@ export class ReviewDetailsPage {
     readonly router = inject(Router);
 
     protected readonly review = signal<Reviews | null>(null);
+    protected readonly restaurant = signal<Restaurant | null>(null);
     protected readonly reviewLikes = signal<ReviewLikes[]>([]);
     protected readonly reviewComments = signal<ReviewComments[]>([]);
     protected readonly profiles = signal<Record<string, { name: string; loyaltyTier: string | null }>>({});
@@ -62,6 +67,10 @@ export class ReviewDetailsPage {
                 throw new Error('Review not found');
             }
             this.review.set(review);
+
+            const restaurant = await this.restaurantService.getRestaurant(review.restaurant_id);
+
+            this.restaurant.set(restaurant);
 
             await this.refreshReviewStats(reviewId);
         } catch (error) {
