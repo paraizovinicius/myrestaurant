@@ -389,7 +389,7 @@
                       
                       
                     </div>
-                    <span class="py-1 text-[20px] text-white/80">{{ reviewAuthorLabel(review.user_id) }}</span>
+                    <a [routerLink]="['/user', review.user_id]" class="py-1 text-[20px] text-white/80 transition hover:text-[#f4c98b] hover:underline">{{ reviewAuthorLabel(review.user_id) }}</a>
                     <br>
                     <!-- When you click on a review, it will take you to the review details page: /review/:id -->
                     <a

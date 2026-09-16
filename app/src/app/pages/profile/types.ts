@@ -28,3 +28,15 @@ export interface UserProfile {
 
   memberSince: string;
 }
+
+export interface UserReviewSummary {
+  id: string;
+  restaurantId: string;
+  restaurantName: string;
+  rating: number;
+  title: string | null;
+  body: string | null;
+  createdAt: string;
+  likes: number;
+  comments: number;
+}

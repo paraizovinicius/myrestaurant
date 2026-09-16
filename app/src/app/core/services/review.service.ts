@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { supabase } from '../supabase/supabase.client';
+import { UserReviewSummary } from '../../pages/profile/types';
 
 @Injectable({
   providedIn: 'root'
@@ -63,6 +64,55 @@ export class ReviewService {
     }
 
     return data;
+  }
+
+  async getReviewsWithRestaurantByUser(userId: string): Promise<UserReviewSummary[]> {
+    const { data, error } = await supabase
+      .from('reviews')
+      .select(`
+        id,
+        restaurant_id,
+        rating,
+        title,
+        body,
+        created_at,
+
+        restaurants!reviews_restaurant_id_fkey(
+          id,
+          name
+        ),
+
+        review_likes(
+          user_id
+        ),
+
+        review_comments(
+          id
+        )
+      `)
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      throw error;
+    }
+
+    return (data ?? []).map((review) => {
+      const rawRestaurant = review.restaurants;
+      const restaurantObj = Array.isArray(rawRestaurant) ? rawRestaurant[0] : rawRestaurant;
+
+      return {
+        id: review.id,
+        restaurantId: review.restaurant_id,
+        restaurantName: restaurantObj?.name ?? 'Unknown restaurant',
+        rating: review.rating,
+        title: review.title,
+        body: review.body,
+        createdAt: review.created_at,
+        likes: review.review_likes?.length ?? 0,
+        comments: review.review_comments?.length ?? 0
+      };
+    });
   }
 
   async createReview(

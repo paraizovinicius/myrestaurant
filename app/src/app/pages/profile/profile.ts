@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
-import { UserProfile } from './types';
+import { UserProfile, UserReviewSummary } from './types';
 import { AuthService } from '../../core/services/auth.service';
 import { ProfileService } from '../../core/services/profile.service';
+import { ReviewService } from '../../core/services/review.service';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
@@ -19,11 +20,14 @@ export class ProfilePage {
 
   private readonly authService = inject(AuthService);
   private readonly profileService = inject(ProfileService);
+  private readonly reviewService = inject(ReviewService);
   private errorClearTimeout: ReturnType<typeof setTimeout> | null = null;
   private successClearTimeout: ReturnType<typeof setTimeout> | null = null;
-  
+
   protected readonly user = this.authService.user;
   protected readonly profile = signal<UserProfile | null>(null);
+  protected readonly myReviews = signal<UserReviewSummary[]>([]);
+  protected readonly reviewsLoading = signal(true);
   protected readonly error = signal<string | null>(null);
   protected readonly loading = signal(true);
   protected readonly success = signal<string | null>(null);
@@ -43,6 +47,13 @@ export class ProfilePage {
       const profile = await this.profileService.getMyProfile();
       this.loading.set(false);
       this.profile.set(profile);
+
+      if (profile) {
+        this.loadMyReviews(profile.id);
+      } else {
+        this.reviewsLoading.set(false);
+      }
+
     } catch(error) {
 
       console.error(
@@ -50,8 +61,34 @@ export class ProfilePage {
         error
       );
 
+      this.reviewsLoading.set(false);
+
     }
 
+  }
+
+  private async loadMyReviews(userId: string): Promise<void> {
+    this.reviewsLoading.set(true);
+
+    try {
+
+      const reviews = await this.reviewService.getReviewsWithRestaurantByUser(userId);
+      this.myReviews.set(reviews);
+
+    } catch (error) {
+
+      console.error(
+        'Failed loading your reviews:',
+        error
+      );
+
+      this.myReviews.set([]);
+
+    } finally {
+
+      this.reviewsLoading.set(false);
+
+    }
   }
 
   protected readonly welcomeMessage = computed(() => {

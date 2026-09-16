@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { supabase } from '../supabase/supabase.client';
 import { UserProfile } from '../../pages/profile/types';
+import { PublicProfile } from '../../pages/user-profile/types';
 
 @Injectable({
   providedIn: 'root'
@@ -55,6 +56,35 @@ export class ProfileService {
 
       loyaltyTier: data.loyalty_tier,
 
+      memberSince: data.created_at
+    };
+
+  }
+
+  async getProfileById(userId: string): Promise<PublicProfile | null> {
+
+    const {
+      data,
+      error
+    } = await supabase
+      .from('profiles')
+      .select('id, name, loyalty_tier, created_at')
+      .eq('id', userId)
+      .maybeSingle();
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data) {
+      return null;
+    }
+
+    return {
+      id: data.id,
+      fullName: data.name ?? 'Anonymous user',
+      avatarUrl: this.getAvatarUrlByUserId(data.id, Date.now()),
+      loyaltyTier: data.loyalty_tier,
       memberSince: data.created_at
     };
 
