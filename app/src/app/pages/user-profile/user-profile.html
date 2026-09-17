@@ -39,7 +39,38 @@
           <span class="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-white/80">
             {{ profile.loyaltyTier }} tier
           </span>
+
+          <span class="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-white/80">
+            {{ followerCount() }} {{ followerCount() === 1 ? 'follower' : 'followers' }}
+          </span>
+
+          <span class="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-white/80">
+            {{ followingCount() }} following
+          </span>
+
+          @if (!isOwnProfile()) {
+            <button
+              type="button"
+              (click)="toggleFollow()"
+              [disabled]="followActionPending()"
+              class="cursor-pointer rounded-full px-4 py-2 font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+              [class.bg-[#f4c98b]]="!isFollowing()"
+              [class.text-[#241915]]="!isFollowing()"
+              [class.hover:bg-[#ffd99b]]="!isFollowing()"
+              [class.border]="isFollowing()"
+              [class.border-white/20]="isFollowing()"
+              [class.bg-white/10]="isFollowing()"
+              [class.text-white]="isFollowing()"
+              [class.hover:bg-white/15]="isFollowing()"
+            >
+              {{ followActionPending() ? 'Please wait...' : (isFollowing() ? 'Following' : 'Follow') }}
+            </button>
+          }
         </div>
+
+        @if (followError()) {
+          <p class="mt-3 text-sm text-red-300">{{ followError() }}</p>
+        }
       </div>
 
       <div class="grid gap-6 p-6 sm:p-8 lg:grid-cols-[minmax(0,1fr)_340px] lg:p-10">

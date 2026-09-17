@@ -4,6 +4,7 @@ import { UserProfile, UserReviewSummary } from './types';
 import { AuthService } from '../../core/services/auth.service';
 import { ProfileService } from '../../core/services/profile.service';
 import { ReviewService } from '../../core/services/review.service';
+import { FollowService } from '../../core/services/follow.service';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
@@ -21,6 +22,7 @@ export class ProfilePage {
   private readonly authService = inject(AuthService);
   private readonly profileService = inject(ProfileService);
   private readonly reviewService = inject(ReviewService);
+  private readonly followService = inject(FollowService);
   private errorClearTimeout: ReturnType<typeof setTimeout> | null = null;
   private successClearTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -28,6 +30,8 @@ export class ProfilePage {
   protected readonly profile = signal<UserProfile | null>(null);
   protected readonly myReviews = signal<UserReviewSummary[]>([]);
   protected readonly reviewsLoading = signal(true);
+  protected readonly followerCount = signal(0);
+  protected readonly followingCount = signal(0);
   protected readonly error = signal<string | null>(null);
   protected readonly loading = signal(true);
   protected readonly success = signal<string | null>(null);
@@ -50,6 +54,7 @@ export class ProfilePage {
 
       if (profile) {
         this.loadMyReviews(profile.id);
+        this.loadFollowCounts(profile.id);
       } else {
         this.reviewsLoading.set(false);
       }
@@ -87,6 +92,28 @@ export class ProfilePage {
     } finally {
 
       this.reviewsLoading.set(false);
+
+    }
+  }
+
+  private async loadFollowCounts(userId: string): Promise<void> {
+
+    try {
+
+      const [followerCount, followingCount] = await Promise.all([
+        this.followService.getFollowerCount(userId),
+        this.followService.getFollowingCount(userId)
+      ]);
+
+      this.followerCount.set(followerCount);
+      this.followingCount.set(followingCount);
+
+    } catch (error) {
+
+      console.error(
+        'Failed loading follow counts:',
+        error
+      );
 
     }
   }

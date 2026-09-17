@@ -56,6 +56,12 @@
         <span class="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-white/80">
           Member since {{ profile()?.memberSince | date:'longDate' }}
         </span>
+        <span class="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-white/80">
+          {{ followerCount() }} {{ followerCount() === 1 ? 'follower' : 'followers' }}
+        </span>
+        <span class="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-white/80">
+          {{ followingCount() }} following
+        </span>
       </div>
     </div>
 
