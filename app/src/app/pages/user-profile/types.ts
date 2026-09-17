@@ -6,4 +6,10 @@ export interface PublicProfile {
   memberSince: string;
 }
 
+export interface FollowedUser {
+  id: string;
+  fullName: string;
+  avatarUrl: string | null;
+}
+
 export type { UserReviewSummary } from '../profile/types';

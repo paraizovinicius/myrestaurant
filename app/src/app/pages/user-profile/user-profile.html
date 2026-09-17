@@ -49,22 +49,32 @@
           </span>
 
           @if (!isOwnProfile()) {
-            <button
-              type="button"
-              (click)="toggleFollow()"
-              [disabled]="followActionPending()"
-              class="cursor-pointer rounded-full px-4 py-2 font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
-              [class.bg-[#f4c98b]]="!isFollowing()"
-              [class.text-[#241915]]="!isFollowing()"
-              [class.hover:bg-[#ffd99b]]="!isFollowing()"
-              [class.border]="isFollowing()"
-              [class.border-white/20]="isFollowing()"
-              [class.bg-white/10]="isFollowing()"
-              [class.text-white]="isFollowing()"
-              [class.hover:bg-white/15]="isFollowing()"
-            >
-              {{ followActionPending() ? 'Please wait...' : (isFollowing() ? 'Following' : 'Follow') }}
-            </button>
+            @if (isLoggedIn()) {
+              <button
+                type="button"
+                (click)="toggleFollow()"
+                [disabled]="followActionPending()"
+                class="cursor-pointer rounded-full px-4 py-2 font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+                [class.bg-[#f4c98b]]="!isFollowing()"
+                [class.text-[#241915]]="!isFollowing()"
+                [class.hover:bg-[#ffd99b]]="!isFollowing()"
+                [class.border]="isFollowing()"
+                [class.border-white/20]="isFollowing()"
+                [class.bg-white/10]="isFollowing()"
+                [class.text-white]="isFollowing()"
+                [class.hover:bg-white/15]="isFollowing()"
+              >
+                {{ followActionPending() ? 'Please wait...' : (isFollowing() ? 'Following' : 'Follow') }}
+              </button>
+            } @else {
+              <a
+                routerLink="/login"
+                [queryParams]="{ returnUrl: router.url }"
+                class="rounded-full border border-white/20 bg-white/5 px-4 py-2 font-medium text-white/80 transition hover:border-[#f4c98b]/40 hover:text-[#f4c98b]"
+              >
+                Log in to follow
+              </a>
+            }
           }
         </div>
 

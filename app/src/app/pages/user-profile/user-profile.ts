@@ -107,12 +107,6 @@ export class UserProfilePage {
       return;
     }
 
-    if (!this.isLoggedIn()) {
-      this.followError.set(null);
-      this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
-      return;
-    }
-
     this.followActionPending.set(true);
     this.followError.set(null);
 

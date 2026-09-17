@@ -1,12 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { UserProfile, UserReviewSummary } from './types';
+import { FollowedUser } from '../user-profile/types';
 import { AuthService } from '../../core/services/auth.service';
 import { ProfileService } from '../../core/services/profile.service';
 import { ReviewService } from '../../core/services/review.service';
 import { FollowService } from '../../core/services/follow.service';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+
+type FollowTab = 'followers' | 'following';
 
 
 @Component({
@@ -30,8 +33,12 @@ export class ProfilePage {
   protected readonly profile = signal<UserProfile | null>(null);
   protected readonly myReviews = signal<UserReviewSummary[]>([]);
   protected readonly reviewsLoading = signal(true);
-  protected readonly followerCount = signal(0);
-  protected readonly followingCount = signal(0);
+  protected readonly followers = signal<FollowedUser[]>([]);
+  protected readonly following = signal<FollowedUser[]>([]);
+  protected readonly followListsLoading = signal(true);
+  protected readonly activeFollowTab = signal<FollowTab>('followers');
+  protected readonly followerCount = computed(() => this.followers().length);
+  protected readonly followingCount = computed(() => this.following().length);
   protected readonly error = signal<string | null>(null);
   protected readonly loading = signal(true);
   protected readonly success = signal<string | null>(null);
@@ -54,9 +61,10 @@ export class ProfilePage {
 
       if (profile) {
         this.loadMyReviews(profile.id);
-        this.loadFollowCounts(profile.id);
+        this.loadFollowLists(profile.id);
       } else {
         this.reviewsLoading.set(false);
+        this.followListsLoading.set(false);
       }
 
     } catch(error) {
@@ -96,26 +104,38 @@ export class ProfilePage {
     }
   }
 
-  private async loadFollowCounts(userId: string): Promise<void> {
+  private async loadFollowLists(userId: string): Promise<void> {
+    this.followListsLoading.set(true);
 
     try {
 
-      const [followerCount, followingCount] = await Promise.all([
-        this.followService.getFollowerCount(userId),
-        this.followService.getFollowingCount(userId)
+      const [followers, following] = await Promise.all([
+        this.followService.getFollowers(userId),
+        this.followService.getFollowing(userId)
       ]);
 
-      this.followerCount.set(followerCount);
-      this.followingCount.set(followingCount);
+      this.followers.set(followers);
+      this.following.set(following);
 
     } catch (error) {
 
       console.error(
-        'Failed loading follow counts:',
+        'Failed loading follow lists:',
         error
       );
 
+      this.followers.set([]);
+      this.following.set([]);
+
+    } finally {
+
+      this.followListsLoading.set(false);
+
     }
+  }
+
+  protected setFollowTab(tab: FollowTab): void {
+    this.activeFollowTab.set(tab);
   }
 
   protected readonly welcomeMessage = computed(() => {

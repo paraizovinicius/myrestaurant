@@ -298,36 +298,64 @@
         </section>
       </div>
 
-      <!-- <aside class="space-y-6">
+      <aside class="space-y-6">
         <section class="rounded-[24px] border border-white/10 bg-black/20 p-5 sm:p-6">
-          <h3 class="text-xl font-semibold text-white">Activity</h3>
-          <div class="mt-4 grid gap-3">
-            <article class="rounded-[18px] border border-white/10 bg-white/5 p-4">
-              <span class="block text-xs uppercase tracking-[0.13em] text-[#f4c98b]">Total orders</span>
-              <strong class="mt-2 block text-3xl font-bold text-white">{{ profile()?.totalOrders }}</strong>
-            </article>
-            <article class="rounded-[18px] border border-white/10 bg-white/5 p-4">
-              <span class="block text-xs uppercase tracking-[0.13em] text-[#f4c98b]">Wishlist items</span>
-              <strong class="mt-2 block text-3xl font-bold text-white">{{ profile()?.wishlistItems }}</strong>
-            </article>
-          </div>
-        </section>
-
-        <section class="rounded-[24px] border border-white/10 bg-black/20 p-5 sm:p-6">
-          <h3 class="text-xl font-semibold text-white">Favorite cuisines</h3>
-          <div class="mt-4 space-y-3">
-            <article
-              *ngFor="let cuisine of profile()?.favoriteCuisines"
-              class="rounded-[18px] border border-white/10 bg-white/5 p-4"
+          <div class="flex gap-2 rounded-full border border-white/10 bg-white/5 p-1 text-sm">
+            <button
+              type="button"
+              (click)="setFollowTab('followers')"
+              class="flex-1 cursor-pointer rounded-full px-3 py-2 font-semibold transition"
+              [class.bg-[#f4c98b]]="activeFollowTab() === 'followers'"
+              [class.text-[#241915]]="activeFollowTab() === 'followers'"
+              [class.text-white/70]="activeFollowTab() !== 'followers'"
             >
-              <div class="flex items-center justify-between gap-2">
-                <strong class="text-white">{{ cuisine.name }}</strong>
-                <span class="text-sm text-white/70">{{ cuisine.visitsThisMonth }} visits</span>
+              Followers ({{ followerCount() }})
+            </button>
+            <button
+              type="button"
+              (click)="setFollowTab('following')"
+              class="flex-1 cursor-pointer rounded-full px-3 py-2 font-semibold transition"
+              [class.bg-[#f4c98b]]="activeFollowTab() === 'following'"
+              [class.text-[#241915]]="activeFollowTab() === 'following'"
+              [class.text-white/70]="activeFollowTab() !== 'following'"
+            >
+              Following ({{ followingCount() }})
+            </button>
+          </div>
+
+          <div class="mt-4 space-y-3">
+            @if (followListsLoading()) {
+              <div class="rounded-[18px] border border-white/10 bg-white/5 p-4 text-sm text-white/80">
+                Loading...
               </div>
-            </article>
+            } @else {
+              @let people = activeFollowTab() === 'followers' ? followers() : following();
+
+              @if (people.length === 0) {
+                <div class="rounded-[18px] border border-white/10 bg-white/5 p-4 text-sm text-white/80">
+                  {{ activeFollowTab() === 'followers' ? 'No followers yet.' : 'Not following anyone yet.' }}
+                </div>
+              } @else {
+                @for (person of people; track person.id) {
+                  <a
+                    [routerLink]="['/user', person.id]"
+                    class="flex items-center gap-3 rounded-[18px] border border-white/10 bg-white/5 p-3 transition hover:border-[#f4c98b]/40 hover:bg-white/10"
+                  >
+                    @if (person.avatarUrl) {
+                      <img [src]="person.avatarUrl" alt="{{ person.fullName }}'s avatar" class="h-10 w-10 rounded-full object-cover" />
+                    } @else {
+                      <span class="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/5 text-sm font-semibold text-white/70">
+                        {{ person.fullName.charAt(0) }}
+                      </span>
+                    }
+                    <span class="font-medium text-white">{{ person.fullName }}</span>
+                  </a>
+                }
+              }
+            }
           </div>
         </section>
-      </aside> -->
+      </aside>
     </div>
   </section>
 
