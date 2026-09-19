@@ -8,6 +8,7 @@
     "start": "ng serve",
     "prebuild": "npm run env",
     "build": "ng build",
+    "vercel-build": "npm run env && ng build",
     "prewatch": "npm run env",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
