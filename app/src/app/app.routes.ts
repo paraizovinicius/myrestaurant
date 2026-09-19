@@ -7,6 +7,10 @@ export const routes: Routes = [
 		loadComponent: () => import('./pages/home/home').then((m) => m.HomePage),
 	},
 	{
+		path: 'feed',
+		loadComponent: () => import('./pages/feed/feed').then((m) => m.FeedPage),
+	},
+	{
 		path: 'restaurants',
 		loadComponent: () => import('./pages/restaurants/restaurants').then((m) => m.RestaurantsPage),
 	},

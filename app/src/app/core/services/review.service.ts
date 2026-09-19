@@ -1,11 +1,15 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { supabase } from '../supabase/supabase.client';
 import { UserReviewSummary } from '../../pages/profile/types';
+import { FeedReviewItem } from '../../pages/feed/types';
+import { ProfileService } from './profile.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ReviewService {
+
+  private readonly profileService = inject(ProfileService);
 
   async getReviewsForRestaurant(restaurantId: string) {
     const { data, error } = await supabase
@@ -105,6 +109,69 @@ export class ReviewService {
         id: review.id,
         restaurantId: review.restaurant_id,
         restaurantName: restaurantObj?.name ?? 'Unknown restaurant',
+        rating: review.rating,
+        title: review.title,
+        body: review.body,
+        createdAt: review.created_at,
+        likes: review.review_likes?.length ?? 0,
+        comments: review.review_comments?.length ?? 0
+      };
+    });
+  }
+
+  async getReviewsFeed(offset: number, limit: number): Promise<FeedReviewItem[]> {
+    const { data, error } = await supabase
+      .from('reviews')
+      .select(`
+        id,
+        user_id,
+        restaurant_id,
+        rating,
+        title,
+        body,
+        created_at,
+
+        profiles!reviews_user_id_fkey(
+          id,
+          name
+        ),
+
+        restaurants!reviews_restaurant_id_fkey(
+          id,
+          name
+        ),
+
+        review_likes(
+          user_id
+        ),
+
+        review_comments(
+          id
+        )
+      `)
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
+
+    if (error) {
+      throw error;
+    }
+
+    return (data ?? []).map((review) => {
+      const rawRestaurant = review.restaurants;
+      const restaurantObj = Array.isArray(rawRestaurant) ? rawRestaurant[0] : rawRestaurant;
+
+      const rawProfile = review.profiles;
+      const profileObj = Array.isArray(rawProfile) ? rawProfile[0] : rawProfile;
+
+      const reviewerId = profileObj?.id ?? review.user_id;
+
+      return {
+        id: review.id,
+        restaurantId: review.restaurant_id,
+        restaurantName: restaurantObj?.name ?? 'Unknown restaurant',
+        reviewerId,
+        reviewerName: profileObj?.name ?? 'Anonymous user',
+        reviewerAvatarUrl: this.profileService.getAvatarUrlByUserId(reviewerId, Date.now()),
         rating: review.rating,
         title: review.title,
         body: review.body,
