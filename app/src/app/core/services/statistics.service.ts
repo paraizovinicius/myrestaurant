@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { supabase } from '../supabase/supabase.client';
-import { CommunityStatistics } from '../../pages/home/types';
+import { CommunityStatistics } from '../../pages/about/types';
 
 @Injectable({
   providedIn: 'root'

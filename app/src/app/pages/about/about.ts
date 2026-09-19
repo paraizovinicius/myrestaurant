@@ -18,19 +18,19 @@ import { PopularRestaurantsService } from '../../core/services/popular-restauran
 import { RouterLink } from '@angular/router';
 
 @Component({
-  selector: 'app-home-page',
+  selector: 'app-about-page',
   standalone: true,
   imports: [RouterLink, DatePipe, SlicePipe],
-  templateUrl: './home.html',
-  styleUrl: './home.css'
+  templateUrl: './about.html',
+  styleUrl: './about.css'
 })
-export class HomePage implements AfterViewInit, OnDestroy {
+export class AboutPage implements AfterViewInit, OnDestroy {
   @ViewChildren('carousel')
   private readonly carouselsRef!: QueryList<ElementRef<HTMLDivElement>>;
   private readonly slideCount = 3;
   private activeSlide = 0;
   private intervalId?: number;
-  
+
   private readonly statisticsService = inject(StatisticsService);
   private readonly popularReviewsService = inject(PopularReviewsService);
   private readonly popularRestaurantsService = inject(PopularRestaurantsService);
@@ -50,10 +50,10 @@ export class HomePage implements AfterViewInit, OnDestroy {
     if (!isPlatformBrowser(this.platformId)) {
           return;
         }
-    
+
         const mediaQuery = window.matchMedia('(max-width: 700px)');
         const updateMobileState = () => this.mobile.set(mediaQuery.matches);
-    
+
         updateMobileState();
         mediaQuery.addEventListener('change', updateMobileState);
         this.destroyRef.onDestroy(() => mediaQuery.removeEventListener('change', updateMobileState));
@@ -61,7 +61,7 @@ export class HomePage implements AfterViewInit, OnDestroy {
 
   async ngOnInit(): Promise<void> {
     try {
-      // 1. Fetch all home page data concurrently instead of waterfalling
+      // 1. Fetch all about page data concurrently instead of waterfalling
       const [stats, reviews, restaurants] = await Promise.all([
         this.statisticsService.getCommunityStatistics(),
         this.popularReviewsService.getPopularReviews(5), // this one fetches avatar photos as well
@@ -76,7 +76,7 @@ export class HomePage implements AfterViewInit, OnDestroy {
       this.popularReviews.set(reviews);
       this.popularRestaurants.set(restaurants);
     } catch (error) {
-      console.error('Failed to load homepage data:', error);
+      console.error('Failed to load about page data:', error);
       this.loading?.set(false);
     }
   }
@@ -92,7 +92,7 @@ export class HomePage implements AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     if (isPlatformBrowser(this.platformId) && this.intervalId !== undefined) {
       window.clearInterval(this.intervalId);
-    } 
+    }
   }
 
   private advanceSlide(): void {

@@ -11,7 +11,7 @@
   </div>
     } @else {
       <div
-      routerLink="/feed"
+      routerLink="/"
       class="cursor-pointer select-none tracking-[-0.02em]">
         <img
           src="/logo.png"
@@ -24,11 +24,18 @@
     <nav class="ml-3 lg:ml-6 flex flex-1 flex-wrap items-center gap-3 space-x-3" aria-label="Primary navigation">
       @if (!mobile()) {
       <a
-        routerLink="/feed"
+        routerLink="/"
         routerLinkActive="font-bold border-[#9e3d00]/20"
         class="inline-flex min-h-11 items-center rounded-full border border-transparent px-4 py-2 font-medium text-[#9e3d00] transition hover:border-[#9e3d00]/20 hover:bg-[#9e3d00]/[0.06]"
       >
         Explore
+      </a>
+      <a
+        routerLink="/about"
+        routerLinkActive="font-bold border-[#9e3d00]/20"
+        class="inline-flex min-h-11 items-center rounded-full border border-transparent px-4 py-2 font-medium text-[#9e3d00] transition hover:border-[#9e3d00]/20 hover:bg-[#9e3d00]/[0.06]"
+      >
+        About
       </a>
       }
       <a
@@ -197,7 +204,7 @@
       <nav aria-label="Footer navigation">
         <div class="flex flex-wrap items-center gap-x-8 gap-y-4 grid grid-cols-3">
           <a
-            href="#about"
+            routerLink="/about"
             class="group inline-flex items-center gap-2 text-[16px] font-medium transition-colors hover:text-[#7f3100]"
           >
             About Us

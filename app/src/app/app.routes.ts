@@ -4,11 +4,11 @@ export const routes: Routes = [
 	{
 		path: '',
 		pathMatch: 'full',
-		loadComponent: () => import('./pages/home/home').then((m) => m.HomePage),
+		loadComponent: () => import('./pages/feed/feed').then((m) => m.FeedPage),
 	},
 	{
-		path: 'feed',
-		loadComponent: () => import('./pages/feed/feed').then((m) => m.FeedPage),
+		path: 'about',
+		loadComponent: () => import('./pages/about/about').then((m) => m.AboutPage),
 	},
 	{
 		path: 'restaurants',
