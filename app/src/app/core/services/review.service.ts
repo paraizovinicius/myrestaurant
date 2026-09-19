@@ -119,8 +119,13 @@ export class ReviewService {
     });
   }
 
-  async getReviewsFeed(offset: number, limit: number): Promise<FeedReviewItem[]> {
-    const { data, error } = await supabase
+  async getReviewsFeed(offset: number, limit: number, city?: string | null): Promise<FeedReviewItem[]> {
+    // A "!inner" join is required so that filtering on the embedded
+    // restaurants.city column restricts the outer reviews rows too,
+    // rather than just filtering the embedded object.
+    const restaurantsJoin = city ? 'restaurants!reviews_restaurant_id_fkey!inner' : 'restaurants!reviews_restaurant_id_fkey';
+
+    let query = supabase
       .from('reviews')
       .select(`
         id,
@@ -136,7 +141,7 @@ export class ReviewService {
           name
         ),
 
-        restaurants!reviews_restaurant_id_fkey(
+        ${restaurantsJoin}(
           id,
           name
         ),
@@ -151,6 +156,12 @@ export class ReviewService {
       `)
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
+
+    if (city) {
+      query = query.ilike('restaurants.city', city);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       throw error;

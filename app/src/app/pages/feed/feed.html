@@ -1,8 +1,44 @@
 <main class="mx-auto w-full max-w-3xl px-4 py-6 sm:px-6 lg:px-8">
   <div class="mb-6">
     <h1 class="text-2xl font-bold text-white">🍽️ Feed</h1>
-    <p class="mt-1 text-white/60">The latest reviews from the community, newest first.</p>
+    <p class="mt-1 text-white/60">
+      @if (viewMode() === 'nearby') {
+        Reviews from restaurants in {{ userCity() }}, newest first.
+      } @else {
+        The latest reviews from the community, newest first.
+      }
+    </p>
   </div>
+
+  <div class="mb-4 inline-flex rounded-full border border-white/10 bg-white/5 p-1 text-sm">
+    <button
+      type="button"
+      (click)="setViewMode('global')"
+      class="cursor-pointer rounded-full px-4 py-2 font-semibold transition"
+      [class.bg-[#f4c98b]]="viewMode() === 'global'"
+      [class.text-[#241915]]="viewMode() === 'global'"
+      [class.text-white/70]="viewMode() !== 'global'"
+    >
+      Globally
+    </button>
+    <button
+      type="button"
+      (click)="setViewMode('nearby')"
+      class="cursor-pointer rounded-full px-4 py-2 font-semibold transition"
+      [class.bg-[#f4c98b]]="viewMode() === 'nearby'"
+      [class.text-[#241915]]="viewMode() === 'nearby'"
+      [class.text-white/70]="viewMode() !== 'nearby'"
+    >
+      Near you
+    </button>
+  </div>
+
+  @if (nearbyWarning()) {
+    <div class="mb-4 rounded-[16px] border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-sm text-amber-200">
+      {{ nearbyWarning() }}
+      <a routerLink="/profile" class="underline hover:text-amber-100">Go to profile</a>
+    </div>
+  }
 
   @if (loading()) {
     <div class="space-y-3">
@@ -24,7 +60,11 @@
 
     @if (reviews().length === 0 && !error()) {
       <div class="rounded-[20px] border border-white/10 bg-white/5 p-6 text-center text-white/80">
-        No reviews yet. Be the first to write one!
+        @if (viewMode() === 'nearby') {
+          No reviews yet for restaurants in {{ userCity() }}.
+        } @else {
+          No reviews yet. Be the first to write one!
+        }
       </div>
     }
 
