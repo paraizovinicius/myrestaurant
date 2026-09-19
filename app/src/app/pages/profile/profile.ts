@@ -1,15 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, ElementRef, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { UserProfile, UserReviewSummary } from './types';
 import { FollowedUser } from '../user-profile/types';
 import { AuthService } from '../../core/services/auth.service';
 import { ProfileService } from '../../core/services/profile.service';
 import { ReviewService } from '../../core/services/review.service';
 import { FollowService } from '../../core/services/follow.service';
+import { GoogleMapsService } from '../../core/services/google-maps.service';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
 type FollowTab = 'followers' | 'following';
+type AddressAutocompleteState = 'loading' | 'ready' | 'error';
 
 
 @Component({
@@ -26,8 +28,10 @@ export class ProfilePage {
   private readonly profileService = inject(ProfileService);
   private readonly reviewService = inject(ReviewService);
   private readonly followService = inject(FollowService);
+  private readonly googleMapsService = inject(GoogleMapsService);
   private errorClearTimeout: ReturnType<typeof setTimeout> | null = null;
   private successClearTimeout: ReturnType<typeof setTimeout> | null = null;
+  private addressAutocompleteElement: google.maps.places.PlaceAutocompleteElement | null = null;
 
   protected readonly user = this.authService.user;
   protected readonly profile = signal<UserProfile | null>(null);
@@ -44,6 +48,11 @@ export class ProfilePage {
   protected readonly success = signal<string | null>(null);
 
   protected editingAddress = signal(false);
+  protected readonly addressAutocompleteContainer = viewChild<ElementRef<HTMLDivElement>>('addressAutocompleteContainer');
+  protected readonly addressAutocompleteState = signal<AddressAutocompleteState>('loading');
+  protected readonly addressAutocompleteError = signal<string | null>(null);
+  protected readonly addressSelected = signal(false);
+  protected readonly selectedAddressPreview = signal('');
 
   protected address = '';
   protected zipcode = '';
@@ -51,6 +60,44 @@ export class ProfilePage {
   protected country = '';
 
   protected readonly isLoggedIn = computed(() => !!this.user());
+
+  constructor() {
+    effect(() => {
+      const container = this.addressAutocompleteContainer();
+
+      this.addressAutocompleteElement = null;
+
+      if (!container) {
+        return;
+      }
+
+      this.addressAutocompleteState.set('loading');
+      this.addressAutocompleteError.set(null);
+
+      this.googleMapsService
+        .attachAutocomplete(container.nativeElement, (parsed) => {
+          this.address = parsed.address;
+          this.zipcode = parsed.zipcode;
+          this.city = parsed.city;
+          this.country = parsed.country;
+
+          this.selectedAddressPreview.set(parsed.formattedAddress);
+          this.addressSelected.set(true);
+        })
+        .then((element) => {
+          element.value = this.selectedAddressPreview();
+
+          this.addressAutocompleteElement = element;
+          this.addressAutocompleteState.set('ready');
+        })
+        .catch((error) => {
+          console.error('Failed to load address autocomplete:', error);
+
+          this.addressAutocompleteError.set('Address search is currently unavailable. Please try again later.');
+          this.addressAutocompleteState.set('error');
+        });
+    });
+  }
 
   async ngOnInit(): Promise<void> {
     try {
@@ -196,10 +243,41 @@ export class ProfilePage {
     this.city = profile.city ?? '';
     this.country = profile.country ?? '';
 
+    const hasExistingAddress = !!(profile.address || profile.city || profile.country);
+
+    this.selectedAddressPreview.set(this.buildFullAddress(profile));
+    this.addressSelected.set(hasExistingAddress);
+
     this.editingAddress.set(true);
   }
 
-  async saveAddress() {
+  protected cancelEditingAddress(): void {
+    this.editingAddress.set(false);
+  }
+
+  protected clearAddress(): void {
+    this.address = '';
+    this.zipcode = '';
+    this.city = '';
+    this.country = '';
+
+    this.selectedAddressPreview.set('');
+    this.addressSelected.set(true);
+
+    const autocomplete = this.addressAutocompleteElement;
+
+    if (autocomplete) {
+      autocomplete.value = '';
+    }
+  }
+
+  private buildFullAddress(profile: UserProfile): string {
+    return [profile.address, profile.city, profile.zipcode, profile.country]
+      .filter((part): part is string => !!part && part.trim().length > 0)
+      .join(', ');
+  }
+
+  protected async saveAddress() {
 
     try {
 

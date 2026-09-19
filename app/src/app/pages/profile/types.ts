@@ -40,3 +40,11 @@ export interface UserReviewSummary {
   likes: number;
   comments: number;
 }
+
+export interface ParsedAddress {
+  address: string;
+  zipcode: string;
+  city: string;
+  country: string;
+  formattedAddress: string;
+}
